@@ -1,6 +1,10 @@
-﻿namespace Common.Entities.User
+﻿using Common.Enums;
+
+namespace Common.Entities.User;
+
+public class Admin : AUser
 {
-    internal class Admin
+    public Admin(string name, Role role) : base(name, role)
     {
     }
 }
