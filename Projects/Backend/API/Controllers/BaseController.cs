@@ -44,7 +44,7 @@ public abstract class BaseController : ControllerBase
         catch (EntityNotFoundException<BaseEntity<Guid>, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         catch (Exception) { return InternalServerError(); }
     }
-    protected async Task<IActionResult> UpdateEntity<TPayload, TRepository>(TPayload payload, TRepository repository)
+    protected async Task<IActionResult> UpdateEntity<TPayload, TRepository>(Guid id, TPayload payload, TRepository repository)
         where TPayload : ABaseModifyPayload
         where TRepository : BaseRepository<BaseEntity<Guid>, Guid>
     {
@@ -52,6 +52,7 @@ public abstract class BaseController : ControllerBase
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (payload.Id is null || payload.Id == Guid.Empty) return BadRequest("Invalid id provided");
+            if (payload.Id != id) return BadRequest("Id mismatch");
 
             var entity = await repository.GetAsync(payload.Id.Value);
             repository.Update(entity);

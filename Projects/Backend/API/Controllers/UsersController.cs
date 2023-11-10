@@ -32,12 +32,11 @@ public class UsersController : BaseController
     public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] UserModifyPayload payload)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (payload.Id != userId) return BadRequest("Id mismatch");
 
         bool isAdmin = IsAdmin(userId);
         if (!isAdmin && payload.Role == Role.Admin) return BadRequest("You cannot change your role");
 
-        return await UpdateEntity(payload, isAdmin 
+        return await UpdateEntity(userId, payload, isAdmin 
             ? uow.Admins.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>()
             : uow.Citizens.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
     }
