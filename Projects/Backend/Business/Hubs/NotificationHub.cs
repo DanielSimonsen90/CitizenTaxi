@@ -5,7 +5,7 @@ namespace Business.Hubs;
 
 public class NotificationHub : Hub
 {
-    public const string ENDPOINT = "/notificationhub";
+    public const string ENDPOINT = "notificationhub";
     private readonly UnitOfWork _uow;
 
     public NotificationHub(UnitOfWork uow)

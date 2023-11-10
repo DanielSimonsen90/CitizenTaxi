@@ -7,7 +7,7 @@ namespace DataAccess.Repositories;
 
 public class BookingRepository : BaseRepository<Booking, Guid>
 {
-    public BookingRepository(DbContext context) : base(context) { }
+    public BookingRepository(CitizenTaxiDbContext context) : base(context) { }
 
     public List<Booking> GetFromCitizen(Citizen citizen) => _dbSet
         .Include(booking => booking.Citizen)

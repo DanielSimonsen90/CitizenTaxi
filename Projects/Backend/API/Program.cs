@@ -18,7 +18,7 @@ builder.Services.AddDbContext<CitizenTaxiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<UnitOfWork>();
-builder.Services.AddSingleton<LoginService>();
+builder.Services.AddScoped<LoginService>();
 builder.Services.AddSignalR();
 
 // Force lowercase endpoints
@@ -43,6 +43,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<NotificationHub>($"/api/{NotificationHub.ENDPOINT}");
+app.MapHub<NotificationHub>($"api/{NotificationHub.ENDPOINT}");
 
 app.Run();
