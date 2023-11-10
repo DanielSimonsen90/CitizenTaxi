@@ -1,6 +1,8 @@
-﻿using Common.Enums;
+﻿using Common.Entities;
+using Common.Entities.User;
+using Common.Enums;
 
-namespace Common.Entities.User;
+namespace DataAccess;
 
 internal static class MockData
 {
