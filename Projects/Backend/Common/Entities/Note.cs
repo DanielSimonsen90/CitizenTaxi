@@ -1,9 +1,10 @@
 ﻿using Common.Entities.User;
 using Common.Enums;
+using DanhoLibrary.NLayer;
 
 namespace Common.Entities;
 
-public class Note
+public class Note : BaseEntity<Guid>
 {
     public Note(Citizen citizen, bool pensioner, string residence,
         CarHeight carHeight, HelpingUtil helpingUtil,

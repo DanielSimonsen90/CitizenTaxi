@@ -1,8 +1,9 @@
 ﻿using Common.Entities.User;
+using DanhoLibrary.NLayer;
 
 namespace Common.Entities;
 
-public class Booking
+public class Booking : BaseEntity<Guid>
 {
     public Booking(string pickup, string destination, DateTime arrival, Citizen citizen)
     {
