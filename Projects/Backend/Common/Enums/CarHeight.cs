@@ -2,6 +2,9 @@
 
 namespace Common.Enums;
 
+/// <summary>
+/// Different car heights the citizen can choose from.
+/// </summary>
 public enum CarHeight
 {
     [Display(Name = "Enhver")]

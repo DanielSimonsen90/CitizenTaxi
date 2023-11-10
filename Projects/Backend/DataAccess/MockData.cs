@@ -4,6 +4,9 @@ using Common.Enums;
 
 namespace DataAccess;
 
+/// <summary>
+/// Mock/Seed data for the database for testing purposes.
+/// </summary>
 internal static class MockData
 {
     internal static readonly Admin Admin = new("Admin", Role.Admin) { Id = Guid.Parse("00000000-0000-0000-0000-000000000001") };

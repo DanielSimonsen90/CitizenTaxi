@@ -3,6 +3,9 @@
 
 namespace Common.Enums;
 
+/// <summary>
+/// System roles.
+/// </summary>
 public enum Role
 {
     [Display(Name = "Borger")]

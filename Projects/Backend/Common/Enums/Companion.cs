@@ -2,6 +2,9 @@
 
 namespace Common.Enums;
 
+/// <summary>
+/// Different companions the citizen can choose from.
+/// </summary>
 public enum Companion
 {
     [Display(Name = "Alene")]

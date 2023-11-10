@@ -2,6 +2,9 @@
 
 namespace Common.Enums;
 
+/// <summary>
+/// Helping utilities the citizen may possess.
+/// </summary>
 public enum HelpingUtil
 {
     [Display(Name = "Ingen")]

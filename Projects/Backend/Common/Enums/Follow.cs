@@ -2,6 +2,9 @@
 
 namespace Common.Enums;
 
+/// <summary>
+/// Different follow options the citizen can choose from.
+/// </summary>
 public enum Follow
 {
     [Display(Name = "Nej")]
