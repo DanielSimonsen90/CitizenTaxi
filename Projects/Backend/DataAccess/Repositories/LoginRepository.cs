@@ -6,5 +6,5 @@ namespace DataAccess.Repositories;
 
 public class LoginRepository : BaseRepository<Login, Guid>
 {
-    public LoginRepository(DbContext context) : base(context) { }
+    public LoginRepository(CitizenTaxiDbContext context) : base(context) { }
 }

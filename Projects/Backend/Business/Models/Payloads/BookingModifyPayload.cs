@@ -1,7 +1,7 @@
 ﻿#nullable disable
 namespace Business.Models.Payloads;
 
-public class BookingModifyPayload
+public class BookingModifyPayload : ABaseModifyPayload
 {
     public Guid CitizenId { get; set; }
     public string Pickup { get; set; }

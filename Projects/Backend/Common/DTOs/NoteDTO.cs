@@ -4,7 +4,7 @@ using Common.Enums;
 
 namespace Common.DTOs;
 
-public class NoteDTO
+public class NoteDTO : ABaseDTO
 {
     public bool Pensioner { get; set; }
     public string Residence { get; set; }

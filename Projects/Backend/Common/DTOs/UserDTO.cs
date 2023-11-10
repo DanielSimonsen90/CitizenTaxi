@@ -1,9 +1,11 @@
 ﻿#nullable disable
 
+using Common.Enums;
+
 namespace Common.DTOs;
 
-public class UserDTO
+public class UserDTO : ABaseDTO
 {
-    public Guid Id { get; set; }
     public string Name { get; set; }
+    public Role Role { get; set; }
 }

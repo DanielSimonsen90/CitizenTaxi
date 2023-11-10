@@ -3,7 +3,7 @@ using Common.Enums;
 
 namespace Business.Models.Payloads;
 
-public class NoteModifyPayload
+public class NoteModifyPayload : ABaseModifyPayload
 {
     public Guid CitizenId { get; set; }
     public bool Pensioner { get; set; }

@@ -1,6 +1,8 @@
-﻿namespace Business.Models.Payloads;
+﻿#nullable disable
+namespace Business.Models.Payloads;
 
-public class LoginPayload : DanhoLibrary.Login
+public class LoginPayload : ABaseModifyPayload
 {
-    public LoginPayload(string username, string password) : base(username, password) {}
+    public string Username { get; set; }
+    public string Password { get; set; }
 }
