@@ -1,8 +1,10 @@
 ﻿using Business.Models.Payloads;
 using Business.Services;
 using Common.DTOs;
+using Common.Entities;
 using Common.Entities.User;
 using DanhoLibrary.NLayer;
+using DataAccess.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,19 +18,19 @@ public class NotesController : BaseController
         await CreateEntity(payload, uow.Notes);
     [HttpGet] public async Task<IActionResult> GetNotes([FromQuery] Guid? citizenId)
     {
-        if (citizenId is null) return Ok(uow.Notes.GetAll().Adapt<List<NoteDTO>>());
+        if (citizenId is null) return await Task.FromResult(Ok(uow.Notes.GetAll().Adapt<List<NoteDTO>>()));
 
         try
         {
-            Citizen citizen = await uow.Citizens.GetAsync(citizenId.Value);
-            return Ok(uow.Notes.GetFromCitizen(citizen).Adapt<List<NoteDTO>>());
+            Citizen citizen = uow.Citizens.Get(citizenId.Value);
+            return await Task.FromResult(Ok(uow.Notes.GetFromCitizen(citizen).Adapt<NoteDTO?>()));
         }
         catch (EntityNotFoundException<Citizen, Guid> ex) { return NotFound(ex.Message); }
     }
     [HttpGet("{noteId:Guid}")] public async Task<IActionResult> GetNote([FromRoute] Guid noteId) => 
-        await GetEntity<NoteDTO>(noteId, uow.Notes.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
+        await GetEntity<NoteDTO, Note, NoteRepository>(noteId, uow.Notes, Note.RELATIONS);
     [HttpPut("{noteId:Guid}")] public async Task<IActionResult> UpdateNote([FromRoute] Guid noteId, [FromBody] NoteModifyPayload payload) =>
-        await UpdateEntity(noteId, payload, uow.Notes.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
+        await UpdateEntity<NoteModifyPayload, Note, NoteRepository>(noteId, payload, uow.Notes);
     [HttpDelete("{noteId:Guid}")] public async Task<IActionResult> DeleteNote([FromRoute] Guid noteId) =>
-        await DeleteEntity(noteId, uow.Notes.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
+        await DeleteEntity<Note, NoteRepository>(noteId, uow.Notes);
 }

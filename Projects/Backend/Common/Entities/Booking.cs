@@ -1,11 +1,17 @@
 ﻿using Common.Entities.User;
 using DanhoLibrary.NLayer;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 
 namespace Common.Entities;
 
 public class Booking : BaseEntity<Guid>
 {
+    public static readonly Expression<Func<Booking, object?>>[] RELATIONS = 
+    { 
+        booking => booking.Citizen 
+    };
+
     public Booking() : this("", "", DateTime.Now) { }
     public Booking(string pickup, string destination, DateTime arrival)
     {

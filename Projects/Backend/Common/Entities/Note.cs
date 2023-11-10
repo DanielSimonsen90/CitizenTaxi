@@ -2,11 +2,17 @@
 using Common.Enums;
 using DanhoLibrary.NLayer;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 
 namespace Common.Entities;
 
 public class Note : BaseEntity<Guid>
 {
+    public static readonly Expression<Func<Note, object?>>[] RELATIONS =
+    {
+        note => note.Citizen,
+    };
+
     public Note() : this(false, "", CarHeight.Any, HelpingUtil.None, Companion.Alone, Follow.No) {}
     public Note(bool pensioner, string residence,
         CarHeight carHeight, HelpingUtil helpingUtil,

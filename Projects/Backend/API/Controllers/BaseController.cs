@@ -4,6 +4,8 @@ using Common.DTOs;
 using DanhoLibrary.NLayer;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
+using System.Linq.Expressions;
 
 namespace API.Controllers;
 
@@ -37,16 +39,26 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentException ex) { return BadRequest(ex.Message); }
         catch (Exception) { return InternalServerError(); }
     }
-    protected async Task<IActionResult> GetEntity<TDTO>(Guid id, BaseRepository<BaseEntity<Guid>, Guid> repository)
+    protected async Task<IActionResult> GetEntity<TDTO, TEntity, TRepository>(Guid id, TRepository repository, params Expression<Func<TEntity, object?>>[] relations)
+        where TDTO : ABaseDTO
+        where TEntity : BaseEntity<Guid>
+        where TRepository : BaseRepository<TEntity, Guid>
     {
-        try { return Ok((await repository.GetAsync(id)).Adapt<TDTO>()); }
+        try 
+        {
+            var entity = repository.GetWithRelations(id, relations);
+            return entity is null
+                ? NotFound($"Entity not found with id: {id}")
+                : Ok(entity.Adapt<TDTO>());
+        }
         catch (ArgumentException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<BaseEntity<Guid>, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         catch (Exception) { return InternalServerError(); }
     }
-    protected async Task<IActionResult> UpdateEntity<TPayload, TRepository>(Guid id, TPayload payload, TRepository repository)
+    protected async Task<IActionResult> UpdateEntity<TPayload, TEntity, TRepository>(Guid id, TPayload payload, TRepository repository)
         where TPayload : ABaseModifyPayload
-        where TRepository : BaseRepository<BaseEntity<Guid>, Guid>
+        where TEntity : BaseEntity<Guid>
+        where TRepository : BaseRepository<TEntity, Guid>
     {
         try
         {
@@ -65,7 +77,9 @@ public abstract class BaseController : ControllerBase
         catch (Exception) { return InternalServerError(); }
     }
 
-    protected async Task<IActionResult> DeleteEntity(Guid id, BaseRepository<BaseEntity<Guid>, Guid> repository)
+    protected async Task<IActionResult> DeleteEntity<TEntity, TRepository>(Guid id, TRepository repository)
+        where TEntity : BaseEntity<Guid>
+        where TRepository : BaseRepository<TEntity, Guid>
     {
         try
         {
