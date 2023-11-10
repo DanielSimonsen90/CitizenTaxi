@@ -1,10 +1,11 @@
 ﻿using Business.Services;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Business.Hubs;
 
 public class NotificationHub : Hub
 {
+    public const string ENDPOINT = "/notificationhub";
     private readonly UnitOfWork _uow;
 
     public NotificationHub(UnitOfWork uow)
@@ -12,10 +13,10 @@ public class NotificationHub : Hub
         _uow = uow;
     }
 
-    public override Task OnDisconnected(bool stopCalled)
+    public override Task OnDisconnectedAsync(Exception exception)
     {
-        return base.OnDisconnected(stopCalled);
         // TODO: Stop simulation if user disconnects
+        return base.OnDisconnectedAsync(exception);
     }
 
     public Task Simulate(Guid bookingId)

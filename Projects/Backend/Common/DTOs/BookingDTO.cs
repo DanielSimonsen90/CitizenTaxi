@@ -2,7 +2,7 @@
 
 namespace Common.DTOs;
 
-public class BookingDTO
+public class BookingDTO : ABaseDTO
 {
     public string Pickup { get; set; }
     public string Destination { get; set; }
