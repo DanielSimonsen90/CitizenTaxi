@@ -9,8 +9,8 @@ public class BookingRepository : BaseRepository<Booking, Guid>
 {
     public BookingRepository(CitizenTaxiDbContext context) : base(context) { }
 
-    public List<Booking> GetFromCitizen(Citizen citizen) => _dbSet
-        .Include(booking => booking.Citizen)
-        .Where(note => note.Citizen.Id == citizen.Id)
+    public List<Booking> GetFromCitizen(Citizen citizen) => Booking.RELATIONS
+        .Aggregate(_dbSet.AsQueryable(), (current, relation) => current.Include(relation))
+        .Where(booking => booking.Citizen.Id == citizen.Id)
         .ToList();
 }

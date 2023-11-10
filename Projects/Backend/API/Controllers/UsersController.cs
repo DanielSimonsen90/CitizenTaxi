@@ -15,39 +15,47 @@ public class UsersController : BaseController
     public UsersController(UnitOfWork uow) : base(uow) { }
 
     #region User CRUD
-    [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload) => payload.Role switch
+    [HttpPost] public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload) => payload.Role switch
     {
         Role.Citizen => await CreateEntity(payload, uow.Citizens),
         Role.Admin => await CreateEntity(payload, uow.Admins),
         _ => BadRequest("Invalid role provided"),
     };
 
-    [HttpGet("{userId:Guid}")]
-    public async Task<IActionResult> GetUser([FromRoute] Guid userId) => IsAdmin(userId)
-        ? await GetEntity<UserDTO>(userId, uow.Admins.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>())
-        : await GetEntity<CitizenDTO>(userId, uow.Citizens.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
+    [HttpGet] public IActionResult GetUsers(Role? role) => role switch
+    {
+        Role.Citizen => Ok(uow.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>()),
+        Role.Admin => Ok(uow.Admins.GetAll().Adapt<List<UserDTO>>()),
+        null => Ok(new
+        {
+            Citizens = uow.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>(),
+            Admins = uow.Admins.GetAll().Adapt<List<UserDTO>>(),
+        }),
+        _ => BadRequest("Invalid role provided"),
+    };
 
-    [HttpPut("{userId:Guid}")]
-    public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] UserModifyPayload payload)
+    [HttpGet("{userId:Guid}")] public async Task<IActionResult> GetUser([FromRoute] Guid userId) => 
+        IsAdmin(userId)
+            ? await GetEntity<UserDTO, Admin, AdminRepository>(userId, uow.Admins)
+            : await GetEntity<CitizenDTO, Citizen, CitizenRepository>(userId, uow.Citizens, Citizen.RELATIONS);
+
+    [HttpPut("{userId:Guid}")] public async Task<IActionResult> UpdateUser([FromRoute] Guid userId, [FromBody] UserModifyPayload payload)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         bool isAdmin = IsAdmin(userId);
         if (!isAdmin && payload.Role == Role.Admin) return BadRequest("You cannot change your role");
 
-        return await UpdateEntity(userId, payload, isAdmin 
-            ? uow.Admins.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>()
-            : uow.Citizens.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
+        return isAdmin
+            ? await UpdateEntity<UserModifyPayload, Admin, AdminRepository>(userId, payload, uow.Admins)
+            : await UpdateEntity<UserModifyPayload, Citizen, CitizenRepository>(userId, payload, uow.Citizens);
     }
 
     [HttpDelete("{userId:Guid}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
-    {
-        return await DeleteEntity(userId, IsAdmin(userId)
-            ? uow.Admins.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>()
-            : uow.Citizens.Adapt<BaseRepository<BaseEntity<Guid>, Guid>>());
-    }
+    public async Task<IActionResult> DeleteUser([FromRoute] Guid userId) => 
+        IsAdmin(userId)
+            ? await DeleteEntity<Admin, AdminRepository>(userId, uow.Admins)
+            : await DeleteEntity<Citizen, CitizenRepository>(userId, uow.Citizens);
     #endregion
 
     #region Authenticate
@@ -67,6 +75,6 @@ public class UsersController : BaseController
     private bool IsAdmin(Guid userId)
     {
         try { return uow.Admins.Get(userId) is not null; }
-        catch (EntityNotFoundException<BaseEntity<Guid>, Guid>) { return false; }
+        catch (EntityNotFoundException<Admin, Guid>) { return false; }
     }
 }
