@@ -1,4 +1,7 @@
-﻿using Common.Entities.User;
+﻿using Common.Entities;
+using Common.Entities.User;
+using Common.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories;
 
@@ -9,4 +12,9 @@ namespace DataAccess.Repositories;
 public class AdminRepository : AUserRepository<Admin>
 {
     public AdminRepository(CitizenTaxiDbContext context) : base(context) { }
+
+    public override Admin? GetFromLogin(Login login) => FindUserByLoginAndRole(
+        Admin.RELATIONS.Aggregate(_dbSet.AsQueryable(), (current, relation) => current.Include(relation)),
+        login,
+        Role.Admin);
 }

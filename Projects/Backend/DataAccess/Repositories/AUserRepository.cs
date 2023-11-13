@@ -1,7 +1,9 @@
 ﻿using Common.Entities;
 using Common.Entities.User;
+using Common.Enums;
 using DanhoLibrary.NLayer;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DataAccess.Repositories;
 
@@ -24,9 +26,10 @@ public abstract class AUserRepository<TUser> : BaseRepository<TUser, Guid>
     /// </summary>
     /// <param name="login">Login entity</param>
     /// <returns><see cref="TUser"/> if found, null if not</returns>
-    public TUser? GetFromLogin(Login login) => _dbSet
-        .Include(u => u.Login) // Include the Login relation
-        .FirstOrDefault(user => // Find the user where the login matches the login parameter.
-            user.Login.Username == login.Username
-            && user.Login.Password == login.Password);
+    protected TUser? FindUserByLoginAndRole(IQueryable<TUser> query, Login login, Role role) => query
+        .FirstOrDefault(user => 
+            user.Login.Username == login.Username 
+            && user.Login.Password == login.Password
+            && user.Role == role);
+    public abstract TUser? GetFromLogin(Login login);
 }

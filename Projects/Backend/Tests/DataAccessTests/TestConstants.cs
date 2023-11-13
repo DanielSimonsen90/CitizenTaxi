@@ -12,7 +12,7 @@ internal static class TestConstants
     public const string CITIZEN_NAME = "Test citizen";
     public const string RESIDENCE = "Solvej 10, 0000 God by";
 
-    public static Citizen TEST_CITIZEN = new (CITIZEN_NAME, Role.Citizen);
+    public static Citizen TEST_CITIZEN = new (CITIZEN_NAME);
     public static Note TEST_NOTE = new (
         pensioner: true,
         residence: RESIDENCE,
@@ -25,7 +25,7 @@ internal static class TestConstants
     {
         T result = JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(self));
         if (newId is not null) result.Id = (Guid)newId;
-
+        
         return result;
     }
 }
