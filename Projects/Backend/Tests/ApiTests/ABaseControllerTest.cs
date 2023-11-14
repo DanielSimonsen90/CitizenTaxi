@@ -31,11 +31,17 @@ internal abstract class ABaseControllerTest<TEntity, TDTO, TModifyPayload, TRepo
     public void Setup()
     {
         CitizenTaxiDbContext context = new(new DbContextOptionsBuilder<CitizenTaxiDbContext>()
-            .UseInMemoryDatabase("ControllerTest")
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options);
         UnitOfWorkMock = new Mock<UnitOfWork>(context);
         controller = CreateController(UnitOfWorkMock.Object);
     }
+    [TearDown]
+    public void TearDown()
+    {
+        UnitOfWorkMock.Object.Dispose();
+    }
+
     protected abstract BaseController CreateController(UnitOfWork uow);
 
     [Test] 

@@ -48,7 +48,8 @@ internal class BookingsControllerTest : ABaseControllerTest<
         });
     }
     [Test] public override async Task GetEntity() => await GetEntity(TestConstants.TEST_BOOKING, Booking.RELATIONS);
-    [Test] public override async Task UpdateEntity()
+    [Test]
+    public override async Task UpdateEntity()
     {
         UnitOfWorkMock.Object.Citizens.Add(TestConstants.TEST_CITIZEN);
         await UpdateEntity(TestConstants.TEST_BOOKING, TestConstants.TEST_BOOKING_PAYLOAD);
