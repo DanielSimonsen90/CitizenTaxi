@@ -57,6 +57,9 @@ internal abstract class ABaseControllerTest<TEntity, TDTO, TModifyPayload, TRepo
     }
 
     [Test]
+    public abstract Task GetEntities();
+
+    [Test]
     public abstract Task GetEntity();   
     protected async Task GetEntity(TEntity entity, params Expression<Func<TEntity, object?>>[] relations)
     {
@@ -124,5 +127,11 @@ internal abstract class ABaseControllerTest<TEntity, TDTO, TModifyPayload, TRepo
         });
     }
 
-    private Task<int> SaveChangesAsync() => UnitOfWorkMock.Object.SaveChangesAsync();
+    protected Task<int> SaveChangesAsync() => UnitOfWorkMock.Object.SaveChangesAsync();
+    protected static T GetValueFromResult<T>(IActionResult result)
+    {
+        if (result is not OkObjectResult okResult) throw new ArgumentException("Result is not an OkObjectResult");
+        if (okResult.Value is not T value) throw new ArgumentException("Value is not of type T");
+        return value;
+    }
 }
