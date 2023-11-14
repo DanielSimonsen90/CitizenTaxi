@@ -29,7 +29,7 @@ public class NotesController : BaseController
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
     [HttpPost] public async Task<IActionResult> CreateNote([FromBody] NoteModifyPayload payload) => 
-        await CreateEntity(payload, uow.Notes);
+        await CreateEntity(payload, unitOfWork.Notes);
 
     /// <summary>
     /// Get all <see cref="Note"/>s from the database. This can be filtered by <paramref name="citizenId"/> to only get notes from a specific <see cref="Citizen"/>.
@@ -40,13 +40,13 @@ public class NotesController : BaseController
     [HttpGet] public async Task<IActionResult> GetNotes([FromQuery] Guid? citizenId)
     {
         // If no citizenId is given, return all notes as a list of NoteDTO
-        if (citizenId is null) return await Task.FromResult(Ok(uow.Notes.GetAll().Adapt<List<NoteDTO>>()));
+        if (citizenId is null) return await Task.FromResult(Ok(unitOfWork.Notes.GetAll().Adapt<List<NoteDTO>>()));
 
         try
         {
             // If a citizenId is given, get the citizen from the database and return all notes from that citizen as a list of NoteDTO
-            Citizen citizen = uow.Citizens.Get(citizenId.Value);
-            return await Task.FromResult(Ok(uow.Notes.GetFromCitizen(citizen).Adapt<NoteDTO?>()));
+            Citizen citizen = unitOfWork.Citizens.Get(citizenId.Value);
+            return await Task.FromResult(Ok(unitOfWork.Notes.GetFromCitizen(citizen).Adapt<NoteDTO?>()));
         }
         // If the citizen is not found, return a not found response
         catch (EntityNotFoundException<Citizen, Guid> ex) { return NotFound(ex.Message); }
@@ -59,7 +59,7 @@ public class NotesController : BaseController
     /// <param name="noteId">Id of the <see cref="Note"/> entity</param>
     /// <returns>HTTP response from containing the <see cref="Note"/> or any error-related HTTP response</returns>
     [HttpGet("{noteId:Guid}")] public async Task<IActionResult> GetNote([FromRoute] Guid noteId) => 
-        await GetEntity<NoteDTO, Note, NoteRepository>(noteId, uow.Notes, Note.RELATIONS);
+        await GetEntity<NoteDTO, Note, NoteRepository>(noteId, unitOfWork.Notes, Note.RELATIONS);
 
     /// <summary>
     /// Update a <see cref="Note"/> in the database with the given <paramref name="noteId"/> and <paramref name="payload"/>.
@@ -69,7 +69,7 @@ public class NotesController : BaseController
     /// <param name="payload">Received payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.UpdateEntity{TPayload, TEntity, TRepository}(Guid, TPayload, TRepository, System.Linq.Expressions.Expression{Func{TEntity, object?}}[])"/></returns>
     [HttpPut("{noteId:Guid}")] public async Task<IActionResult> UpdateNote([FromRoute] Guid noteId, [FromBody] NoteModifyPayload payload) =>
-        await UpdateEntity<NoteModifyPayload, Note, NoteRepository>(noteId, payload, uow.Notes);
+        await UpdateEntity<NoteModifyPayload, Note, NoteRepository>(noteId, payload, unitOfWork.Notes);
 
     /// <summary>
     /// Delete a <see cref="Note"/> from the database with the given <paramref name="noteId"/>.
@@ -78,5 +78,5 @@ public class NotesController : BaseController
     /// <param name="noteId">Id of the <see cref="Note"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
     [HttpDelete("{noteId:Guid}")] public async Task<IActionResult> DeleteNote([FromRoute] Guid noteId) =>
-        await DeleteEntity<Note, NoteRepository>(noteId, uow.Notes);
+        await DeleteEntity<Note, NoteRepository>(noteId, unitOfWork.Notes);
 }

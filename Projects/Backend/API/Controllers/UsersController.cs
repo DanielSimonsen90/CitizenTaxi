@@ -37,8 +37,8 @@ public class UsersController : BaseController
         // TODO: Create login to user
 
         // Role of the payload determines which entity to create and which repository to use.
-        Role.Citizen => await CreateEntity(payload, uow.Citizens),
-        Role.Admin => await CreateEntity(payload, uow.Admins),
+        Role.Citizen => await CreateEntity(payload, unitOfWork.Citizens),
+        Role.Admin => await CreateEntity(payload, unitOfWork.Admins),
         _ => BadRequest("Invalid role provided"),
     };
 
@@ -52,12 +52,12 @@ public class UsersController : BaseController
     {
         // Role of the payload determines which entity to get and which repository to use.
         // If no role is given, return all users as a list of UserDTO
-        Role.Citizen => Ok(uow.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>()),
-        Role.Admin => Ok(uow.Admins.GetAll().Adapt<List<UserDTO>>()),
+        Role.Citizen => Ok(unitOfWork.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>()),
+        Role.Admin => Ok(unitOfWork.Admins.GetAll().Adapt<List<UserDTO>>()),
         null => Ok(new
         {
-            Citizens = uow.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>(),
-            Admins = uow.Admins.GetAll().Adapt<List<UserDTO>>(),
+            Citizens = unitOfWork.Citizens.GetAllWithRelations(Citizen.RELATIONS).Adapt<List<CitizenDTO>>(),
+            Admins = unitOfWork.Admins.GetAll().Adapt<List<UserDTO>>(),
         }),
         // If the role is not valid, return a bad request
         _ => BadRequest("Invalid role provided"),
@@ -73,8 +73,8 @@ public class UsersController : BaseController
         // Role of the payload determines which entity to get and which repository to use.
         // This is checked by the IsAdmin method.
         IsAdmin(userId)
-            ? await GetEntity<UserDTO, Admin, AdminRepository>(userId, uow.Admins)
-            : await GetEntity<CitizenDTO, Citizen, CitizenRepository>(userId, uow.Citizens, Citizen.RELATIONS);
+            ? await GetEntity<UserDTO, Admin, AdminRepository>(userId, unitOfWork.Admins)
+            : await GetEntity<CitizenDTO, Citizen, CitizenRepository>(userId, unitOfWork.Citizens, Citizen.RELATIONS);
 
     /// <summary>
     /// Update a <see cref="Citizen"/> or <see cref="Admin"/> in the database with the given <paramref name="userId"/> and <paramref name="payload"/>.
@@ -94,8 +94,8 @@ public class UsersController : BaseController
 
         // Process the update request
         return isAdmin
-            ? await UpdateEntity<UserModifyPayload, Admin, AdminRepository>(userId, payload, uow.Admins)
-            : await UpdateEntity<UserModifyPayload, Citizen, CitizenRepository>(userId, payload, uow.Citizens);
+            ? await UpdateEntity<UserModifyPayload, Admin, AdminRepository>(userId, payload, unitOfWork.Admins)
+            : await UpdateEntity<UserModifyPayload, Citizen, CitizenRepository>(userId, payload, unitOfWork.Citizens);
     }
 
     /// <summary>
@@ -108,8 +108,8 @@ public class UsersController : BaseController
     public async Task<IActionResult> DeleteUser([FromRoute] Guid userId) => 
         // Role of the payload determines which entity to delete and which repository to use.
         IsAdmin(userId)
-            ? await DeleteEntity<Admin, AdminRepository>(userId, uow.Admins)
-            : await DeleteEntity<Citizen, CitizenRepository>(userId, uow.Citizens);
+            ? await DeleteEntity<Admin, AdminRepository>(userId, unitOfWork.Admins)
+            : await DeleteEntity<Citizen, CitizenRepository>(userId, unitOfWork.Citizens);
     #endregion
 
     #region Authenticate
@@ -147,7 +147,7 @@ public class UsersController : BaseController
     {
         // Try to get the admin from the database. If it exists, return true, else return false
         // This throws custom EntityNotFoundException from DanhoLibrary.NLayer if the entity is not found
-        try { return uow.Admins.Get(userId) is not null; }
+        try { return unitOfWork.Admins.Get(userId) is not null; }
         catch (EntityNotFoundException<Admin, Guid>) { return false; }
     }
 }

@@ -29,7 +29,7 @@ public class BookingsController : BaseController
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
     [HttpPost] public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload) => 
-        await CreateEntity(payload, uow.Bookings);
+        await CreateEntity(payload, unitOfWork.Bookings);
 
     /// <summary>
     /// Get all <see cref="Booking"/>s from the database.
@@ -40,13 +40,13 @@ public class BookingsController : BaseController
     [HttpGet] public async Task<IActionResult> GetBookings([FromQuery] Guid? citizenId)
     {
         // If no citizenId is given, return all bookings as a list of BookingDTO
-        if (citizenId is null) return await Task.FromResult(Ok(uow.Bookings.GetAll().Adapt<List<BookingDTO>>()));
+        if (citizenId is null) return await Task.FromResult(Ok(unitOfWork.Bookings.GetAll().Adapt<List<BookingDTO>>()));
 
         try
         {
             // If a citizenId is given, get the citizen from the database and return all bookings from that citizen as a list of BookingDTO
-            Citizen citizen = uow.Citizens.GetWithRelations(citizenId.Value);
-            return await Task.FromResult(Ok(uow.Bookings.GetFromCitizen(citizen).Adapt<List<BookingDTO>>()));
+            Citizen citizen = unitOfWork.Citizens.GetWithRelations(citizenId.Value);
+            return await Task.FromResult(Ok(unitOfWork.Bookings.GetFromCitizen(citizen).Adapt<List<BookingDTO>>()));
         }
         // If the citizen is not found, return a not found response
         catch (EntityNotFoundException<Citizen, Guid> ex) { return NotFound(ex.Message); }
@@ -59,7 +59,7 @@ public class BookingsController : BaseController
     /// <param name="bookingId">Id of the <see cref="Booking"/> entity</param>
     /// <returns>HTTP response from containing the <see cref="Booking"/> or any error-related HTTP response</returns>
     [HttpGet("{bookingId:Guid}")] public async Task<IActionResult> GetBooking([FromRoute] Guid bookingId) => 
-        await GetEntity<BookingDTO, Booking, BookingRepository>(bookingId, uow.Bookings, Booking.RELATIONS);
+        await GetEntity<BookingDTO, Booking, BookingRepository>(bookingId, unitOfWork.Bookings, Booking.RELATIONS);
 
     /// <summary>
     /// Update a <see cref="Booking"/> in the database with the given <paramref name="bookingId"/> and <paramref name="payload"/>.
@@ -69,7 +69,7 @@ public class BookingsController : BaseController
     /// <param name="payload">Received payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.UpdateEntity{TPayload, TEntity, TRepository}(Guid, TPayload, TRepository, System.Linq.Expressions.Expression{Func{TEntity, object?}}[])"/></returns>
     [HttpPut("{bookingId:Guid}")] public async Task<IActionResult> UpdateBooking([FromRoute] Guid bookingId, [FromBody] BookingModifyPayload payload) => 
-        await UpdateEntity<BookingModifyPayload, Booking, BookingRepository>(bookingId, payload, uow.Bookings);
+        await UpdateEntity<BookingModifyPayload, Booking, BookingRepository>(bookingId, payload, unitOfWork.Bookings);
 
     /// <summary>
     /// Delete a <see cref="Booking"/> from the database with the given <paramref name="bookingId"/>.
@@ -78,5 +78,5 @@ public class BookingsController : BaseController
     /// <param name="bookingId">Id of the <see cref="Booking"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
     [HttpDelete("{bookingId:Guid}")] public async Task<IActionResult> DeleteBooking([FromRoute] Guid bookingId) =>
-        await DeleteEntity<Booking, BookingRepository>(bookingId, uow.Bookings);
+        await DeleteEntity<Booking, BookingRepository>(bookingId, unitOfWork.Bookings);
 }

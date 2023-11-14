@@ -1,9 +1,7 @@
-﻿using Common.DTOs;
-using Common.Entities;
-using Common.Entities.User;
-using Common.Enums;
+﻿using TestConstantsLib;
 using DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using Common.DTOs;
+using Common.Entities;
 
 namespace DataAccessTests;
 
@@ -20,9 +18,9 @@ internal class NotesRepositoryTest : ABaseRepositoryTest<Note, NoteDTO, NoteRepo
     public void GetNoteFromCitizen_ReturnsNoteAssociatedWithCitizen()
     {
         // Arrange
-        var a = TestConstants.TEST_CITIZEN.Clone();
-        var b = TestConstants.TEST_CITIZEN.Clone(Guid.NewGuid());
-        var note = TestConstants.TEST_NOTE.Clone();
+        var a = TestConstants.TEST_CITIZEN.CloneEntity();
+        var b = TestConstants.TEST_CITIZEN.CloneEntity(Guid.NewGuid());
+        var note = TestConstants.TEST_NOTE.CloneEntity();
 
         a.Note = note;
         UnitOfWork.Citizens.Add(a);

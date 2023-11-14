@@ -1,12 +1,8 @@
-﻿using Common.DTOs;
+﻿using TestConstantsLib;
+using DataAccess.Repositories;
+using Common.DTOs;
 using Common.Entities;
 using Common.Entities.User;
-using DataAccess.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessTests;
 
@@ -28,7 +24,7 @@ internal class AdminRepositoryTest : ABaseRepositoryTest<Admin, UserDTO, AdminRe
         admin.Login = new Login("admin", "admin", admin);
         Repository.Add(admin);
 
-        var citizen = TestConstants.TEST_CITIZEN.Clone();
+        var citizen = TestConstants.TEST_CITIZEN.CloneEntity();
         citizen.Login = new Login("citizen", "citizen", citizen);
         UnitOfWork.Citizens.Add(citizen);
 
