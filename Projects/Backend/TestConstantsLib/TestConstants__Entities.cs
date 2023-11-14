@@ -1,17 +1,13 @@
-﻿using Common.Entities.User;
-using Common.Entities;
+﻿using Common.Entities;
+using Common.Entities.User;
 using Common.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestConstantsLib;
 
 public static partial class TestConstants
 {
     public static Citizen TEST_CITIZEN { get; } = new(CITIZEN_NAME);
+    public static Admin TEST_ADMIN { get; } = new(ADMIN_NAME);
     public static Note TEST_NOTE { get; } = new(
         pensioner: true,
         residence: RESIDENCE,

@@ -142,7 +142,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         // Backup exception in case something else went wrong
-        catch (Exception ex) { return InternalServerError(); }
+        catch (Exception) { return InternalServerError(); }
     }
 
     /// <summary>
