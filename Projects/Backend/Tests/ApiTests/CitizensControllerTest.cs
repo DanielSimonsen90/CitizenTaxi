@@ -9,9 +9,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiTests;
 
-internal class CitizensController : ABaseControllerTest<Citizen, CitizenDTO, UserModifyPayload, CitizenRepository>
+/// <summary>
+/// Testing <see cref="UsersController"/> specified towards <see cref="Citizen"/>s
+/// </summary>
+internal class CitizensControllerTest : ABaseControllerTest<Citizen, CitizenDTO, UserModifyPayload, CitizenRepository>
 {
+    /// <summary>
+    /// Point to <see cref="UnitOfWork.Citizens"/>
+    /// </summary>
     protected override CitizenRepository Repository => UnitOfWorkMock.Object.Citizens;
+    /// <summary>
+    /// Create <see cref="UsersController"/> with <see cref="UnitOfWork"/>
+    /// </summary>
+    /// <param name="uow">UnitOfWork for service dependency</param>
+    /// <returns></returns>
     protected override BaseController CreateController(UnitOfWork uow) => new UsersController(uow);
 
     [Test] public override Task CreateEntity() => CreateEntity(TestConstants.TEST_USER_PAYLOAD);
@@ -36,14 +47,14 @@ internal class CitizensController : ABaseControllerTest<Citizen, CitizenDTO, Use
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(expectAllCitizens, Is.InstanceOf<OkObjectResult>());
-            Assert.That(expectAllAdmins, Is.InstanceOf<OkObjectResult>());
-            Assert.That(expectAllUsers, Is.InstanceOf<OkObjectResult>());
+            Assert.That(expectAllCitizens, Is.InstanceOf<OkObjectResult>(), "Expecting all citizens returns 200 OkObject");
+            Assert.That(expectAllAdmins, Is.InstanceOf<OkObjectResult>(), "Epxecting all admins returns 200 OkObject");
+            Assert.That(expectAllUsers, Is.InstanceOf<OkObjectResult>(), "Expecting all users returns 200 OkObject");
 
-            Assert.That(GetValueFromResult<List<CitizenDTO>>(expectAllCitizens), Has.Count.EqualTo(2));
-            Assert.That(GetValueFromResult<List<UserDTO>>(expectAllAdmins), Has.Count.EqualTo(1));
-            Assert.That(GetValueFromResult<object>(expectAllUsers), Has.Property("Citizens").InstanceOf<List<CitizenDTO>>());
-            Assert.That(GetValueFromResult<object>(expectAllUsers), Has.Property("Admins").InstanceOf<List<UserDTO>>());
+            Assert.That(GetValueFromResult<List<CitizenDTO>>(expectAllCitizens), Has.Count.EqualTo(2), "Expecting correct amount of citizens");
+            Assert.That(GetValueFromResult<List<UserDTO>>(expectAllAdmins), Has.Count.EqualTo(1), "Expecting correct amount of admins");
+            Assert.That(GetValueFromResult<object>(expectAllUsers), Has.Property("Citizens").InstanceOf<List<CitizenDTO>>(), "Expecting \"Citizen\" property in all users");
+            Assert.That(GetValueFromResult<object>(expectAllUsers), Has.Property("Admins").InstanceOf<List<UserDTO>>(), "Expecting \"Admin\" property in all users");
         });
     }
     [Test] public override Task GetEntity() => GetEntity(TestConstants.TEST_CITIZEN, Citizen.RELATIONS);
