@@ -1,0 +1,10 @@
+/**
+ * Transition mixin that only applies transition property, if user has not requested reduced motion.
+ * @param {number} $time - Transition time in milliseconds
+ */
+@mixin transition($time: 100ms) {
+  @media (prefers-reduced-motion: no-preference) {
+    --transition-time: #{$time};
+    transition: all var(--transition-time) ease-in-out;
+  }
+}

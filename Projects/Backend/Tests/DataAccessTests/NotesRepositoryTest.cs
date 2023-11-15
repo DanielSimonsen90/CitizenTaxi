@@ -1,6 +1,5 @@
 ﻿using TestConstantsLib;
 using DataAccess.Repositories;
-using Common.DTOs;
 using Common.Entities;
 
 namespace DataAccessTests;

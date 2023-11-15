@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Business\Business.csproj" />
+    <ProjectReference Include="..\..\Business\Business.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="DanhoLibrary">
-      <HintPath>..\..\..\..\..\..\..\Libraries\DanhoLibrary\DanhoLibrary\bin\Release\netstandard2.1\DanhoLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Libraries\DanhoLibrary\DanhoLibrary\bin\Release\netstandard2.1\DanhoLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 
