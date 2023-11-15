@@ -84,10 +84,10 @@ internal abstract class ABaseControllerTest<TEntity, TDTO, TModifyPayload, TRepo
     protected async Task CreateEntity(TModifyPayload payload)
     {
         // Act
-        IActionResult expectCreatedResult = await controller.CreateEntity(payload, Repository);
+        IActionResult expectCreatedResult = await controller.CreateEntity<TModifyPayload, TDTO, TEntity>(payload, Repository);
 
         payload.Id = Guid.NewGuid();
-        IActionResult payloadWithIdReturnsBadRequest = await controller.CreateEntity(payload, Repository);
+        IActionResult payloadWithIdReturnsBadRequest = await controller.CreateEntity<TModifyPayload, TDTO, TEntity>(payload, Repository);
 
         // Assert
         Assert.Multiple(() =>

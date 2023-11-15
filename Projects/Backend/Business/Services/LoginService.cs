@@ -52,10 +52,8 @@ public class LoginService
         }
 
         // Find a login with the given username and password and check if it exists
-        bool correct = _uow.Logins.Get(l =>
-            l.Username == login.Username
-            && IsCorrectPassword(login.Password, l.Salt, l.Password))
-            != null;
+        Login? loginEntity = _uow.Logins.Get(l => l.Username == login.Username);
+        bool correct = loginEntity is not null && IsCorrectPassword(login.Password, loginEntity.Salt, loginEntity.Password);
 
         // If the login is not correct, add 1 to the login attempts for the given username
         if (!correct)
@@ -63,6 +61,7 @@ public class LoginService
             LoginAttempt attempt = _loginAttempts.ContainsKey(login.Username) ? _loginAttempts[login.Username] : new LoginAttempt();
             attempt.Attempts++;
             _loginAttempts[login.Username] = attempt;
+            return correct;
         }
 
         _loginAttempts.Remove(login.Username);

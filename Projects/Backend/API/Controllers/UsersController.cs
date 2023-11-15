@@ -47,20 +47,27 @@ public class UsersController : BaseController
         // Create user based on the role of the payload using BaseController.CreateEntity
         IActionResult result = payload.Role switch
         {
-            Role.Citizen => await CreateEntity(payload, unitOfWork.Citizens),
-            Role.Admin => await CreateEntity(payload, unitOfWork.Admins),
+            Role.Citizen => await CreateEntity<UserModifyPayload, CitizenDTO, Citizen>(payload, unitOfWork.Citizens),
+            Role.Admin => await CreateEntity<UserModifyPayload, UserDTO, Admin>(payload, unitOfWork.Admins),
             _ => BadRequest("Invalid role provided"),
         };
 
         // If the result is not an OkObjectResult, return the result
-        if (result is not OkObjectResult okResult) return result;
-        
+        if (result is not CreatedResult createdResult) return result;
+
         // Receive the created user from the result and create a login for the user
-        AUser user = okResult.Value as AUser ?? throw new Exception("User was null");
+        UserDTO dto = createdResult.Value as UserDTO ?? throw new Exception("User was null");
+        AUser user = dto.Role switch
+        {
+            Role.Citizen => unitOfWork.Citizens.Get(dto.Id!.Value) ?? throw new Exception("Citizen was null"),
+            Role.Admin => unitOfWork.Admins.Get(dto.Id!.Value) ?? throw new Exception("Admin was null"),
+            _ => throw new Exception("Invalid role provided"),
+        };
         string salt = LoginService.GenerateSalt();
         Login login = new(payload.Username, 
             LoginService.GenerateEncrypedPassword(payload.Password, salt), 
             salt, user);
+        user.Login = login;
         
         // Add the login to the database and save changes
         unitOfWork.Logins.Add(login);

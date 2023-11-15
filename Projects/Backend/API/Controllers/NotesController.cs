@@ -29,7 +29,7 @@ public class NotesController : BaseController
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
     [HttpPost] public async Task<IActionResult> CreateNote([FromBody] NoteModifyPayload payload) => 
-        await CreateEntity(payload, unitOfWork.Notes);
+        await CreateEntity<NoteModifyPayload, NoteDTO, Note>(payload, unitOfWork.Notes);
 
     /// <summary>
     /// Get all <see cref="Note"/>s from the database. This can be filtered by <paramref name="citizenId"/> to only get notes from a specific <see cref="Citizen"/>.

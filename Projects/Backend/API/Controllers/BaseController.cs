@@ -54,8 +54,9 @@ public abstract class BaseController : ControllerBase
     /// <param name="payload">The payload received from the frontend</param>
     /// <param name="repository">The repository to save the entity to</param>
     /// <returns>HTTP result of the operation</returns>
-    public async Task<IActionResult> CreateEntity<TPayload, TEntity>(TPayload payload, BaseRepository<TEntity, Guid> repository)
+    public async Task<IActionResult> CreateEntity<TPayload, TDTO, TEntity>(TPayload payload, BaseRepository<TEntity, Guid> repository)
         where TEntity : BaseEntity<Guid> // The entity must be a BaseEntity with a Guid as Id
+        where TDTO : ABaseDTO // The DTO must be a ABaseDTO
         where TPayload : ABaseModifyPayload // The payload must be a ABaseModifyPayload
     {
         try
@@ -70,7 +71,7 @@ public abstract class BaseController : ControllerBase
             await unitOfWork.SaveChangesAsync();
 
             // Return the created entity
-            return Created($"api/[controller]/{created.Id}", created);
+            return Created($"api/[controller]/{created.Id}", created.Adapt<TDTO>());
         }
         // If any exception is thrown from the AddAsync method, return appropriate HTTP response.
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
