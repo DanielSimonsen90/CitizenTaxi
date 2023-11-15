@@ -19,9 +19,6 @@ public enum Companion
     [Display(Name = "Med ledsager")]
     WithCompanion,
 
-    [Display(Name = "Med guide")]
-    WithGuide,
-
     [Display(Name = "Med kæledyr")]
     WithPet,
 
