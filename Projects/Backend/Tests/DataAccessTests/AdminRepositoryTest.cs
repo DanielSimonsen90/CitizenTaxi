@@ -34,11 +34,11 @@ internal class AdminRepositoryTest : ABaseRepositoryTest<Admin, AdminRepository>
     {
         // Arrange
         var admin = new Admin("Admin");
-        admin.Login = new Login("admin", "admin", admin);
+        admin.Login = new Login("admin", "admin", "salt", admin);
         Repository.Add(admin);
 
         var citizen = TestConstants.TEST_CITIZEN.CloneEntity();
-        citizen.Login = new Login("citizen", "citizen", citizen);
+        citizen.Login = new Login("citizen", "citizen", "salt", citizen);
         UnitOfWork.Citizens.Add(citizen);
 
         UnitOfWork.SaveChanges(); // Admin should be added to database with login

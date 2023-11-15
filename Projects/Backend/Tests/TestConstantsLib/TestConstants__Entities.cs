@@ -1,4 +1,5 @@
-﻿using Common.Entities;
+﻿using Business.Services;
+using Common.Entities;
 using Common.Entities.User;
 using Common.Enums;
 
@@ -29,5 +30,5 @@ public static partial class TestConstants
         CitizenId = TEST_CITIZEN.Id,
     };
 
-    public static Login TEST_LOGIN => new(USERNAME, PASSWORD, TEST_CITIZEN);
+    public static Login TEST_LOGIN => new(USERNAME, LoginService.GenerateEncrypedPassword(PASSWORD, PASSWORD_SALT), PASSWORD_SALT, TEST_CITIZEN);
 }

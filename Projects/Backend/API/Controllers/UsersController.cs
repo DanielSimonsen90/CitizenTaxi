@@ -57,7 +57,10 @@ public class UsersController : BaseController
         
         // Receive the created user from the result and create a login for the user
         AUser user = okResult.Value as AUser ?? throw new Exception("User was null");
-        Login login = new(payload.Username, _loginService.GenerateEncrypedPassword(payload), user);
+        string salt = LoginService.GenerateSalt();
+        Login login = new(payload.Username, 
+            LoginService.GenerateEncrypedPassword(payload.Password, salt), 
+            salt, user);
         
         // Add the login to the database and save changes
         unitOfWork.Logins.Add(login);

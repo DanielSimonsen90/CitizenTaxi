@@ -14,17 +14,19 @@ namespace Common.Entities;
 public class Login : BaseEntity<Guid>
 {
     // Overloading constructor to satisfy EntityFramework in creating models using Migrations.
-    public Login() : this("", "", new Citizen()) {}
-    public Login(string username, string password, AUser user)
+    public Login() : this("", "", "", new Citizen()) {}
+    public Login(string username, string password, string salt, AUser user)
     {
         User = user;
         UserId = user.Id;
         Username = username;
         Password = password;
+        Salt = salt;
     }
 
     public string Username { get; set; }
     public string Password { get; set; }
+    public string Salt { get; set; }
 
     // Defining foreign key relationship to AUser (Citizen or Admin).
     [ForeignKey(nameof(User))]

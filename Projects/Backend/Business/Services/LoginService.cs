@@ -2,6 +2,8 @@
 using Business.Models;
 using Business.Models.Payloads;
 using Common.Entities;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Business.Services;
 
@@ -11,6 +13,10 @@ namespace Business.Services;
 /// </summary>
 public class LoginService
 {
+    private const int keySize = 64;
+    private const int iterations = 350_000;
+    private static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
+
 
     /// <summary>
     /// Internal dictionary for login attempts.
@@ -48,7 +54,7 @@ public class LoginService
         // Find a login with the given username and password and check if it exists
         bool correct = _uow.Logins.Get(l =>
             l.Username == login.Username
-            && l.Password == login.Password)
+            && IsCorrectPassword(login.Password, l.Salt, l.Password))
             != null;
 
         // If the login is not correct, add 1 to the login attempts for the given username
@@ -64,14 +70,33 @@ public class LoginService
     }
 
     /// <summary>
-    /// TODO: Implement password encryption
+    /// Generates a secure password hash and salt from the given unencrypted password.
     /// </summary>
-    /// <param name="login"></param>
-    /// <param name="unencrypted"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public string GenerateEncrypedPassword(UserModifyPayload payload)
+    /// <param name="unencrypted">Unencrypted value</param>
+    /// <returns>Encrypted value</returns>
+    public static string GenerateEncrypedPassword(string unencrypted, string salt)
     {
-        throw new NotImplementedException();
+        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(unencrypted),
+            Convert.FromBase64String(salt),
+            iterations,
+            hashAlgorithm,
+            keySize);
+
+        return Convert.ToBase64String(hash);
+    }
+    public static string GenerateSalt() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(keySize));
+
+    public static bool IsCorrectPassword(string unencrypted, string salt, string encrypted)
+    {
+        byte[] saltValue = Convert.FromBase64String(salt);
+        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(unencrypted),
+            saltValue,
+            iterations,
+            hashAlgorithm,
+            keySize);
+
+        return Convert.ToBase64String(hash) == encrypted;
     }
 }

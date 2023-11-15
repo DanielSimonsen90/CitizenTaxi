@@ -72,6 +72,13 @@ public class LoginServiceTest
     [Test]
     public void GenerateEncrypedPassword()
     {
-        Assert.Pass(); // TODO: Implement
+        // Arrange
+        string password = TestConstants.PASSWORD;
+
+        // Act
+        string encryptedPassword = LoginService.GenerateEncrypedPassword(password, LoginService.GenerateSalt());
+
+        // Assert
+        Assert.That(encryptedPassword, Is.Not.EqualTo(password), "Encrypted password is not equal to password");
     }
 }
