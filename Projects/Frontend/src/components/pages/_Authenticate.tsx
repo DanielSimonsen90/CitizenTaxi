@@ -1,12 +1,9 @@
-import { PropsWithChildren } from "react";
-
 /**
  * Component used to authenticate the user role.
- * @param props
  * @returns Appropriate view based on the user role
  */
-export default function Authenticate({ children }: PropsWithChildren) {
+export default function Authenticate() {
   // TODO: Add authentication logic
 
-  return <>{children}</>
+  return <h1>Authenticate</h1>;
 }
