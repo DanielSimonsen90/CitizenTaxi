@@ -1,1 +1,1 @@
-export {}
+export const DOMAIN_NAME = "CitizenTaxi";
