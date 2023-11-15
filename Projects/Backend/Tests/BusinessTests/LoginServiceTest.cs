@@ -6,6 +6,8 @@ using Common.Entities;
 using Common.Entities.User;
 
 using Microsoft.EntityFrameworkCore;
+using Business.Models;
+using Business.Exceptions;
 
 namespace BusinessTests;
 
@@ -63,6 +65,13 @@ public class LoginServiceTest
             Assert.That(cannotLoginWithDetailsNotSaved, Is.False, "Login with details not saved in database");
             Assert.That(cannotLoginWithBadUsername, Is.False, "Login with bad username");
             Assert.That(cannotLoginWithBadPassword, Is.False, "Login with bad password");
+            Assert.Throws<TooManyLoginAttemptsException>(() =>
+            {
+                for (int i = 0; i < LoginAttempt.MAX_LOGIN_ATTEMPTS; i++)
+                {
+                    _loginService.TryLogin(payloadBadPassword);
+                }
+            }, "Login rate limited by login attempts");
         });
     }
 
@@ -72,6 +81,13 @@ public class LoginServiceTest
     [Test]
     public void GenerateEncrypedPassword()
     {
-        Assert.Pass(); // TODO: Implement
+        // Arrange
+        string password = TestConstants.PASSWORD;
+
+        // Act
+        string encryptedPassword = LoginService.GenerateEncrypedPassword(password, LoginService.GenerateSalt());
+
+        // Assert
+        Assert.That(encryptedPassword, Is.Not.EqualTo(password), "Encrypted password is not equal to password");
     }
 }

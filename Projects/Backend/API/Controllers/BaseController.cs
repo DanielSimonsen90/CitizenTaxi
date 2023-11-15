@@ -35,8 +35,15 @@ public abstract class BaseController : ControllerBase
     /// <summary>
     /// By standard, ASP.NET Core does not include a method for internal server error, so this method is used to return a 500 Internal Server Error.
     /// </summary>
+    /// <param name="message">Message of exception</param>
     /// <returns></returns>
-    protected IActionResult InternalServerError() => StatusCode(StatusCodes.Status500InternalServerError);
+    protected IActionResult InternalServerError(string message) => StatusCode(StatusCodes.Status500InternalServerError, message);
+    /// <summary>
+    /// By standard, ASP.NET Core does not include a method for too many requests, so this method is used to return a 429 Too Many Requests.
+    /// </summary>
+    /// <param name="message">Additional message other than default "Too many requests"</param>
+    /// <returns></returns>
+    protected IActionResult TooManyRequests(string message = "Too many requests") => StatusCode(StatusCodes.Status429TooManyRequests, message);
 
     #region CRUD Operations
     /// <summary>
@@ -47,8 +54,9 @@ public abstract class BaseController : ControllerBase
     /// <param name="payload">The payload received from the frontend</param>
     /// <param name="repository">The repository to save the entity to</param>
     /// <returns>HTTP result of the operation</returns>
-    public async Task<IActionResult> CreateEntity<TPayload, TEntity>(TPayload payload, BaseRepository<TEntity, Guid> repository)
+    public async Task<IActionResult> CreateEntity<TPayload, TDTO, TEntity>(TPayload payload, BaseRepository<TEntity, Guid> repository)
         where TEntity : BaseEntity<Guid> // The entity must be a BaseEntity with a Guid as Id
+        where TDTO : ABaseDTO // The DTO must be a ABaseDTO
         where TPayload : ABaseModifyPayload // The payload must be a ABaseModifyPayload
     {
         try
@@ -63,13 +71,13 @@ public abstract class BaseController : ControllerBase
             await unitOfWork.SaveChangesAsync();
 
             // Return the created entity
-            return Created($"api/[controller]/{created.Id}", created);
+            return Created($"api/[controller]/{created.Id}", created.Adapt<TDTO>());
         }
         // If any exception is thrown from the AddAsync method, return appropriate HTTP response.
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (ArgumentException ex) { return BadRequest(ex.Message); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -101,7 +109,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -143,7 +151,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -167,7 +175,7 @@ public abstract class BaseController : ControllerBase
         }
         // If the entity was not found or any other exception was thrown, return the appropriate HTTP response
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
     #endregion
 }

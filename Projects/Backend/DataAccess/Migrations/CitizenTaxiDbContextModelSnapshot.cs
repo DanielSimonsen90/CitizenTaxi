@@ -52,7 +52,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000006"),
-                            Arrival = new DateTime(2023, 11, 15, 18, 4, 29, 995, DateTimeKind.Local).AddTicks(9337),
+                            Arrival = new DateTime(2023, 11, 15, 22, 22, 20, 700, DateTimeKind.Local).AddTicks(4319),
                             CitizenId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Destination = "Frederikshavn Sygehus",
                             Pickup = "Solvej 10, 0000 God by"
@@ -60,7 +60,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000007"),
-                            Arrival = new DateTime(2023, 11, 15, 19, 34, 29, 997, DateTimeKind.Local).AddTicks(5747),
+                            Arrival = new DateTime(2023, 11, 15, 23, 52, 20, 702, DateTimeKind.Local).AddTicks(3892),
                             CitizenId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Destination = "Solvej 10, 0000 God by",
                             Pickup = "Frederikshavn Sygehus"
@@ -74,6 +74,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -93,6 +97,7 @@ namespace DataAccess.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
                             Password = "admin123",
+                            Salt = "salt",
                             UserId = new Guid("00000000-0000-0000-0000-000000000001"),
                             Username = "admin"
                         },
@@ -100,6 +105,7 @@ namespace DataAccess.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
                             Password = "borger123",
+                            Salt = "salt",
                             UserId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Username = "borger"
                         });

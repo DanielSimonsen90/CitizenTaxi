@@ -87,7 +87,10 @@ public class AuthService
     public async Task InvokeAsync(HttpContext context)
     {
         if (!context.Request.Path.HasValue) throw new Exception("Request path is null");
-        if (!context.Request.Path.Value.Contains("/users/authenticate"))
+
+        // If user isn't re-authenticating or creating an account, check if they have valid tokens
+        if (!context.Request.Path.Value.Contains("/users/authenticate") &&
+            !(context.Request.Path.Value.Contains("/users") && context.Request.Method == "POST"))
         {
             try
             {

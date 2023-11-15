@@ -29,7 +29,7 @@ public class BookingsController : BaseController
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
     [HttpPost] public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload) => 
-        await CreateEntity(payload, unitOfWork.Bookings);
+        await CreateEntity<BookingModifyPayload, BookingDTO, Booking>(payload, unitOfWork.Bookings);
 
     /// <summary>
     /// Get all <see cref="Booking"/>s from the database.

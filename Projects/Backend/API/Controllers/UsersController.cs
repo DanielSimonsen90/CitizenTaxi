@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using Business.Exceptions;
+using Business.Models;
 using Business.Models.Payloads;
 using Business.Services;
 using Common.DTOs;
@@ -40,15 +41,41 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
-    [HttpPost] public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload) => payload.Role switch
+    [HttpPost]
+    public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload)
     {
-        // TODO: Create login to user
+        // Create user based on the role of the payload using BaseController.CreateEntity
+        IActionResult result = payload.Role switch
+        {
+            Role.Citizen => await CreateEntity<UserModifyPayload, CitizenDTO, Citizen>(payload, unitOfWork.Citizens),
+            Role.Admin => await CreateEntity<UserModifyPayload, UserDTO, Admin>(payload, unitOfWork.Admins),
+            _ => BadRequest("Invalid role provided"),
+        };
 
-        // Role of the payload determines which entity to create and which repository to use.
-        Role.Citizen => await CreateEntity(payload, unitOfWork.Citizens),
-        Role.Admin => await CreateEntity(payload, unitOfWork.Admins),
-        _ => BadRequest("Invalid role provided"),
-    };
+        // If the result is not an OkObjectResult, return the result
+        if (result is not CreatedResult createdResult) return result;
+
+        // Receive the created user from the result and create a login for the user
+        UserDTO dto = createdResult.Value as UserDTO ?? throw new Exception("User was null");
+        AUser user = dto.Role switch
+        {
+            Role.Citizen => unitOfWork.Citizens.Get(dto.Id!.Value) ?? throw new Exception("Citizen was null"),
+            Role.Admin => unitOfWork.Admins.Get(dto.Id!.Value) ?? throw new Exception("Admin was null"),
+            _ => throw new Exception("Invalid role provided"),
+        };
+        string salt = LoginService.GenerateSalt();
+        Login login = new(payload.Username, 
+            LoginService.GenerateEncrypedPassword(payload.Password, salt), 
+            salt, user);
+        user.Login = login;
+        
+        // Add the login to the database and save changes
+        unitOfWork.Logins.Add(login);
+        await unitOfWork.SaveChangesAsync();
+        
+        // Return the result
+        return result;
+    }
 
     /// <summary>
     /// Get all <see cref="Citizen"/>s and <see cref="Admin"/>s from the database.
@@ -129,16 +156,22 @@ public class UsersController : BaseController
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody] LoginPayload payload)
     {
-        // TODO: Throw custom TooManyAttemptsException
-        bool isValid = _loginService.TryLogin(payload);
-        if (!isValid) return BadRequest("Invalid credentials");
+        try
+        {
+            bool isValid = _loginService.TryLogin(payload);
+            if (!isValid) return BadRequest("Invalid credentials");
 
-        Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
-        if (login is null) return InternalServerError();
+            Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
+            if (login is null) return InternalServerError($"Login model was null when looking for username {payload.Username}.");
 
-        AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
+            AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
 
-        return Ok(login.UserId);
+            return Ok(login.UserId);
+        }
+        catch (TooManyLoginAttemptsException ex)
+        {
+            return TooManyRequests(ex.Message);
+        }
     }
 
     /// <summary>

@@ -11,4 +11,5 @@ public static partial class TestConstants
 
     public const string USERNAME = "TestUsername";
     public const string PASSWORD = "TestPassword";
+    public const string PASSWORD_SALT = "salt";
 }

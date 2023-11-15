@@ -20,6 +20,7 @@ namespace DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -122,11 +123,11 @@ namespace DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Logins",
-                columns: new[] { "Id", "Password", "UserId", "Username" },
+                columns: new[] { "Id", "Password", "Salt", "UserId", "Username" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000003"), "admin123", new Guid("00000000-0000-0000-0000-000000000000"), "admin" },
-                    { new Guid("00000000-0000-0000-0000-000000000004"), "borger123", new Guid("00000000-0000-0000-0000-000000000000"), "borger" }
+                    { new Guid("00000000-0000-0000-0000-000000000003"), "admin123", "salt", new Guid("00000000-0000-0000-0000-000000000001"), "admin" },
+                    { new Guid("00000000-0000-0000-0000-000000000004"), "borger123", "salt", new Guid("00000000-0000-0000-0000-000000000002"), "borger" }
                 });
 
             migrationBuilder.InsertData(
@@ -134,8 +135,8 @@ namespace DataAccess.Migrations
                 columns: new[] { "Id", "Arrival", "CitizenId", "Destination", "Pickup" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000006"), new DateTime(2023, 11, 10, 13, 15, 57, 291, DateTimeKind.Local).AddTicks(8325), new Guid("00000000-0000-0000-0000-000000000002"), "Frederikshavn Sygehus", "Solvej 10, 0000 God by" },
-                    { new Guid("00000000-0000-0000-0000-000000000007"), new DateTime(2023, 11, 10, 14, 45, 57, 293, DateTimeKind.Local).AddTicks(9920), new Guid("00000000-0000-0000-0000-000000000002"), "Solvej 10, 0000 God by", "Frederikshavn Sygehus" }
+                    { new Guid("00000000-0000-0000-0000-000000000006"), new DateTime(2023, 11, 15, 22, 22, 20, 700, DateTimeKind.Local).AddTicks(4319), new Guid("00000000-0000-0000-0000-000000000002"), "Frederikshavn Sygehus", "Solvej 10, 0000 God by" },
+                    { new Guid("00000000-0000-0000-0000-000000000007"), new DateTime(2023, 11, 15, 23, 52, 20, 702, DateTimeKind.Local).AddTicks(3892), new Guid("00000000-0000-0000-0000-000000000002"), "Solvej 10, 0000 God by", "Frederikshavn Sygehus" }
                 });
 
             migrationBuilder.InsertData(
