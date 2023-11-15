@@ -1,6 +1,6 @@
 ﻿namespace Business.Models;
 
-internal class LoginAttempt
+public class LoginAttempt
 {
     public const int MAX_LOGIN_ATTEMPTS = 3;
 

@@ -17,7 +17,6 @@ public class LoginService
     private const int iterations = 350_000;
     private static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
 
-
     /// <summary>
     /// Internal dictionary for login attempts.
     /// Key is username, value is attempts.
