@@ -36,7 +36,7 @@ public abstract class BaseController : ControllerBase
     /// By standard, ASP.NET Core does not include a method for internal server error, so this method is used to return a 500 Internal Server Error.
     /// </summary>
     /// <returns></returns>
-    protected IActionResult InternalServerError() => StatusCode(StatusCodes.Status500InternalServerError);
+    protected IActionResult InternalServerError(string message) => StatusCode(StatusCodes.Status500InternalServerError, message);
 
     #region CRUD Operations
     /// <summary>
@@ -69,7 +69,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (ArgumentException ex) { return BadRequest(ex.Message); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public abstract class BaseController : ControllerBase
         catch (ArgumentNullException ex) { return BadRequest($"Invalid argument provided: {ex.Message}"); }
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         // Backup exception in case something else went wrong
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public abstract class BaseController : ControllerBase
         }
         // If the entity was not found or any other exception was thrown, return the appropriate HTTP response
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
-        catch (Exception) { return InternalServerError(); }
+        catch (Exception ex) { return InternalServerError(ex.Message); }
     }
     #endregion
 }

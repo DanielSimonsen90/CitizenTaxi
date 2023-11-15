@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using Business.Exceptions;
+using Business.Models;
 using Business.Models.Payloads;
 using Business.Services;
 using Common.DTOs;
@@ -129,16 +130,22 @@ public class UsersController : BaseController
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody] LoginPayload payload)
     {
-        // TODO: Throw custom TooManyAttemptsException
-        bool isValid = _loginService.TryLogin(payload);
-        if (!isValid) return BadRequest("Invalid credentials");
+        try
+        {
+            bool isValid = _loginService.TryLogin(payload);
+            if (!isValid) return BadRequest("Invalid credentials");
 
-        Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
-        if (login is null) return InternalServerError();
+            Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
+            if (login is null) return InternalServerError($"Login model was null when looking for username {payload.Username}.");
 
-        AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
+            AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
 
-        return Ok(login.UserId);
+            return Ok(login.UserId);
+        }
+        catch (TooManyLoginAttemptsException ex)
+        {
+            return TooManyRequests(ex.Message);
+        }
     }
 
     /// <summary>
@@ -166,4 +173,6 @@ public class UsersController : BaseController
         try { return unitOfWork.Admins.Get(userId) is not null; }
         catch (EntityNotFoundException<Admin, Guid>) { return false; }
     }
+
+    private IActionResult TooManyRequests(string message = "Too many requests") => StatusCode(StatusCodes.Status429TooManyRequests, message);
 }
