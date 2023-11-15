@@ -16,8 +16,18 @@ public static partial class TestConstants
     public static UserModifyPayload TEST_USER_PAYLOAD { get; } = new()
     {
         Name = "Test User",
-        Username = "TestUsername",
-        Password = "TestPassword",
+        Username = USERNAME,
+        Password = PASSWORD,
         Role = Role.Citizen
+    };
+    public static LoginPayload TEST_LOGIN_PAYLOAD { get; } = new()
+    {
+        Username = USERNAME,
+        Password = PASSWORD
+    };
+    public static LoginPayload TEST_LOGIN_PAYLOAD_TWO { get; } = new()
+    {
+        Username = USERNAME + "2",
+        Password = PASSWORD + "2"
     };
 }

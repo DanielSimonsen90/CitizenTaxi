@@ -24,4 +24,6 @@ public static partial class TestConstants
         Citizen = TEST_CITIZEN,
         CitizenId = TEST_CITIZEN.Id,
     };
+
+    public static Login TEST_LOGIN => new(USERNAME, PASSWORD, TEST_CITIZEN);
 }
