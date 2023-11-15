@@ -41,15 +41,31 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
-    [HttpPost] public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload) => payload.Role switch
+    [HttpPost]
+    public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload)
     {
-        // TODO: Create login to user
+        // Create user based on the role of the payload using BaseController.CreateEntity
+        IActionResult result = payload.Role switch
+        {
+            Role.Citizen => await CreateEntity(payload, unitOfWork.Citizens),
+            Role.Admin => await CreateEntity(payload, unitOfWork.Admins),
+            _ => BadRequest("Invalid role provided"),
+        };
 
-        // Role of the payload determines which entity to create and which repository to use.
-        Role.Citizen => await CreateEntity(payload, unitOfWork.Citizens),
-        Role.Admin => await CreateEntity(payload, unitOfWork.Admins),
-        _ => BadRequest("Invalid role provided"),
-    };
+        // If the result is not an OkObjectResult, return the result
+        if (result is not OkObjectResult okResult) return result;
+        
+        // Receive the created user from the result and create a login for the user
+        AUser user = okResult.Value as AUser ?? throw new Exception("User was null");
+        Login login = new(payload.Username, _loginService.GenerateEncrypedPassword(payload), user);
+        
+        // Add the login to the database and save changes
+        unitOfWork.Logins.Add(login);
+        await unitOfWork.SaveChangesAsync();
+        
+        // Return the result
+        return result;
+    }
 
     /// <summary>
     /// Get all <see cref="Citizen"/>s and <see cref="Admin"/>s from the database.

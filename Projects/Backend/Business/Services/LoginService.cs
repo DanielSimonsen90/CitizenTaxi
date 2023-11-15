@@ -70,7 +70,7 @@ public class LoginService
     /// <param name="unencrypted"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public string GenerateEncrypedPassword(Login login, string unencrypted)
+    public string GenerateEncrypedPassword(UserModifyPayload payload)
     {
         throw new NotImplementedException();
     }
