@@ -173,6 +173,4 @@ public class UsersController : BaseController
         try { return unitOfWork.Admins.Get(userId) is not null; }
         catch (EntityNotFoundException<Admin, Guid>) { return false; }
     }
-
-    private IActionResult TooManyRequests(string message = "Too many requests") => StatusCode(StatusCodes.Status429TooManyRequests, message);
 }

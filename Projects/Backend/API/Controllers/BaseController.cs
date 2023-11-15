@@ -35,8 +35,15 @@ public abstract class BaseController : ControllerBase
     /// <summary>
     /// By standard, ASP.NET Core does not include a method for internal server error, so this method is used to return a 500 Internal Server Error.
     /// </summary>
+    /// <param name="message">Message of exception</param>
     /// <returns></returns>
     protected IActionResult InternalServerError(string message) => StatusCode(StatusCodes.Status500InternalServerError, message);
+    /// <summary>
+    /// By standard, ASP.NET Core does not include a method for too many requests, so this method is used to return a 429 Too Many Requests.
+    /// </summary>
+    /// <param name="message">Additional message other than default "Too many requests"</param>
+    /// <returns></returns>
+    protected IActionResult TooManyRequests(string message = "Too many requests") => StatusCode(StatusCodes.Status429TooManyRequests, message);
 
     #region CRUD Operations
     /// <summary>
