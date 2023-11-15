@@ -1,4 +1,6 @@
-﻿using Business.Models.Payloads;
+﻿using Business.Exceptions;
+using Business.Models;
+using Business.Models.Payloads;
 using Common.Entities;
 
 namespace Business.Services;
@@ -9,12 +11,13 @@ namespace Business.Services;
 /// </summary>
 public class LoginService
 {
+
     /// <summary>
     /// Internal dictionary for login attempts.
     /// Key is username, value is attempts.
     /// This gets updated in <see cref="TryLogin(LoginPayload)"/>
     /// </summary>
-    private readonly Dictionary<string, int> _loginAttempts = new();
+    private readonly Dictionary<string, LoginAttempt> _loginAttempts = new();
     /// <summary>
     /// <see cref="UnitOfWork"/> for database access.
     /// This is used to get <see cref="Login"/> from database in <see cref="TryLogin(LoginPayload)"/>
@@ -32,7 +35,15 @@ public class LoginService
 
     public bool TryLogin(LoginPayload login)
     {
-        // TODO: Cancel login request on max login attempts
+        // Check if the user has tried to login too many times
+        if (_loginAttempts.ContainsKey(login.Username))
+        {
+            LoginAttempt attempt = _loginAttempts[login.Username];
+
+            if (attempt.Attempts == LoginAttempt.MAX_LOGIN_ATTEMPTS 
+                && !attempt.CanTryAgain) 
+                throw new TooManyLoginAttemptsException(DateTime.UtcNow - attempt.AttemptStarted);
+        }
 
         // Find a login with the given username and password and check if it exists
         bool correct = _uow.Logins.Get(l =>
@@ -43,11 +54,12 @@ public class LoginService
         // If the login is not correct, add 1 to the login attempts for the given username
         if (!correct)
         {
-            int attempts = _loginAttempts.ContainsKey(login.Username) ? _loginAttempts[login.Username] : 0;
-            _loginAttempts[login.Username] = attempts + 1;
+            LoginAttempt attempt = _loginAttempts.ContainsKey(login.Username) ? _loginAttempts[login.Username] : new LoginAttempt();
+            attempt.Attempts++;
+            _loginAttempts[login.Username] = attempt;
         }
 
-        // TODO: Reset login attempts on successful login
+        _loginAttempts.Remove(login.Username);
         return correct;
     }
 
