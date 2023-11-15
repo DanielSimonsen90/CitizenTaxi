@@ -6,6 +6,7 @@ using API.Controllers;
 using Business.Services;
 using TestConstantsLib;
 using Microsoft.AspNetCore.Mvc;
+using Common.Entities;
 
 namespace ApiTests;
 
@@ -61,17 +62,4 @@ internal class CitizensControllerTest : ABaseControllerTest<Citizen, CitizenDTO,
 
     [Test] public override Task UpdateEntity() => UpdateEntity(TestConstants.TEST_CITIZEN, TestConstants.TEST_USER_PAYLOAD);
     [Test] public override Task DeleteEntity() => DeleteEntity(TestConstants.TEST_CITIZEN);
-
-    // TODO: Implement login and logout
-
-    [Test]
-    public async Task Authenticate()
-    {
-        Assert.Pass();
-    }
-    [Test]
-    public async Task Logout()
-    {
-        Assert.Pass();
-    }
 }
