@@ -7,7 +7,6 @@ export const AuthProviderContext = createContext<AuthProviderContextType>({
   login: () => {},
   logout: () => {},
   logginIn: false,
-
-  token: undefined,
-  refreshToken: undefined,
 });
+
+export const COOKIE_NAME = "citizen_taxi_access_token"

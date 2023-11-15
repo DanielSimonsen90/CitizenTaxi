@@ -23,7 +23,7 @@ internal class CitizensControllerTest : ABaseControllerTest<Citizen, CitizenDTO,
     /// </summary>
     /// <param name="uow">UnitOfWork for service dependency</param>
     /// <returns></returns>
-    protected override BaseController CreateController(UnitOfWork uow) => new UsersController(uow);
+    protected override BaseController CreateController(UnitOfWork uow) => new UsersController(uow, new LoginService(uow));
 
     [Test] public override Task CreateEntity() => CreateEntity(TestConstants.TEST_USER_PAYLOAD);
 
