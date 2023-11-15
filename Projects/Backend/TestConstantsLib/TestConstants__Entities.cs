@@ -4,6 +4,10 @@ using Common.Enums;
 
 namespace TestConstantsLib;
 
+/// <summary>
+/// TestConstants is a partial class for splitting up constants into multiple files.
+/// The class is used in multiple testing projects for dummy data.
+/// </summary>
 public static partial class TestConstants
 {
     public static Citizen TEST_CITIZEN => new(CITIZEN_NAME);
