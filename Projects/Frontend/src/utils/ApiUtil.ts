@@ -1,3 +1,4 @@
+// Define API_ENDPOINT_SECURE by environment, if development then use localhost, else use azurewebsites
 if (process.env.NODE_ENV === 'development') {
   var API_ENDPOINT_SECURE = "https://localhost:5000/api";
 } else {
@@ -5,10 +6,13 @@ if (process.env.NODE_ENV === 'development') {
 }
 export { API_ENDPOINT_SECURE };
 
+// Export path for SignalR
 export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/notificationhub";
 
+// An ApiEndpoint paramter can be either a string or undefined
 type TParam = string | undefined;
 
+// All possible endpoints for the API. This will generate autocomplete when using the Request function
 type ApiEndpoints<Param extends TParam = undefined> =
   | `bookings` // [GET, POST]
   | `bookings?citizenId=${Param}` // [GET] Guid
@@ -23,13 +27,15 @@ type ApiEndpoints<Param extends TParam = undefined> =
   | `users/${Param}` // [GET, PUT, DELETE] Guid userId
   | `users/authenticate` // [POST, DELETE]
 
+// All possible HTTP methods
 export type HttpMethods =
   | 'GET'
   | 'POST'
   | 'PUT'
   | 'DELETE';
 
-type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
+// Options for the Request function
+export type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
   method?: HttpMethods;
   body?: TBody;
   noHeaders?: boolean;
@@ -37,8 +43,15 @@ type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
   query?: Record<string, string>;
 };
 
+/**
+ * Makes a request to the API
+ * @param path Api endpoint to request
+ * @param options Additional options for the request
+ * @returns The response from the API
+ */
 export async function Request<TData, Param extends TParam = undefined>(
   path: ApiEndpoints<Param>,
+  // Destructor the options object, if it's undefined then set it to an empty object
   {
     method = 'GET',
     body,
@@ -48,10 +61,12 @@ export async function Request<TData, Param extends TParam = undefined>(
   }: RequestOptions | undefined = {}) {
   // console.log(`Requesting ${path} with method ${method}`);
 
+  // Construct the endpoint for the request
   const endpoint = (() => {
     const result = API_ENDPOINT_SECURE + ensureSlash(path);
     if (path.includes('?') || !query) return result;
 
+    // If the query object is defined, then construct a query string from it
     const queryString = Object.entries(query)
       .map(([key, value]) => `${key}=${value}`)
       .join('&');
@@ -59,6 +74,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     return path.includes('?') ? `${result}&${queryString}` : `${result}?${queryString}`;
   })();
 
+  // Construct the request init object to pass to the fetch function
   const init: RequestInit = {
     method,
     body: body ? !noHeaders ? JSON.stringify(body) : body : undefined,
@@ -66,18 +82,20 @@ export async function Request<TData, Param extends TParam = undefined>(
     signal: controller.signal,
   };
 
+  // Make the request, log any errors, and throw them again
   const res = await fetch(endpoint, init).catch(err => {
-    if (err instanceof Error && err.message.includes('Failed to fetch')) {
-      return fetch(API_ENDPOINT_SECURE + ensureSlash(path), init);
-    }
-
     console.error(`Failed to [${method}] ${path}`, err);
     throw err;
   });
 
+  // Clone the response so that it can be converted to JSON and text
   const clone = res.clone();
+
+  // All successful responses are in the 200s, so check if the status code starts with 2
   const isSuccessful = res.status.toString().startsWith('2');
 
+  // This try-catch block is used to catch any errors when converting the response to JSON
+  // If the response is not jsonable, then the catch will return null for the data
   try {
     return {
       success: isSuccessful,
@@ -95,6 +113,11 @@ export async function Request<TData, Param extends TParam = undefined>(
   }
 }
 
+/**
+ * Ensures that the path starts with a /
+ * @param path Path string
+ * @returns Path that starts with a /
+ */
 export function ensureSlash(path: string) {
   return path.startsWith('/') ? path : '/' + path;
 }

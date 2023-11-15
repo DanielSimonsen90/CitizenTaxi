@@ -1,14 +1,20 @@
-export type Nullable<T> = T | null;
+// Generic T can be either T or null
+export type Nullable<T> = T | null; 
+
+// Generic T cannot be null or undefined
 export type NonNullable<T> =
   T extends null ? never :
   T extends undefined ? never :
   T;
 
+// Generic T can be either T or awaited T
 export type Promiseable<T> = T | Promise<T>;
 
+// Type for storing a value in local or session storage using a key
 export type StorageOptions = {
   storage: Storage,
   key: string,
 };
 
+// TypeScript doesn't have a built-in type for Guid, however it is interpreted as a string
 export type Guid = string;

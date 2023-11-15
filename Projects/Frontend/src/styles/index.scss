@@ -1,6 +1,7 @@
 @use './colors' as clrs;
 @use './mixins' as mixins;
 
+// Define CSS specificity layers
 @layer base;
 
 @layer base {

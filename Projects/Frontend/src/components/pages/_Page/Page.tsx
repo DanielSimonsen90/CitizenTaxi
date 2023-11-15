@@ -10,6 +10,7 @@ type PageProps = PropsWithChildren & {
 };
 
 export default function PageLayout({ title, description, children, thumbnail }: PageProps) {
+  // Set the page title and description from the props
   useEffectOnce(() => {
     document.title = title ? `${title} - ${DOMAIN_NAME}` : DOMAIN_NAME;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
