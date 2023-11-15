@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\API\API.csproj" />
-    <ProjectReference Include="..\..\TestConstantsLib\TestConstantsLib.csproj" />
+    <ProjectReference Include="..\TestConstantsLib\TestConstantsLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
