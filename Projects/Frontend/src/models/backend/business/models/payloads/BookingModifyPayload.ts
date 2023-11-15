@@ -1,6 +1,6 @@
-import { Guid } from "@types";
+import { Guid } from "types";
+import { Booking } from "models/backend/common";
 import { BaseModifyPayload } from "./BaseModifyPayload";
-import { Booking } from "@models/backend/common";
 
 // Generic "WithId" type is used to determine if the payload should contain an id or not
 // This is handled by the BaseModifyPayload type
