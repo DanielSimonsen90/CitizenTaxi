@@ -1,0 +1,23 @@
+:root {
+  --background-primary: #{clrs.$background-primary};
+  --background-secondary: #{clrs.$background-secondary};
+  --background-tertiary: #{clrs.$background-tertiary};
+  --background-quaternary: #{clrs.$background-quaternary};
+
+  --text-primary: #{clrs.$text-primary};
+  --text-secondary: #{clrs.$text-secondary};
+  --text-tertiary: #{clrs.$text-tertiary};
+  --text-quaternary: #{clrs.$text-quaternary};
+
+  @media (prefers-color-scheme: light) {
+    --background-primary: #{clrs.$text-primary};
+    --background-secondary: #{clrs.$text-secondary};
+    --background-tertiary: #{clrs.$text-tertiary};
+    --background-quaternary: #{clrs.$text-quaternary};
+
+    --text-primary: #{clrs.$background-primary};
+    --text-secondary: #{clrs.$background-secondary};
+    --text-tertiary: #{clrs.$background-tertiary};
+    --text-quaternary: #{clrs.$background-quaternary};
+  }
+}

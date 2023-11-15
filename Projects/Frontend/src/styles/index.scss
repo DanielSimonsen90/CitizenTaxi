@@ -1,13 +1,45 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@use './colors' as clrs;
+@use './mixins' as mixins;
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer base;
+
+@layer base {
+  @import './components/index.scss';
+  @import './theme.scss';
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    position: relative;
+    margin: unset;
+    @include mixins.transition();
+  }
+
+  :root {
+    --text-muted: clrs.$text-muted;
+    --text-link: clrs.$text-link;
+
+    --brand-primary: clrs.$brand-primary;
+    --brand-secondary: clrs.$brand-secondary;
+
+    --crud-update: clrs.$crud-update;
+    --crud-delete: clrs.$crud-delete;
+
+    font-size: 16px;
+    font-family: Arial;
+  }
+
+  body {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+  }
+
+  #root {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: auto 1fr auto; // Header, Content, Footer
+  }
+
+  a {
+    color: var(--text-link);
+  }
 }

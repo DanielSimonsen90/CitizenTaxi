@@ -1,0 +1,6 @@
+@mixin transition($time: 100ms) {
+  @media (prefers-reduced-motion: no-preference) {
+    --transition-time: #{$time};
+    transition: all var(--transition-time) ease-in-out;
+  }
+}
