@@ -125,7 +125,7 @@ public class UsersController : BaseController
     /// Adds <see cref="AuthTokens"/> instance using <see cref="AuthService"/>
     /// </summary>
     /// <param name="payload">Login details</param>
-    /// <returns><see cref="AuthTokens"/></returns>
+    /// <returns>User id to fetch logged-in user</returns>
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody] LoginPayload payload)
     {
@@ -142,14 +142,14 @@ public class UsersController : BaseController
     }
 
     /// <summary>
-    /// TODO: Implement logout
+    /// Removes <see cref="AuthTokens"/> instance using <see cref="AuthService"/>
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpDelete("authenticate")]
     public IActionResult Logout()
     {
-        throw new NotImplementedException();
+        AuthService.RemoveCookie(Request, Response);
+        return Ok();
     }
     #endregion
 

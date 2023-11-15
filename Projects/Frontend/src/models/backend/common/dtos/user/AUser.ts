@@ -1,4 +1,4 @@
-import { Role } from "../../Enums";
+import { Role } from "../../enums/Enums";
 import { BaseEntity } from "../BaseEntity";
 
 // The AUser type should inherit properties from the BaseEntity type and have the following additional properties:

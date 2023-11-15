@@ -7,7 +7,7 @@ namespace Business.Services;
 public class AuthService
 {
     #region Statics
-    public const string COOKIE_KEY = "citizen_taxi_access_token";
+    public const string COOKIE_KEY = "citizen_taxi_authentication";
     public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromMinutes(15);
     public static readonly TimeSpan REFRESH_TOKEN_EXPIRATION = TimeSpan.FromDays(7);
 
@@ -22,8 +22,6 @@ public class AuthService
 
         AuthTokens? existing = authTokens.Values.FirstOrDefault(a => a.UserId == userId);
         if (existing != null) authTokens.Remove(existing.AccessToken.ToString());
-
-        authTokens.Add(auth.AccessToken.ToString(), auth);
 
         AddCookie(response, auth);
     }
@@ -43,6 +41,32 @@ public class AuthService
                 SameSite = SameSiteMode.None,
                 Secure = true,
             });
+        authTokens.Add(auth.AccessToken.ToString(), auth);
+    }
+    public static AuthTokens? GetAuthTokens(HttpRequest request)
+    {
+        try
+        {
+            string cookie = request.Cookies[COOKIE_KEY];
+            AuthTokens parsedCookie = JsonSerializer.Deserialize<AuthTokens>(cookie, new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+            }) ?? throw new Exception("Cookie is null");
+            authTokens.TryGetValue(parsedCookie.AccessToken.Value, out AuthTokens? auth);
+            return auth;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    public static void RemoveCookie(HttpRequest request, HttpResponse response)
+    {
+        AuthTokens? auth = GetAuthTokens(request);
+        if (auth is null) return;
+            
+        response.Cookies.Delete(COOKIE_KEY);
+        authTokens.Remove(auth.AccessToken.ToString());
     }
 
     private static AuthToken GenerateToken(TimeSpan expiresIn)
@@ -67,12 +91,7 @@ public class AuthService
         {
             try
             {
-                string cookie = context.Request.Cookies[COOKIE_KEY];
-                AuthTokens parsedCookie = JsonSerializer.Deserialize<AuthTokens>(cookie, new JsonSerializerOptions()
-                {
-                    PropertyNameCaseInsensitive = true,
-                }) ?? throw new Exception("Cookie is null");
-                authTokens.TryGetValue(parsedCookie.AccessToken.Value, out AuthTokens? auth);
+                AuthTokens? auth = GetAuthTokens(context.Request);
 
                 if (auth is null || (auth.AccessToken.IsExpired && auth.RefreshToken.IsExpired)) throw new Exception("Unauthorized");
                 if (auth.AccessToken.IsExpired) GenerateTokensAndSaveToCookies(auth.UserId, context.Response);

@@ -1,5 +1,5 @@
 import { Button } from "danholibraryrjs";
-import { Role } from "models/backend/common";
+import { Role, translateEnum } from "models/backend/common/enums";
 import { useAuth } from "providers/AuthProvider";
 import { Request } from "utils";
 
@@ -8,18 +8,20 @@ import { Request } from "utils";
  * @returns Appropriate view based on the user role
  */
 export default function Authenticate() {
-  const { login } = useAuth();
+  const { login, logout, user } = useAuth();
   const username = "admin";
-  const password= "admin123";
+  const password = "admin123";
 
   return (
     <div>
-      <Button onClick={() => login(username, password)}>Login</Button>
+      {!user ? <div>Not logged in</div> : <div>Logged in as {user.name}, {translateEnum(user.role)}</div>}
+      <Button onClick={() => user ? logout() : login(username, password)}>{
+        user ? "Logout" : "Login"
+      }</Button>
       <Button onClick={async () => {
         const response = await Request(`users?role=${Role.Citizen}`);
-        console.log(response);
         alert(response.status);
-      }}>Get Citizens</Button>
+      }}>Request citizens</Button>
     </div>
-  )
+  );
 }

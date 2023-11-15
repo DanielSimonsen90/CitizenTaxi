@@ -1,17 +1,14 @@
 import { useState, PropsWithChildren } from 'react';
-import { useAsyncEffect, useCallbackOnce } from 'danholibraryrjs';
+import { useCallbackOnce } from 'danholibraryrjs';
 import type { User } from 'models/backend/common/dtos';
-import { AuthProviderContext, COOKIE_NAME } from './AuthProviderConstants';
+import { AuthProviderContext } from './AuthProviderConstants';
 import { Request } from 'utils';
 import { LoginPayload } from 'models/backend/business/models/payloads';
-import { parseCookieString } from 'utils/CookieUtil';
-import { AuthTokensJSON, Guid } from 'types';
-import { useCookie } from 'hooks';
+import { Guid } from 'types';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User>();
   const [logginIn, setLogginIn] = useState<boolean>(false);
-  const [jsonCookie, updateCookie, deleteCookie] = useCookie<AuthTokensJSON>(COOKIE_NAME, {} as AuthTokensJSON);
 
   const login = useCallbackOnce(async (username: string, password: string) => {
     setLogginIn(true);
@@ -37,7 +34,6 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     const response = await Request('users/authenticate', { method: 'DELETE' });
     if (!response.success) return alert(response.text);
 
-    deleteCookie();
     setUser(undefined);
   });
 

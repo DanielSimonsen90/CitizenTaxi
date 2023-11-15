@@ -1,3 +1,4 @@
+import { Role } from "models/backend/common";
 import { User } from "models/backend/common/dtos";
 import { Nullable } from "types";
 
