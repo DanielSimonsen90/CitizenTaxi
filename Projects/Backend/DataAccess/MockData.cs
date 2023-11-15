@@ -9,8 +9,8 @@ namespace DataAccess;
 /// </summary>
 internal static class MockData
 {
-    internal static readonly Admin Admin = new("Admin", Role.Admin) { Id = Guid.Parse("00000000-0000-0000-0000-000000000001") };
-    internal static readonly Citizen Citizen = new("Borger", Role.Citizen) { Id = Guid.Parse("00000000-0000-0000-0000-000000000002") };
+    internal static readonly Admin Admin = new("Admin") { Id = Guid.Parse("00000000-0000-0000-0000-000000000001") };
+    internal static readonly Citizen Citizen = new("Borger") { Id = Guid.Parse("00000000-0000-0000-0000-000000000002") };
 
     internal static readonly Login AdminLogin = new("admin", "admin123", Admin) { Id = Guid.Parse("00000000-0000-0000-0000-000000000003") };
     internal static readonly Login CitizenLogin = new("borger", "borger123", Citizen) { Id = Guid.Parse("00000000-0000-0000-0000-000000000004") };

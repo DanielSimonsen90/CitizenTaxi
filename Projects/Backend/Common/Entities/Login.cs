@@ -17,6 +17,7 @@ public class Login : BaseEntity<Guid>
     public Login(string username, string password, AUser user)
     {
         User = user;
+        UserId = user.Id;
         Username = username;
         Password = password;
     }

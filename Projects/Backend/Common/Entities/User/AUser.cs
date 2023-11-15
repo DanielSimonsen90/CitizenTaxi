@@ -1,5 +1,6 @@
 ﻿using Common.Enums;
 using DanhoLibrary.NLayer;
+using System.Linq.Expressions;
 
 namespace Common.Entities.User;
 
@@ -11,6 +12,11 @@ namespace Common.Entities.User;
 /// </summary>
 public abstract class AUser : BaseEntity<Guid>
 {
+    //public static readonly Expression<Func<AUser, object?>>[] RELATIONS =
+    //{
+    //    user => user.Login
+    //};
+
     public AUser(string name, Role role)
     {
         Name = name;

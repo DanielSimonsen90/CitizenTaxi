@@ -1,6 +1,7 @@
 ﻿using DanhoLibrary.NLayer;
 using DataAccess;
 using DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services;
 
@@ -46,4 +47,12 @@ public class UnitOfWork : BaseUnitOfWork<CitizenTaxiDbContext>
     /// The <see cref="Common.Entities.Note"/> repository used for CRUD operations on <see cref="Common.Entities.Note"/>
     /// </summary>
     public NoteRepository Notes { get; set; }
+
+    /// <summary>
+    /// Releases all resources used by the <see cref="CitizenTaxiDbContext"/>.
+    /// </summary>
+    public void Dispose()
+    {
+        Context.Dispose();
+    }
 }
