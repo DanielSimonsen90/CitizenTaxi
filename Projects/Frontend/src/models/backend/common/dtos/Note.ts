@@ -1,4 +1,4 @@
-import { CarHeight, Companion, Follow, HelpingUtil } from "../Enums";
+import { CarHeight, Companion, Follow, HelpingUtil } from "../enums/Enums";
 import { BaseEntity } from "./BaseEntity";
 
 // The Note type should inherit properties from the BaseEntity type and have the following additional properties:

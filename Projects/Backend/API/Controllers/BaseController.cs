@@ -38,6 +38,7 @@ public abstract class BaseController : ControllerBase
     /// <returns></returns>
     protected IActionResult InternalServerError() => StatusCode(StatusCodes.Status500InternalServerError);
 
+    #region CRUD Operations
     /// <summary>
     /// Create an entity in the database from the given <paramref name="payload"/> and <paramref name="repository"/>.
     /// </summary>
@@ -167,5 +168,6 @@ public abstract class BaseController : ControllerBase
         // If the entity was not found or any other exception was thrown, return the appropriate HTTP response
         catch (EntityNotFoundException<TEntity, Guid> ex) { return NotFound($"Entity not found: {ex.Message}"); }
         catch (Exception) { return InternalServerError(); }
-    }   
+    }
+    #endregion
 }

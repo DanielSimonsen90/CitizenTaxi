@@ -1,12 +1,15 @@
-﻿using Business.Models.Payloads;
+﻿using Business.Models;
+using Business.Models.Payloads;
 using Business.Services;
 using Common.DTOs;
+using Common.Entities;
 using Common.Entities.User;
 using Common.Enums;
 using DanhoLibrary.NLayer;
 using DataAccess.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace API.Controllers;
 
@@ -18,11 +21,16 @@ namespace API.Controllers;
 /// </summary>
 public class UsersController : BaseController
 {
+    private readonly LoginService _loginService;
+
     /// <summary>
     /// Constructor receives <see cref="UnitOfWork"/> through dependency injection.
     /// </summary>
     /// <param name="uow">UnitOfWork used to perform CRUD operations on <see cref="Citizen"/> and <see cref="Admin"/></param>
-    public UsersController(UnitOfWork uow) : base(uow) { }
+    public UsersController(UnitOfWork uow, LoginService loginService) : base(uow) 
+    { 
+        _loginService = loginService;
+    }
 
     #region User CRUD
     /// <summary>
@@ -114,26 +122,34 @@ public class UsersController : BaseController
 
     #region Authenticate
     /// <summary>
-    /// TODO: Implement authentication
+    /// Adds <see cref="AuthTokens"/> instance using <see cref="AuthService"/>
     /// </summary>
-    /// <param name="payload"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="payload">Login details</param>
+    /// <returns>User id to fetch logged-in user</returns>
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody] LoginPayload payload)
     {
-        throw new NotImplementedException();
+        // TODO: Throw custom TooManyAttemptsException
+        bool isValid = _loginService.TryLogin(payload);
+        if (!isValid) return BadRequest("Invalid credentials");
+
+        Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
+        if (login is null) return InternalServerError();
+
+        AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
+
+        return Ok(login.UserId);
     }
 
     /// <summary>
-    /// TODO: Implement logout
+    /// Removes <see cref="AuthTokens"/> instance using <see cref="AuthService"/>
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpDelete("authenticate")]
     public IActionResult Logout()
     {
-        throw new NotImplementedException();
+        AuthService.RemoveCookie(Request, Response);
+        return Ok();
     }
     #endregion
 

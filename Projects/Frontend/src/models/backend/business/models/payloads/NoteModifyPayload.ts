@@ -1,5 +1,5 @@
-import { Note } from "@models/backend/common";
-import { Guid } from "@types";
+import { Note } from "models/backend/common";
+import { Guid } from "types";
 import { BaseModifyPayload } from "./BaseModifyPayload";
 
 // Generic "WithId" type is used to determine if the payload should contain an id or not

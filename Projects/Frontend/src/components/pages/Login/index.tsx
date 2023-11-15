@@ -1,4 +1,4 @@
-import { DOMAIN_NAME } from "@SiteConstants";
+import { DOMAIN_NAME } from "SiteConstants";
 import PageLayout from "../_Page";
 import Login from "./Login";
 import './Login.scss';

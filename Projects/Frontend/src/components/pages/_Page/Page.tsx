@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { useEffectOnce } from "danholibraryrjs";
-import { DOMAIN_NAME } from '@SiteConstants';
+import { DOMAIN_NAME } from 'SiteConstants';
 
 type PageProps = PropsWithChildren & {
   description: string;

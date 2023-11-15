@@ -42,6 +42,8 @@ app.UseCors(builder => builder
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
+app.UseMiddleware<AuthService>();
+
 app.MapControllers();
 app.MapHub<NotificationHub>($"api/{NotificationHub.ENDPOINT}");
 

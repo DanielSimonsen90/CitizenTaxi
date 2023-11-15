@@ -1,4 +1,5 @@
 ﻿using Common.Entities;
+using Common.Entities.User;
 using DanhoLibrary.NLayer;
 
 namespace DataAccess.Repositories;
@@ -11,4 +12,6 @@ namespace DataAccess.Repositories;
 public class LoginRepository : BaseRepository<Login, Guid>
 {
     public LoginRepository(CitizenTaxiDbContext context) : base(context) { }
+
+    public Login? GetLoginByUsername(string username) => GetWithRelations(login => login.Username == username);
 }

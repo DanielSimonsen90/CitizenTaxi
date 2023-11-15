@@ -7,15 +7,13 @@ const Router = () => (
   <BrowserRouter>
     <Routes>
       <Route path="*" Component={Layout}> {/* All pages must follow the Layout component */}
-        <Route path="/" element={<Authenticate />}> {/* The Authenticate component is in charge of handling what component the user should see */}
-          {/* <Route path="borgere" element={<CitizenOverview />} /> */}
-          {/* <Route path="noter" element={<NotesOverview />} /> */}
-          {/* <Route path="bestillinger" element={<BookingsOverview />} /> */}
-          {/* <Route path="bestil" element={<BookTaxi />} /> */}
-        </Route>
-
-        <Route path="*" element={<NotFound />} /> {/* If the user tries to access a route not registered, show the NotFound component */}
+        <Route index element={<Authenticate />} /> {/* The Authenticate component is in charge of handling what component the user should see */}
+        {/* <Route path="borgere" element={<CitizenOverview />} /> */}
+        {/* <Route path="noter" element={<NotesOverview />} /> */}
+        {/* <Route path="bestillinger" element={<BookingsOverview />} /> */}
+        {/* <Route path="bestil" element={<BookTaxi />} /> */}
       </Route>
+      <Route path="*" element={<NotFound />} /> {/* If the user tries to access a route not registered, show the NotFound component */}
     </Routes>
   </BrowserRouter>
 );

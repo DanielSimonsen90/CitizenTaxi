@@ -1,3 +1,5 @@
+import { AuthToken, AuthTokens } from "models/backend/business/models/AuthTokens";
+
 // Generic T can be either T or null
 export type Nullable<T> = T | null; 
 
@@ -18,3 +20,9 @@ export type StorageOptions = {
 
 // TypeScript doesn't have a built-in type for Guid, however it is interpreted as a string
 export type Guid = string;
+
+export type AuthTokensJSON = {
+  [key in keyof AuthTokens]: AuthTokens[key] extends AuthToken 
+    ? Record<string, string> 
+    : AuthTokens[key];
+}
