@@ -26,7 +26,7 @@ public class LoginServiceTest
             new DbContextOptionsBuilder<CitizenTaxiDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
         _uow = new(context);
-        _loginService = new(_uow);
+        _loginService = new(_uow, new CacheService());
     }
 
     /// <summary>
@@ -67,6 +67,7 @@ public class LoginServiceTest
             Assert.That(cannotLoginWithBadPassword, Is.False, "Login with bad password");
             Assert.Throws<TooManyLoginAttemptsException>(() =>
             {
+                // Login with bad password too many times
                 for (int i = 0; i < LoginAttempt.MAX_LOGIN_ATTEMPTS; i++)
                 {
                     _loginService.TryLogin(payloadBadPassword);

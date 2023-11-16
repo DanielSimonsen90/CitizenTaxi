@@ -8,7 +8,7 @@ using System.Text;
 namespace Business.Services;
 
 /// <summary>
-/// Service for <see cref="Common.Entities.Login"/>
+/// Service for <see cref="Login"/>
 /// This is used for login attempts and password encryption.
 /// </summary>
 public class LoginService
@@ -18,36 +18,35 @@ public class LoginService
     private static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
 
     /// <summary>
-    /// Internal dictionary for login attempts.
-    /// Key is username, value is attempts.
-    /// This gets updated in <see cref="TryLogin(LoginPayload)"/>
-    /// </summary>
-    private readonly Dictionary<string, LoginAttempt> _loginAttempts = new();
-    /// <summary>
     /// <see cref="UnitOfWork"/> for database access.
     /// This is used to get <see cref="Login"/> from database in <see cref="TryLogin(LoginPayload)"/>
     /// </summary>
     private readonly UnitOfWork _uow;
+    private readonly CacheService _cacheService;
 
     /// <summary>
-    /// Constructor receives <see cref="UnitOfWork"/> through dependency injection.
+    /// Constructor receives <see cref="UnitOfWork"/> and <see cref="CacheService"/> through dependency injection.
     /// </summary>
-    /// <param name="uow"></param>
-    public LoginService(UnitOfWork uow)
+    /// <param name="uow">UnitOfWork to receive login and user details</param>
+    /// <param name="cacheService">CacheService to receive login attempts from backend cache</param>
+    public LoginService(UnitOfWork uow, CacheService cacheService)
     {
         _uow = uow;
+        _cacheService = cacheService;
     }
 
     public bool TryLogin(LoginPayload login)
     {
         // Check if the user has tried to login too many times
-        if (_loginAttempts.ContainsKey(login.Username))
+        if (_cacheService.LoginAttempts.ContainsKey(login.Username))
         {
-            LoginAttempt attempt = _loginAttempts[login.Username];
+            LoginAttempt attempt = _cacheService.LoginAttempts[login.Username];
 
-            if (attempt.Attempts == LoginAttempt.MAX_LOGIN_ATTEMPTS 
-                && !attempt.CanTryAgain) 
-                throw new TooManyLoginAttemptsException(DateTime.UtcNow - attempt.AttemptStarted);
+            if (attempt.Attempts >= LoginAttempt.MAX_LOGIN_ATTEMPTS)
+            {
+                if (attempt.CanTryAgain) _cacheService.LoginAttempts.Remove(login.Username);
+                else throw new TooManyLoginAttemptsException(attempt.CanTryAgainAt - DateTime.UtcNow);
+            }
         }
 
         // Find a login with the given username and password and check if it exists
@@ -57,15 +56,21 @@ public class LoginService
         // If the login is not correct, add 1 to the login attempts for the given username
         if (!correct)
         {
-            LoginAttempt attempt = _loginAttempts.ContainsKey(login.Username) ? _loginAttempts[login.Username] : new LoginAttempt();
+            LoginAttempt attempt = _cacheService.LoginAttempts.ContainsKey(login.Username) 
+                ? _cacheService.LoginAttempts[login.Username] 
+                : new LoginAttempt();
             attempt.Attempts++;
-            _loginAttempts[login.Username] = attempt;
+            _cacheService.LoginAttempts[login.Username] = attempt;
             return correct;
         }
 
-        _loginAttempts.Remove(login.Username);
+        _cacheService.LoginAttempts.Remove(login.Username);
         return correct;
     }
+
+    ///
+    ///  The code below was inspired by the article: https://code-maze.com/csharp-hashing-salting-passwords-best-practices/
+    ///
 
     /// <summary>
     /// Generates a secure password hash and salt from the given unencrypted password.
@@ -74,6 +79,7 @@ public class LoginService
     /// <returns>Encrypted value</returns>
     public static string GenerateEncrypedPassword(string unencrypted, string salt)
     {
+        // Convert unencrypted string into hash data with provided salt
         byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
             Encoding.UTF8.GetBytes(unencrypted),
             Convert.FromBase64String(salt),

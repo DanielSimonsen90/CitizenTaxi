@@ -23,14 +23,17 @@ namespace API.Controllers;
 public class UsersController : BaseController
 {
     private readonly LoginService _loginService;
+    private readonly AuthService _authService;
+
 
     /// <summary>
     /// Constructor receives <see cref="UnitOfWork"/> through dependency injection.
     /// </summary>
     /// <param name="uow">UnitOfWork used to perform CRUD operations on <see cref="Citizen"/> and <see cref="Admin"/></param>
-    public UsersController(UnitOfWork uow, LoginService loginService) : base(uow) 
+    public UsersController(UnitOfWork uow, LoginService loginService, AuthService authService) : base(uow) 
     { 
         _loginService = loginService;
+        _authService = authService;
     }
 
     #region User CRUD
@@ -164,7 +167,7 @@ public class UsersController : BaseController
             Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
             if (login is null) return InternalServerError($"Login model was null when looking for username {payload.Username}.");
 
-            AuthService.GenerateTokensAndSaveToCookies(login.UserId, Response);
+            _authService.GenerateTokensAndSaveToCookies(login.UserId, Response);
 
             return Ok(login.UserId);
         }
@@ -181,7 +184,7 @@ public class UsersController : BaseController
     [HttpDelete("authenticate")]
     public IActionResult Logout()
     {
-        AuthService.RemoveCookie(Request, Response);
+        _authService.RemoveCookie(Request, Response);
         return Ok();
     }
     #endregion

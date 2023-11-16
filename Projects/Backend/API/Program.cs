@@ -1,4 +1,5 @@
 using Business.Hubs;
+using Business.Middlewares;
 using Business.Services;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add business services
+builder.Services.AddSingleton<CacheService>();
+builder.Services.AddSingleton<AuthService>();
+
 builder.Services.AddDbContext<CitizenTaxiDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddSignalR();
@@ -42,7 +47,7 @@ app.UseCors(builder => builder
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
-app.UseMiddleware<AuthService>();
+app.UseMiddleware<AuthMiddleware>();
 
 app.MapControllers();
 app.MapHub<NotificationHub>($"api/{NotificationHub.ENDPOINT}");
