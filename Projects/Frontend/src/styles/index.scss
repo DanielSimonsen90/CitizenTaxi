@@ -37,7 +37,8 @@
   #root {
     min-height: 100vh;
     display: grid;
-    grid-template-columns: auto 1fr auto; // Header, Content, Footer
+    grid-template-rows: auto 1fr auto; // Header, Content, Footer
+    gap: 1em;
   }
 
   a {

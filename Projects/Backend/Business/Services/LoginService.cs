@@ -118,7 +118,8 @@ public class LoginService
             iterations,
             hashAlgorithm,
             keySize);
+        string convertedUnencrypted = Convert.ToBase64String(hash);
 
-        return Convert.ToBase64String(hash) == encrypted;
+        return convertedUnencrypted == encrypted;
     }
 }

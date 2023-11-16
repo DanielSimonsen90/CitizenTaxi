@@ -7,5 +7,5 @@ export type AuthProviderContextType = {
 
   login: (email: string, password: string) => void;
   logout: () => void;
-  logginIn: boolean;
+  loggingIn: boolean;
 }

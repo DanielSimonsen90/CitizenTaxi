@@ -6,5 +6,5 @@ export const AuthProviderContext = createContext<AuthProviderContextType>({
 
   login: () => {},
   logout: () => {},
-  logginIn: false,
+  loggingIn: false,
 });

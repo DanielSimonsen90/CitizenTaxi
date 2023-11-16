@@ -39,7 +39,7 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
 
   return (
     <AuthProviderContext.Provider value={{
-      user, logginIn,
+      user, loggingIn: logginIn,
       login, logout,
     }}>
       {children}

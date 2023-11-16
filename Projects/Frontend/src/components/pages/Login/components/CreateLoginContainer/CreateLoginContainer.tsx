@@ -3,15 +3,14 @@ import { Button } from "danholibraryrjs";
 import { useStateInQuery } from "hooks";
 import { UserModifyPayload } from "models/backend/business/models/payloads";
 import { Role } from "models/backend/common";
-import { AllStringValues, ErrorForModel } from "types";
+import { AllStringValues } from "types";
 import { serializeForm, translateEnum, getListFromEnum, revertTranslationForEnum } from "utils";
 
 type Props = {
-  errors: ErrorForModel<UserModifyPayload<false>>;
   onSubmit: (payload: UserModifyPayload<false>) => void;
 }
 
-export default function CreateLoginContainer({ onSubmit, errors }: Props) {
+export default function CreateLoginContainer({ onSubmit }: Props) {
   const [params, setParams] = useStateInQuery<AllStringValues<UserModifyPayload<false>>>("formValues", {
     name: "",
     username: "",
@@ -37,17 +36,17 @@ export default function CreateLoginContainer({ onSubmit, errors }: Props) {
           role: revertTranslationForEnum(data.role, Role)
         })
       }}>
-        <FormGroup label="Brugernavn" htmlFor="create-username" error={errors.usernameError}>
+        <FormGroup label="Brugernavn" htmlFor="create-username">
           <input id="create-username" name="username" required type="text" value={params.username} 
             onChange={e => setParams(prev => ({ ...prev, username: e.currentTarget.value }))} 
           />
         </FormGroup>
 
-        <FormGroup label="Kodeord" htmlFor="create-password" error={errors.passwordError}>
+        <FormGroup label="Kodeord" htmlFor="create-password">
           <input id="create-password" name="password" required type="password" />
         </FormGroup>
 
-        <FormGroup label="Navn" htmlFor="create-name" error={errors.nameError}>
+        <FormGroup label="Navn" htmlFor="create-name">
           <input id="create-name" name="name" required type="text" value={params.name}
             onChange={e => setParams(prev => ({ ...prev, name: e.currentTarget.value }))}
           />
@@ -64,7 +63,7 @@ export default function CreateLoginContainer({ onSubmit, errors }: Props) {
           </select>
         </FormGroup>
 
-        <FormGroup label="Email" htmlFor="create-email" error={errors.emailError}>
+        <FormGroup label="Email" htmlFor="create-email">
           <input id="create-email" required name="email" type="email" value={params.email}
             onChange={e => setParams(prev => ({ ...prev, email: e.currentTarget.value }))}
           />
