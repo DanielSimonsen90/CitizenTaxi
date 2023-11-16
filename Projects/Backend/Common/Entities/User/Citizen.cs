@@ -17,7 +17,12 @@ public class Citizen : AUser
 
     // Overloading constructor to satisfy EntityFramework in creating models using Migrations.
     public Citizen() : this(string.Empty) { }
-    public Citizen(string name) : base(name, Role.Citizen) {}
+    public Citizen(string name) : base(name, Role.Citizen) 
+    {
+        Email = "";
+    }
+
+    public string Email { get; set; }
 
     // Related database entities.
     public List<Booking> Bookings { get; set; } = new();

@@ -26,3 +26,12 @@ export type AuthTokensJSON = {
     ? Record<string, string> 
     : AuthTokens[key];
 }
+
+export type AllStringValues<T> = {
+  [key in keyof T]: string;
+}
+
+export type ErrorForModel<T extends Record<string, any>> = {
+  // @ts-ignore -- Doesn't understand that key is a string
+  [key in keyof T as `${key}Error`]?: string;
+}

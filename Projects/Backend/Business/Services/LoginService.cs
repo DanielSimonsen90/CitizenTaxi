@@ -101,6 +101,7 @@ public class LoginService
     }
     public static string GenerateSalt() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(keySize));
 
+
     /// <summary>
     /// Boolean representation of whether the given unencrypted password matches the encrypted password with the given salt.
     /// </summary>

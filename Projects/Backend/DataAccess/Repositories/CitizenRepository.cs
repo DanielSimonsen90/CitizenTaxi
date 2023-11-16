@@ -17,4 +17,6 @@ public class CitizenRepository : AUserRepository<Citizen>
         Citizen.RELATIONS.Aggregate(_dbSet.AsQueryable(), (current, relation) => current.Include(relation)),
         login, 
         Role.Admin);
+
+    public Citizen? GetCitizenByEmail(string email) => Get(citizen => citizen.Email == email);
 }
