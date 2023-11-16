@@ -13,9 +13,11 @@ namespace Business.Services;
 /// </summary>
 public class LoginService
 {
+    #region Constant properties for hashing password
     private const int keySize = 64;
     private const int iterations = 350_000;
     private static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
+    #endregion
 
     /// <summary>
     /// <see cref="UnitOfWork"/> for database access.
@@ -35,6 +37,13 @@ public class LoginService
         _cacheService = cacheService;
     }
 
+    /// <summary>
+    /// Attempts logging in with <paramref name="login"/>.
+    /// Attempts are stored in <see cref="CacheService.LoginAttempts"/>
+    /// </summary>
+    /// <param name="login">The login payload</param>
+    /// <returns>Result of login credentials match</returns>
+    /// <exception cref="TooManyLoginAttemptsException">If login attempts are equal to <see cref="LoginAttempt.MAX_LOGIN_ATTEMPTS"/></exception>
     public bool TryLogin(LoginPayload login)
     {
         // Check if the user has tried to login too many times
@@ -64,6 +73,7 @@ public class LoginService
             return correct;
         }
 
+        // If the login is correct, remove the login attempts for the given username
         _cacheService.LoginAttempts.Remove(login.Username);
         return correct;
     }
@@ -91,6 +101,13 @@ public class LoginService
     }
     public static string GenerateSalt() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(keySize));
 
+    /// <summary>
+    /// Boolean representation of whether the given unencrypted password matches the encrypted password with the given salt.
+    /// </summary>
+    /// <param name="unencrypted">Input 1</param>
+    /// <param name="salt">Key</param>
+    /// <param name="encrypted">Input 2</param>
+    /// <returns>If unencrypted with salt matches encrypted</returns>
     public static bool IsCorrectPassword(string unencrypted, string salt, string encrypted)
     {
         byte[] saltValue = Convert.FromBase64String(salt);

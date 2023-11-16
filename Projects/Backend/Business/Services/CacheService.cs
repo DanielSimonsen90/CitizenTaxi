@@ -15,5 +15,4 @@ public class CacheService
     /// This gets updated in <see cref="TryLogin(LoginPayload)"/>
     /// </summary>
     public readonly Dictionary<string, LoginAttempt> LoginAttempts = new(); // <username, attempts>
-
 }

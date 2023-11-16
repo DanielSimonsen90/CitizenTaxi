@@ -13,5 +13,10 @@ public class LoginRepository : BaseRepository<Login, Guid>
 {
     public LoginRepository(CitizenTaxiDbContext context) : base(context) { }
 
-    public Login? GetLoginByUsername(string username) => GetWithRelations(login => login.Username == username);
+    /// <summary>
+    /// Get a login by searching for <paramref name="username"/>
+    /// </summary>
+    /// <param name="username">The username to search for</param>
+    /// <returns>Login entity matching <paramref name="username"/>, if any</returns>
+    public Login? GetLoginByUsername(string username) => Get(login => login.Username == username);
 }

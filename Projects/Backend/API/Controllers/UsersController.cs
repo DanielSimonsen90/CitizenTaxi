@@ -25,11 +25,11 @@ public class UsersController : BaseController
     private readonly LoginService _loginService;
     private readonly AuthService _authService;
 
-
     /// <summary>
     /// Constructor receives <see cref="UnitOfWork"/> through dependency injection.
     /// </summary>
     /// <param name="uow">UnitOfWork used to perform CRUD operations on <see cref="Citizen"/> and <see cref="Admin"/></param>
+    /// <param name="loginService">Service for authentication and storing cookie</param>
     public UsersController(UnitOfWork uow, LoginService loginService, AuthService authService) : base(uow) 
     { 
         _loginService = loginService;
@@ -161,18 +161,23 @@ public class UsersController : BaseController
     {
         try
         {
+            // Check if the login is valid
             bool isValid = _loginService.TryLogin(payload);
             if (!isValid) return BadRequest("Invalid credentials");
 
+            // Find the login with the given username
             Login? login = unitOfWork.Logins.GetLoginByUsername(payload.Username);
             if (login is null) return InternalServerError($"Login model was null when looking for username {payload.Username}.");
 
+            // Generate tokens and save them to cookies. Any other connection from the user will be invalid
             _authService.GenerateTokensAndSaveToCookies(login.UserId, Response);
 
+            // Return the user id for the frontend to fetch the user
             return Ok(login.UserId);
         }
         catch (TooManyLoginAttemptsException ex)
         {
+            // If the user has tried to login too many times, return a 429 TooManyRequests response
             return TooManyRequests(ex.Message);
         }
     }
@@ -184,6 +189,7 @@ public class UsersController : BaseController
     [HttpDelete("authenticate")]
     public IActionResult Logout()
     {
+        // Remove the auth tokens from the cookies and the cache
         _authService.RemoveCookie(Request, Response);
         return Ok();
     }
