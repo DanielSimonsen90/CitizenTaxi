@@ -1,0 +1,30 @@
+.site-footer {
+  display: flex;
+  gap: 1em;
+  place-items: center;
+  text-align: center;
+  background-color: var(--background-secondary);
+  padding: 1em;
+
+  flex-direction: row;
+  justify-content: space-around;
+
+  &[data-mobile=true] {
+    flex-direction: column-reverse;
+  }
+
+  .presentation {
+    display: grid;
+    gap: .5em;
+  }
+
+  .links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  * {
+    font-size: .6rem;
+  }
+}

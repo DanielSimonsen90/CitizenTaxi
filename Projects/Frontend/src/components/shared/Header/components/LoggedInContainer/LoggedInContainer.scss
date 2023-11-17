@@ -1,6 +1,7 @@
 .login-container[data-logged-in=true] {
   display: grid;
   gap: .5em;
+  place-items: center;
 
   p {
     display: flex;
