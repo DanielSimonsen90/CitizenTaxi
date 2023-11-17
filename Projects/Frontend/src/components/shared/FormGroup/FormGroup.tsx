@@ -1,4 +1,4 @@
-type Props = {
+  type Props = {
   label: string;
   htmlFor: string;
   children: React.ReactNode;

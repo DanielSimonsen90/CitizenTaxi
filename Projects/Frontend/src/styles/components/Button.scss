@@ -1,0 +1,82 @@
+@use '../colors' as colors;
+@use '../mixins' as mixins;
+
+@mixin createButton($main: colors.$brand-primary,
+  $text: colors.$text-primary,
+  $border: transparent) {
+  @include mixins.transition();
+
+  background: $main;
+  color: $text;
+  border: 1px solid $border;
+
+  text-decoration: unset;
+  --font-size: .75rem;
+  font-size: var(--font-size);
+
+  padding: .5em 1em;
+  max-height: calc(var(--font-size) + 1.25em);
+  border-radius: .5em;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    $background: lighten($main, 3%);
+    $color: darken($text, 3%);
+
+    background: $background;
+    color: $color;
+    box-shadow: 0 0 1em rgba(0, 0, 0, .5);
+    cursor: pointer;
+  }
+
+  &:disabled {
+    color: var(--text-muted);
+    border-color: var(--text-muted);
+    cursor: not-allowed;
+
+    &:not(.secondary, .tertiary) {
+      background-color: var(--main-tertiary);
+    }
+  }
+}
+
+button,
+.button,
+[type=button],
+[type=submit] {
+  @include createButton();
+
+  &.secondary {
+    $main: colors.$brand-primary;
+    @include createButton(transparent,
+      $main,
+      $main);
+
+    &.alt {
+      $main: colors.$brand-alt;
+      @include createButton(transparent,
+        $main,
+        $main);
+    }
+  }
+
+  &.tertiary {
+    @include createButton(colors.$background-tertiary);
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1ch;
+  align-items: center;
+
+  &.reverse {
+    flex-direction: row-reverse;
+    margin-left: auto;
+  }
+}

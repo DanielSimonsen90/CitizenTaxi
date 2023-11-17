@@ -1,6 +1,6 @@
 import { DOMAIN_NAME } from "SiteConstants";
 import { useStateInQuery } from "hooks";
-import { LoginContainer, CreateLoginContainer } from "./components";
+import { LoginContainer, SignUpContainer } from "./components";
 import { LoginPayload, UserModifyPayload } from "models/backend/business/models/payloads";
 import { Request } from "utils";
 import { useAuth } from "providers/AuthProvider";
@@ -30,10 +30,15 @@ export default function Login() {
     <main>
       <header>
         <h1>Login</h1>
-        <p className="secondary">For at benytte {DOMAIN_NAME}, skal du logge ind.</p>
-        <LoginContainer onCreateClick={onCreateClick} onSubmit={onLoginSubmit} />
-        {showCreate && <CreateLoginContainer onSubmit={onCreateSubmit} />}
+        <p className="muted">For at benytte {DOMAIN_NAME}, skal du logge ind.</p>
       </header>
+      <section>
+        <LoginContainer onCreateClick={onCreateClick} onSubmit={onLoginSubmit} />
+        {showCreate && (<>
+          <hr />
+          <SignUpContainer onSubmit={onCreateSubmit} />
+        </>)}
+      </section>
     </main>
   );
 }

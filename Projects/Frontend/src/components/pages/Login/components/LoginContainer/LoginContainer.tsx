@@ -1,6 +1,6 @@
 import { Button } from "danholibraryrjs";
 
-import FormGroup from "components/shared/FormGroup/FormGroup";
+import FormGroup from "components/shared/FormGroup";
 import { LoginPayload } from "models/backend/business/models/payloads";
 import { serializeForm } from "utils";
 import { useAuth } from "providers/AuthProvider";
@@ -14,7 +14,7 @@ export default function LoginContainer({ onSubmit, onCreateClick }: Props) {
   const { loggingIn } = useAuth();
 
   return (
-    <form onSubmit={e => {
+    <form className="login-container" onSubmit={e => {
       e.preventDefault();
       const data = serializeForm<LoginPayload>(e.currentTarget);
       onSubmit(data);
@@ -30,7 +30,7 @@ export default function LoginContainer({ onSubmit, onCreateClick }: Props) {
       <div className="button-container">
         <Button type="submit" disabled={loggingIn}>Log ind</Button>
         <span className="or">eller</span>
-        <Button importance="secondary" type="button" onClick={onCreateClick}>Opret</Button>
+        <Button importance="secondary" className="alt" type="button" onClick={onCreateClick}>Opret</Button>
       </div>
     </form>
   );
