@@ -47,6 +47,10 @@ public class UsersController : BaseController
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] UserModifyPayload payload)
     {
+        // Check if user exists by username
+        if (unitOfWork.Logins.GetLoginByUsername(payload.Username) is not null) return BadRequest("Username already exists");
+        if (unitOfWork.Logins.GetLoginByEmail(payload.Email, unitOfWork.Citizens) is not null) return BadRequest("Email already in use");
+
         // Create user based on the role of the payload using BaseController.CreateEntity
         IActionResult result = payload.Role switch
         {

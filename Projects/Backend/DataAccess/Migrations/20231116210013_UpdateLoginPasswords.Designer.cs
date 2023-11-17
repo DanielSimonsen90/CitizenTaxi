@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(CitizenTaxiDbContext))]
-    [Migration("20231115192220_Initial")]
-    partial class Initial
+    [Migration("20231116210013_UpdateLoginPasswords")]
+    partial class UpdateLoginPasswords
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000006"),
-                            Arrival = new DateTime(2023, 11, 15, 22, 22, 20, 700, DateTimeKind.Local).AddTicks(4319),
+                            Arrival = new DateTime(2023, 11, 17, 0, 0, 13, 689, DateTimeKind.Local).AddTicks(6909),
                             CitizenId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Destination = "Frederikshavn Sygehus",
                             Pickup = "Solvej 10, 0000 God by"
@@ -63,7 +63,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000007"),
-                            Arrival = new DateTime(2023, 11, 15, 23, 52, 20, 702, DateTimeKind.Local).AddTicks(3892),
+                            Arrival = new DateTime(2023, 11, 17, 1, 30, 13, 691, DateTimeKind.Local).AddTicks(4274),
                             CitizenId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Destination = "Solvej 10, 0000 God by",
                             Pickup = "Frederikshavn Sygehus"
@@ -99,7 +99,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            Password = "admin123",
+                            Password = "VtH/hEKvAnRHm/c0lS0IwkDIgl/IzbaPDep4QZSx6hV2br3jnBVhet9RdyBtAvFBoD5AR38haS2IelS/BIbhUg==",
                             Salt = "salt",
                             UserId = new Guid("00000000-0000-0000-0000-000000000001"),
                             Username = "admin"
@@ -107,7 +107,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            Password = "borger123",
+                            Password = "ALXb8Wpq657/JDm5lNuxyPXIKCPgET0FZIZfzgNUJbd1LRXJWTLXbIscvif2p4lZXHmIsxe+7QwT9fl6mD6hkw==",
                             Salt = "salt",
                             UserId = new Guid("00000000-0000-0000-0000-000000000002"),
                             Username = "borger"
@@ -200,6 +200,10 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("LoginId")
                         .HasColumnType("uniqueidentifier");
 
@@ -220,6 +224,7 @@ namespace DataAccess.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Email = "",
                             Name = "Borger",
                             Role = 0
                         });

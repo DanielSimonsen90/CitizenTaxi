@@ -12,12 +12,12 @@ internal static class MockData
     internal static readonly Admin Admin = new("Admin") { Id = Guid.Parse("00000000-0000-0000-0000-000000000001") };
     internal static readonly Citizen Citizen = new("Borger") { Id = Guid.Parse("00000000-0000-0000-0000-000000000002") };
 
-    internal static readonly Login AdminLogin = new("admin", "admin123", "salt", Admin) 
+    internal static readonly Login AdminLogin = new("admin", "VtH/hEKvAnRHm/c0lS0IwkDIgl/IzbaPDep4QZSx6hV2br3jnBVhet9RdyBtAvFBoD5AR38haS2IelS/BIbhUg==", "salt", Admin) // admin123
     { 
         Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
         UserId = Admin.Id,
     };
-    internal static readonly Login CitizenLogin = new("borger", "borger123", "salt", Citizen) 
+    internal static readonly Login CitizenLogin = new("borger", "ALXb8Wpq657/JDm5lNuxyPXIKCPgET0FZIZfzgNUJbd1LRXJWTLXbIscvif2p4lZXHmIsxe+7QwT9fl6mD6hkw==", "salt", Citizen) // borger123
     { 
         Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
         UserId = Citizen.Id,

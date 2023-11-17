@@ -19,4 +19,14 @@ public class LoginRepository : BaseRepository<Login, Guid>
     /// <param name="username">The username to search for</param>
     /// <returns>Login entity matching <paramref name="username"/>, if any</returns>
     public Login? GetLoginByUsername(string username) => Get(login => login.Username == username);
+
+    public Login? GetLoginByEmail(string? email, CitizenRepository citizenRepository)
+    {
+        if (email is null) return null;
+
+        Citizen? citizen = citizenRepository.GetCitizenByEmail(email);
+        if (citizen is null) return null;
+
+        return Get(login => login.UserId == citizen.Id);
+    }
 }

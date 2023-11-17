@@ -1,0 +1,22 @@
+.login-container[data-logged-in=true] {
+  display: grid;
+  gap: .5em;
+
+  p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary);
+  }
+  span {
+    color: var(--text-primary);
+  }
+
+  .user-role {
+    color: var(--text-muted);
+    background-color: var(--background-primary);
+    font-size: .5rem;
+    padding: .25em;
+    border-radius: .5em;
+  }
+}

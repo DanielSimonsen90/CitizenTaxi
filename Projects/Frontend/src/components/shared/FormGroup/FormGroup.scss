@@ -1,0 +1,16 @@
+.form-group {
+  display: grid;
+  gap:.25ch;
+  margin: 1em 0;
+
+  label {
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  input, select {
+    background: var(--background-tertiary);
+    border: unset;
+    color: var(--text-primary);
+  }
+}

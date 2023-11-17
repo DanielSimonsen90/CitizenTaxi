@@ -1,5 +1,7 @@
-import { Role, CarHeight, Companion, Follow, HelpingUtil } from './Enums';
+import { Role, CarHeight, Companion, Follow, HelpingUtil } from 'models/backend/common/enums';
+
 type Enum = Role | CarHeight | Companion | Follow | HelpingUtil;
+type EnumTypes = typeof Role | typeof CarHeight | typeof Companion | typeof Follow | typeof HelpingUtil;
 
 export const translateEnum = (key: Enum): string => {
   switch (key) {
@@ -30,4 +32,19 @@ export const translateEnum = (key: Enum): string => {
 
     default: return 'Ukendt';
   }
-}
+};
+
+export const revertTranslationForEnum = (translation: string, enumType: EnumTypes): number => {
+  const keys = Object.keys(enumType)
+    .filter(key => !isNaN(Number(key)))
+    .map(key => Number(key));
+  const values = keys.map(key => translateEnum(key));
+  const index = values.indexOf(translation);
+  return keys[index];
+};
+
+export const getListFromEnum = (enumType: EnumTypes): number[] => {
+  return Object.keys(enumType)
+    .filter(key => !isNaN(Number(key)))
+    .map(key => Number(key));
+};
