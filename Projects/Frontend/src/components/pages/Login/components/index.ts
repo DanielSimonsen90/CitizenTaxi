@@ -1,2 +1,2 @@
-export * from './CreateLoginContainer';
+export * from './SignUpContainer';
 export * from './LoginContainer';
