@@ -8,7 +8,9 @@
   @import './components/index.scss';
   @import './theme.scss';
 
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     position: relative;
     margin: unset;
@@ -56,13 +58,19 @@
   p {
     font-size: 1rem;
     color: var(--text-primary);
-    max-width: 33ch;
+    max-width: 50ch;
 
     &.secondary {
       color: var(--text-secondary);
     }
-    &.muted, :disabled {
+
+    &.muted,
+    :disabled {
       color: var(--text-muted);
+    }
+
+    span {
+      margin-left: .75ch;
     }
   }
 
@@ -71,7 +79,8 @@
     text-align: center;
     color: var(--text-muted);
 
-    &::before, &::after {
+    &::before,
+    &::after {
       content: '';
       display: inline-block;
       width: 1em;
@@ -81,7 +90,7 @@
       margin: 0 .5em;
     }
   }
-  
+
   a {
     color: var(--text-link);
   }
@@ -90,5 +99,13 @@
     display: grid;
     justify-items: center;
     text-align: center;
+  }
+
+  hr {
+    border: unset;
+    margin: 1em 0;
+    height: .5px;
+    width: 100%;
+    background-color: var(--background-tertiary);
   }
 }

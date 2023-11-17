@@ -5,12 +5,4 @@ main {
   @media (max-width: 300px) {
     max-width: unset;
   }
-
-  hr {
-    border: unset;
-    margin: 1em 0;
-    height: .5px;
-    width: 100%;
-    background-color: var(--background-tertiary);
-  }
 }
