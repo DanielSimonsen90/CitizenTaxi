@@ -14,5 +14,12 @@ export const CitizenProviderContext = createContext<NullableCitizenProviderConte
 });
 
 export const RequestNote = async (citizenId?: Guid) => citizenId ? RequestEntity<Note>(`notes`, citizenId) : null;
-export const RequestCitizen = async (citizenId?: Guid) => citizenId ? RequestEntity<Citizen>(`users`, citizenId) : null;
-export const RequestBookings = async (citizenId?: Guid) => citizenId ? RequestEntity<Array<Booking>>(`bookings`, citizenId) : null;
+export const RequestCitizen = async (citizenId?: Guid) => citizenId ? RequestEntity<Citizen>(`users/${citizenId}`) : null;
+export const RequestBookings = async (citizenId?: Guid) => citizenId ? RequestEntity<Array<Booking>>(`bookings`, citizenId).then(booking => {
+  if (booking) {
+    return booking.map(b => ({
+      ...b,
+      arrival: new Date(b.arrival),
+    }))
+  }
+}) : null;

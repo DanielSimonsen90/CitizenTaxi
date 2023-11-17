@@ -27,7 +27,7 @@ export type ApiEndpoints<Param extends TParam = undefined> =
   | `users` // [GET, POST]
   | `users?role=${Param}` // [GET] enum Role
   | `users/${Param}` // [GET, PUT, DELETE] Guid userId
-  | `users/authenticate` // [POST, DELETE]
+  | `users/authenticate`; // [POST, DELETE]
 
 // All possible HTTP methods
 export type HttpMethods =
@@ -91,6 +91,8 @@ export async function Request<TData, Param extends TParam = undefined>(
     throw err;
   });
 
+  console.log(`[${method}] ${path} responded with ${res.status}`, res);
+
   // Clone the response so that it can be converted to JSON and text
   const clone = res.clone();
 
@@ -131,7 +133,7 @@ export function ensureSlash(path: string) {
  * @param citizenId Citizen id to use in the query string
  * @returns The data from the API
  */
-export async function RequestEntity<TData>(endpoint: ApiEndpoints<never>, citizenId?: Guid) {
+export async function RequestEntity<TData>(endpoint: ApiEndpoints<any>, citizenId?: Guid) {
   const response = await Request<TData, Guid>(endpoint, { query: { citizenId } });
   if (response.success) return response.data;
 
