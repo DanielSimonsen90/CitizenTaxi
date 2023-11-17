@@ -1,3 +1,5 @@
+import { Guid } from "types";
+
 // Define API_ENDPOINT_SECURE by environment, if development then use localhost, else use azurewebsites
 if (process.env.NODE_ENV === 'development') {
   var API_ENDPOINT_SECURE = "https://localhost:5000/api";
@@ -13,7 +15,7 @@ export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/notificationh
 type TParam = string | undefined;
 
 // All possible endpoints for the API. This will generate autocomplete when using the Request function
-type ApiEndpoints<Param extends TParam = undefined> =
+export type ApiEndpoints<Param extends TParam = undefined> =
   | `bookings` // [GET, POST]
   | `bookings?citizenId=${Param}` // [GET] Guid
   | `bookings/${Param}` // [GET, PUT, DELETE] Guid bookingId
@@ -40,7 +42,7 @@ export type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> &
   body?: TBody;
   noHeaders?: boolean;
   controller?: AbortController;
-  query?: Record<string, string>;
+  query?: Record<string, string | undefined>;
 };
 
 /**
@@ -68,7 +70,7 @@ export async function Request<TData, Param extends TParam = undefined>(
 
     // If the query object is defined, then construct a query string from it
     const queryString = Object.entries(query)
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => value ? `${key}=${value}` : '')
       .join('&');
 
     return path.includes('?') ? `${result}&${queryString}` : `${result}?${queryString}`;
@@ -121,4 +123,18 @@ export async function Request<TData, Param extends TParam = undefined>(
  */
 export function ensureSlash(path: string) {
   return path.startsWith('/') ? path : '/' + path;
+}
+
+/**
+ * Makes a request to the API and returns the data
+ * @param endpoint Api endpoint to request
+ * @param citizenId Citizen id to use in the query string
+ * @returns The data from the API
+ */
+export async function RequestEntity<TData>(endpoint: ApiEndpoints<never>, citizenId?: Guid) {
+  const response = await Request<TData, Guid>(endpoint, { query: { citizenId } });
+  if (response.success) return response.data;
+
+  console.error(response.text);
+  return null;
 }

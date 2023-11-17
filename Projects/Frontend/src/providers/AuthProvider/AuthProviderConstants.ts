@@ -1,8 +1,8 @@
 import { createContext } from "react";
 import { AuthProviderContextType } from "./AuthProviderTypes";
 
-export const AuthProviderContext = createContext<AuthProviderContextType>({
-  user: undefined,
+export const AuthProviderContext = createContext<AuthProviderContextType<true>>({
+  user: null,
 
   login: () => {},
   logout: () => {},
