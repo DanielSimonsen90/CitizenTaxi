@@ -1,6 +1,6 @@
 export const DOMAIN_NAME = "CitizenTaxi";
 export const CREATOR_NAME = "Daniel Simonsen";
-export const EPLOYMENT_POSITION = "Datateknikerelev, H6PD111123";
+export const EMPLOYMENT_POSITION = "Datatekniker-elev h6pd111123";
 
 const GITHUB_USERNAME = "DanielSimonsen90";
 
