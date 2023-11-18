@@ -91,7 +91,7 @@ export async function Request<TData, Param extends TParam = undefined>(
     throw err;
   });
 
-  console.log(`[${method}] ${path} responded with ${res.status}`, res);
+  // console.log(`[${method}] ${path} responded with ${res.status}`, res);
 
   // Clone the response so that it can be converted to JSON and text
   const clone = res.clone();
