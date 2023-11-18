@@ -4,10 +4,10 @@ import type { User } from 'models/backend/common/dtos';
 import { AuthProviderContext } from './AuthProviderConstants';
 import { Request } from 'utils';
 import { LoginPayload } from 'models/backend/business/models/payloads';
-import { Guid } from 'types';
+import { Guid, Nullable } from 'types';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<Nullable<User>>(null);
   const [logginIn, setLogginIn] = useState<boolean>(false);
 
   const login = useCallbackOnce(async (username: string, password: string) => {
@@ -34,7 +34,7 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     const response = await Request('users/authenticate', { method: 'DELETE' });
     if (!response.success) return alert(response.text);
 
-    setUser(undefined);
+    setUser(null);
   });
 
   return (

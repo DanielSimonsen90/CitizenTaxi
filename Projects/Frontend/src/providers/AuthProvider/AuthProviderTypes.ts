@@ -1,9 +1,8 @@
-import { Role } from "models/backend/common";
 import { User } from "models/backend/common/dtos";
 import { Nullable } from "types";
 
-export type AuthProviderContextType = {
-  user?: Nullable<User>;
+export type AuthProviderContextType<AllowNullable extends boolean> = {
+  user: AllowNullable extends true ? Nullable<User> : User;
 
   login: (email: string, password: string) => void;
   logout: () => void;
