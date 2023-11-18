@@ -50,17 +50,29 @@ button,
 [type=submit] {
   @include createButton();
 
+  &.alt {
+    @include createButton(colors.$brand-alt);
+  }
+
+  &[data-crud=update] {
+    @include createButton(colors.$crud-update);
+  }
+
   &.secondary {
-    $main: colors.$brand-secondary;
     @include createButton(transparent,
-      $main,
-      $main);
+      colors.$brand-secondary,
+      colors.$brand-secondary);
 
     &.alt {
-      $main: colors.$brand-alt;
       @include createButton(transparent,
-        $main,
-        $main);
+        colors.$brand-alt,
+        colors.$brand-alt);
+    }
+
+    &[data-crud=delete] {
+      @include createButton(transparent,
+        colors.$crud-delete,
+        colors.$crud-delete);
     }
   }
 

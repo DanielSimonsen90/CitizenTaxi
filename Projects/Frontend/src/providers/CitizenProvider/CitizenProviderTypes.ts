@@ -16,3 +16,8 @@ export type NullableCitizenProviderContextType = {
       ? CitizenProviderContextType[key] 
       : Nullable<CitizenProviderContextType[key]>;
 }
+
+export type UseBookingsReturnType<AllowNullable extends boolean> =
+  AllowNullable extends true
+    ? [Nullable<Booking>, Nullable<Array<Array<Booking>>>] // [latestBooking, [day1 bookings, day2 bookings, ...]]
+    : [Booking, Array<Array<Booking>>];
