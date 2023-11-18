@@ -1,0 +1,11 @@
+.citizens-page {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  margin: 0 1rem;
+
+  > * {
+    background-color: var(--background-secondary);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+}
