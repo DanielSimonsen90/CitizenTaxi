@@ -133,8 +133,8 @@ export function ensureSlash(path: string) {
  * @param citizenId Citizen id to use in the query string
  * @returns The data from the API
  */
-export async function RequestEntity<TData>(endpoint: ApiEndpoints<any>, citizenId?: Guid) {
-  const response = await Request<TData, Guid>(endpoint, { query: { citizenId } });
+export async function RequestEntity<TData>(endpoint: ApiEndpoints<any>, citizenId?: Guid, options?: RequestOptions) {
+  const response = await Request<TData, Guid>(endpoint, { query: { citizenId }, ...options });
   if (response.success) return response.data;
 
   console.error(response.text);

@@ -1,0 +1,45 @@
+@layer base {
+  dialog[open] {
+    display: grid;
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--text-muted);
+    box-shadow: 0 0 2em var(--background-tertiary);
+    border-radius: .5em;
+
+    position: fixed;
+    top: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 50%;
+    min-width: 18em;
+    height: fit-content;
+    max-height: 80%;
+    padding: 0;
+
+    overflow: auto;
+    z-index: 10;
+
+    .modal-content {
+      padding: 1em;
+
+      .button-container {
+        margin-top: auto;
+      }
+    }
+
+    &::backdrop {
+      background-color: rgba(0, 0, 0, .3);
+    }
+
+    @media (max-width: 300px) {
+      width: 100vw;
+      min-width: unset;
+
+      .button-container {
+        flex-direction: column;
+        margin-left: 0;
+      }
+    }
+  }
+}

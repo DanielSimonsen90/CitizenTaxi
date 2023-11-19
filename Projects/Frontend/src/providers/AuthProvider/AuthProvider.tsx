@@ -1,5 +1,5 @@
 import { useState, PropsWithChildren } from 'react';
-import { useCallbackOnce } from 'danholibraryrjs';
+import { useCallbackOnce, useEffectOnce } from 'danholibraryrjs';
 import type { User } from 'models/backend/common/dtos';
 import { AuthProviderContext } from './AuthProviderConstants';
 import { Request } from 'utils';
@@ -36,6 +36,11 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
 
     setUser(null);
   });
+
+  // TODO: Remove this - it's only for development purposes
+  useEffectOnce(() => {
+    login('borger', 'borger123');
+  })
 
   return (
     <AuthProviderContext.Provider value={{

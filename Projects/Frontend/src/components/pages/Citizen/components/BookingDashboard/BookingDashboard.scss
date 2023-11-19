@@ -1,0 +1,29 @@
+.booking-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  button.alt {
+    font-size: .8rem;
+  }
+
+  main {
+    margin: unset;
+    max-width: 100%;
+    display: grid;
+    gap: 1.5em;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: unset;
+    display: grid;
+    gap: .5em;
+  }
+}

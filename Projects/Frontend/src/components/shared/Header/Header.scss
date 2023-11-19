@@ -1,12 +1,11 @@
 $site-header-padding: .5em;
-$heading-fz: 1rem;
+$heading-fz: 1.25rem;
 $heading-margin: .25ch;
-$para-fz: .6rem;
+$para-fz: .75rem;
 
 .site-header {
   display: flex;
   flex-direction: column;
-  gap: .5em;
   padding: $site-header-padding;
   background-color: var(--background-secondary);
   // height: calc(
@@ -14,13 +13,31 @@ $para-fz: .6rem;
   //   + #{$heading-fz} 
   //   + #{$heading-margin} * 2
   //   + #{$para-fz});
+
+  &:has(.login-container[data-logged-in=true]) {
+    gap: 1.25em;
+  }
+
+  @media screen and (min-width: 768px) {
+    &:has(.login-container[data-logged-in=true]) {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+
+      .brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      button {
+        margin-left: auto;
+      }
+    }
+  }
 }
 
 .brand {
-  // position: absolute;
-  // left: 50%;
-  // transform: translateX(-50%);
-
   display: grid;
   place-items: center;
 

@@ -9,3 +9,5 @@ export const REPORTS = {
   PRODUCT: `https://github.com/${GITHUB_USERNAME}/${DOMAIN_NAME}/blob/main/Documents/Produktrapport.pdf`
 }
 export const GITHUB = `https://github.com/${GITHUB_USERNAME}/${DOMAIN_NAME}`;
+
+export const DOCTORS_SECRETARY_PHONE = "+45 00 00 00 00";
