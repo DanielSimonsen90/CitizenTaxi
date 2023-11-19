@@ -42,7 +42,7 @@
     max-width: 100vw;
     display: grid;
     grid-template-rows: auto 1fr auto; // Header, Content, Footer
-    gap: 1em;
+    gap: .5em;
   }
 
   h1 {

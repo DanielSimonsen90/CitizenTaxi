@@ -32,7 +32,7 @@ export default function BookingDashboard() {
    * Navigates the citizen to the step-by-step booking process with the selected booking.
    * @param booking The booking to change
    */
-  const onChangeBooking = (booking: Booking) => navigate(`/bestil?trin=1&bookingId=${booking.id}`);
+  const onChangeBooking = (booking: Booking) => navigate(`/bestil/1?bookingId=${booking.id}`);
 
   /**
    * Shows the modal with the DeleteBookingModalContent component.
@@ -65,7 +65,7 @@ export default function BookingDashboard() {
       </Modal>
       <header>
         <h2>Dine bestillinger</h2>
-        <Button className="alt" onClick={() => navigate('bestil?trin=1')}>Bestil en ny tid</Button>
+        <Button className="alt" onClick={() => navigate('bestil/1')}>Bestil en ny tid</Button>
       </header>
       <main role="list">
         {/* Map through all bookings, ordered by day */}
