@@ -10,6 +10,7 @@ import { DeleteBookingModalContent } from "components/shared/Modal/components";
 import BookingItem from "../BookingItem";
 import { useModalContentState } from "components/shared/Modal/ModalHooks";
 import { RequestEntity } from "utils";
+import { useNavigate } from "react-router-dom";
 
 export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 
@@ -22,12 +23,16 @@ export default function BookingDashboard() {
 
   // We use a custom hook to store the modal content in the state
   // This is to dynamically change the modal content when the user clicks on a booking
-  const [ModalContent, setModalContent] = useModalContentState()
+  const [ModalContent, setModalContent] = useModalContentState();
 
-  // TODO: Implement onChangeBooking
-  function onChangeBooking(booking: Booking) {
-    console.log("TODO: Implement onChangeBooking");
-  }
+  // Navigator function from react-router-dom to navigate to a different page
+  const navigate = useNavigate();
+
+  /**
+   * Navigates the citizen to the step-by-step booking process with the selected booking.
+   * @param booking The booking to change
+   */
+  const onChangeBooking = (booking: Booking) => navigate(`/bestil?trin=1&bookingId=${booking.id}`);
 
   /**
    * Shows the modal with the DeleteBookingModalContent component.
@@ -36,9 +41,9 @@ export default function BookingDashboard() {
    * @param booking The booking to delete
    */
   function onDeleteBooking(booking: Booking) {
-    setModalContent(<DeleteBookingModalContent 
-      booking={booking} citizen={citizen} 
-      onCancel={() => modalRef.current?.close()} 
+    setModalContent(<DeleteBookingModalContent
+      booking={booking} citizen={citizen}
+      onCancel={() => modalRef.current?.close()}
       onConfirm={async () => {
         // When the citizen submits the form:
         // close the modal, delete the booking item and update the citizen
@@ -60,7 +65,7 @@ export default function BookingDashboard() {
       </Modal>
       <header>
         <h2>Dine bestillinger</h2>
-        <Button className="alt">Bestil en ny tid</Button>
+        <Button className="alt" onClick={() => navigate('bestil?trin=1')}>Bestil en ny tid</Button>
       </header>
       <main role="list">
         {/* Map through all bookings, ordered by day */}
@@ -68,7 +73,7 @@ export default function BookingDashboard() {
           <ul key={bookings[0].arrival.getDate()}>
             {bookings.map(booking => (
               <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latest.id}
-                onChangeBooking={() => onChangeBooking(booking)} 
+                onChangeBooking={() => onChangeBooking(booking)}
                 onDeleteBooking={() => onDeleteBooking(booking)}
               />
             ))}

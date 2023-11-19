@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { NotFound } from 'components/pages';
+import { BookTaxi, NotFound } from 'components/pages';
 import { Layout } from 'components/pages/_Page';
 import Authenticate from 'components/pages/_Authenticate';
 
@@ -11,7 +11,7 @@ const Router = () => (
         {/* <Route path="borgere" element={<CitizenOverview />} /> */}
         {/* <Route path="noter" element={<NotesOverview />} /> */}
         {/* <Route path="bestillinger" element={<BookingsOverview />} /> */}
-        {/* <Route path="bestil" element={<BookTaxi />} /> */}
+        <Route path="bestil" element={<BookTaxi />} />
       </Route>
       <Route path="*" element={<NotFound />} /> {/* If the user tries to access a route not registered, show the NotFound component */}
     </Routes>
