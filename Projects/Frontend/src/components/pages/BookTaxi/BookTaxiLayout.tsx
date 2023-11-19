@@ -19,17 +19,14 @@ export default function BookTaxi() {
 
   const [payload, setPayload] = useStateInQuery<BookingStepsPayload>('booking', { id: bookingId });
   const { title, description, canContinue, canGoBack } = getStepData(step);
-  const redirectToNextStep = (data: BookingStepsPayload) => {
-    setPayload(prev => ({ ...prev, ...data }));
-    if (canContinue) navigate(`${Number(step) + 1}?booking=${JSON.stringify(payload)}`);
-  };
+  const updatePayload = (data: BookingStepsPayload) => setPayload(prev => ({ ...prev, ...data }));
+  const payloadExists = Object.keysOf(payload).some(key => payload[key] !== undefined);
 
   useEffect(() => {
-    if (Object.keysOf(payload).some(key => payload[key] !== undefined)
-      && step === MAX_STEPS.toString()) {
-      console.log('Submit payload', payload);
-    }
-  }, [step, payload]);
+    if (!payloadExists) return;
+    if (canContinue) return navigate(`${Number(step) + 1}?booking=${JSON.stringify(payload)}`);
+    console.log('Submit payload', payload)
+  }, [payload])
 
   return (
     <div className="book-taxi">
@@ -47,7 +44,7 @@ export default function BookTaxi() {
           <form onSubmit={e => {
             e.preventDefault();
             const data = serializeForm<BookingStepsPayload>(e.target as HTMLFormElement);
-            redirectToNextStep(data);
+            updatePayload(data);
           }}>
             <Outlet />
 

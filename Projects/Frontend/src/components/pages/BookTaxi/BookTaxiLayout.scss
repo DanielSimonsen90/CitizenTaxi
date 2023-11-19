@@ -16,8 +16,18 @@
     text-align: center;
   }
 
+  input {
+    font-size: 1rem;
+    padding: .25em;
+  }
+
   form, .button-container {
     margin-top: 1em;
+  }
+
+  form div:first-child {
+    display: grid;
+    gap: 1em;
   }
 
   .button-container {
