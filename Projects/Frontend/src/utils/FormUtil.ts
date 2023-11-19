@@ -20,7 +20,7 @@ export function serializeForm<T extends object>(form: HTMLFormElement) {
 
     const value = element.value;
     if (value === null) console.warn(`${name}.value returned null`, {element});
-    
+
     // Using the JavaScript spread operator, 
     // we can create a new object with the previous values and replace any value after
     return { ...acc, [name]: value } as T;

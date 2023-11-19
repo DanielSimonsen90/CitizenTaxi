@@ -25,7 +25,7 @@
     margin-top: 1em;
   }
 
-  form div:first-child {
+  form > *:first-child {
     display: grid;
     gap: 1em;
   }
