@@ -3,6 +3,11 @@ import { Role, CarHeight, Companion, Follow, HelpingUtil } from 'models/backend/
 type Enum = Role | CarHeight | Companion | Follow | HelpingUtil;
 type EnumTypes = typeof Role | typeof CarHeight | typeof Companion | typeof Follow | typeof HelpingUtil;
 
+/**
+ * Translate an enum value to a string
+ * @param key Enum value to translate
+ * @returns The translated enum value
+ */
 export const translateEnum = (key: Enum): string => {
   switch (key) {
     case Role.Citizen: return 'Borger';
@@ -34,6 +39,12 @@ export const translateEnum = (key: Enum): string => {
   }
 };
 
+/**
+ * Revert an enum translation to an enum value
+ * @param translation The enum translation to revert
+ * @param enumType Type of enum to revert
+ * @returns Enum value from the translation
+ */
 export const revertTranslationForEnum = (translation: string, enumType: EnumTypes): number => {
   const keys = Object.keys(enumType)
     .filter(key => !isNaN(Number(key)))
@@ -43,6 +54,11 @@ export const revertTranslationForEnum = (translation: string, enumType: EnumType
   return keys[index];
 };
 
+/**
+ * Get a list of enum values
+ * @param enumType Enum type to get list from
+ * @returns List of enum values
+ */
 export const getListFromEnum = (enumType: EnumTypes): number[] => {
   return Object.keys(enumType)
     .filter(key => !isNaN(Number(key)))

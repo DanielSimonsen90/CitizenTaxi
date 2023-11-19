@@ -6,12 +6,16 @@ type Props = PropsWithChildren & BaseProps<HTMLDialogElement> & {
 };
 
 export default function Modal({ children, modalRef: ref, ...props }: Props) {
+  // useEffectOnce only runs once, when the component is mounted
   useEffectOnce(() => {
+    // Define a listener that closes the modal when clicking outside of it
     const listener = (e: MouseEvent) => {
       if (e.target === ref.current || (e.target as HTMLElement).classList.contains('close')) {
         ref.current?.close();
       }
     };
+
+    // Add the listener to the document and remove it when the component is unmounted
     document.addEventListener('mousedown', listener);
     return () => document.removeEventListener('mousedown', listener);
   });

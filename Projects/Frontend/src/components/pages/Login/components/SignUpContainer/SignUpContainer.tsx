@@ -11,6 +11,8 @@ type Props = {
 }
 
 export default function SignUpContainer({ onSubmit }: Props) {
+  // Save the form state in the URL so the user can refresh the page without losing their data
+  // This however excludes the password field, as we don't want to leak that in the URL
   const [params, setParams] = useStateInQuery<AllStringValues<UserModifyPayload<false>>>("formValues", {
     name: "",
     username: "",
@@ -25,10 +27,13 @@ export default function SignUpContainer({ onSubmit }: Props) {
         <h2>Har du ikke en konto?</h2>
         <p className="secondary">Du kan oprette en konto her</p>
         <p className="muted disclaimer">
-          I produktion ville borgerne skulle ringe til lægesekretærene, så de kan blive oprettet i systemet med deres notat.
+          I produktion ville borgerne skulle ringe til lægesekretærene, 
+          så de kan blive oprettet i systemet med deres notat.
         </p>
       </header>
+
       <form className="sign-up-container" onSubmit={e => {
+        // Create our own payload and pass it to the onSubmit callback
         e.preventDefault();
         const data = serializeForm<AllStringValues<UserModifyPayload<false>>>(e.currentTarget);
         onSubmit({
@@ -54,6 +59,7 @@ export default function SignUpContainer({ onSubmit }: Props) {
 
         <FormGroup label="Rolle" htmlFor="create-role">
           <select id="create-role" required name="role">
+            {/* Map over all Role enum values and create an option for each */}
             {getListFromEnum(Role).map(role => (
               <option key={Role[role]} value={translateEnum(role)} 
                 onChange={e => setParams(prev => ({ ...prev, role: e.currentTarget.value }))}>
