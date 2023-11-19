@@ -10,23 +10,23 @@ export default function CitizenNoteInputs() {
     : (
       <form className="citizen-note-inputs">
         <FormGroup label="Bilhøjde" htmlFor="car-height">
-          <input type="text" id="car-height" value={translateEnum(note.carHeight)} />
+          <input type="text" id="car-height" tabIndex={-1} readOnly defaultValue={translateEnum(note.carHeight)} />
         </FormGroup>
 
         <FormGroup label="Hjælpemidler" htmlFor="helping-util">
-          <input type="text" id="helping-util" value={translateEnum(note.helpingUtil)} />
+          <input type="text" id="helping-util" tabIndex={-1} readOnly defaultValue={translateEnum(note.helpingUtil)} />
         </FormGroup>
 
         <FormGroup label="Ledsager" htmlFor="companion">
-          <input type="text" id="companion" value={translateEnum(note.companion)} />
+          <input type="text" id="companion" tabIndex={-1} readOnly defaultValue={translateEnum(note.companion)} />
         </FormGroup>
 
         <FormGroup label="Følges" htmlFor="follow">
-          <input type="text" id="follow" value={translateEnum(note.follow)} />
+          <input type="text" id="follow" tabIndex={-1} readOnly defaultValue={translateEnum(note.follow)} />
         </FormGroup>
 
         <FormGroup label="Bopæl" htmlFor="residence">
-          <input type="text" id="residence" value={note.residence} />
+          <input type="text" id="residence" tabIndex={-1} readOnly defaultValue={note.residence} />
         </FormGroup>
       </form>
     );

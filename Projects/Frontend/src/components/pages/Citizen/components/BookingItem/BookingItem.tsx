@@ -1,11 +1,12 @@
 import { Button } from "danholibraryrjs";
 import { Booking } from "models/backend/common";
+import { Nullable } from "types";
 
 type Props = {
   booking: Booking;
   isLatest: boolean;
-  onChangeBooking: () => void;
-  onDeleteBooking: () => void;
+  onChangeBooking: Nullable<() => void>;
+  onDeleteBooking: Nullable<() => void>;
 }
 
 export default function BookingItem({ 
@@ -22,10 +23,12 @@ export default function BookingItem({
       <section>
         <label>Fra {pickup}</label>
       </section>
-      <footer className="button-container">
-        <Button crud="update" onClick={onChangeBooking}>Ændre bestilling</Button>
-        <Button importance="secondary" crud="delete" onClick={onDeleteBooking}>Slet bestilling</Button>
-      </footer>
+      {onChangeBooking || onDeleteBooking ? (
+        <footer className="button-container">
+          {onChangeBooking && <Button crud="update" onClick={onChangeBooking}>Ændre bestilling</Button>}
+          {onDeleteBooking && <Button importance="secondary" crud="delete" onClick={onDeleteBooking}>Slet bestilling</Button>}
+        </footer>
+      ) : null}
     </li>
   );
 }

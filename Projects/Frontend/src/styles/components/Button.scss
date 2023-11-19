@@ -78,6 +78,12 @@ button,
 
   &.tertiary {
     @include createButton(colors.$background-tertiary);
+
+    &:hover {
+      box-shadow: unset !important;
+      background-color: transparent !important;
+      text-decoration: underline;
+    }
   }
 }
 

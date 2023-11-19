@@ -1,0 +1,44 @@
+.delete-booking {
+  display: grid;
+  justify-items: center;
+  gap: 1ch;
+
+  text-align: center;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--crud-delete);
+    margin: unset;
+  }
+
+  p.secondary {
+    font-size: 1.2rem;
+  }
+
+  li.booking-item {
+    background-color: var(--background-quaternary);
+    grid-auto-flow: column;
+    grid-template-areas: "header" "section";
+    
+    header {
+      display: grid;
+      grid-template-columns: auto 12ch;
+      align-items: start;
+      gap: 1em;
+
+      time {
+        text-align: end;
+      }
+    }
+  }
+
+  p.muted {
+    font-size: 1rem;
+    text-decoration: underline;
+  }
+
+  .button-container {
+    justify-self: end;
+  }
+}

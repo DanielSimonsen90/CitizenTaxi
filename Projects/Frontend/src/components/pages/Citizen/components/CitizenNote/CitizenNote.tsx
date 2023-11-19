@@ -11,7 +11,7 @@ export default function CitizenNote() {
       <footer className="wrong-note">
         <h3 className="secondary">Er dit notat forkert?</h3>
         <p className="secondary">Du kan ringe til lægesekretærene og få det rettet med nummeret:</p>
-        <input type="tel" value={DOCTORS_SECRETARY_PHONE} />
+        <input type="tel" tabIndex={-1} readOnly defaultValue={DOCTORS_SECRETARY_PHONE} />
         <p className="or">eller</p>
         <a href={`tel:${DOCTORS_SECRETARY_PHONE}`} onClick={(e) => {
           e.preventDefault();
