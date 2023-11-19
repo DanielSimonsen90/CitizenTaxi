@@ -10,4 +10,4 @@ export const REPORTS = {
 }
 export const GITHUB = `https://github.com/${GITHUB_USERNAME}/${DOMAIN_NAME}`;
 
-export const DOCTORS_SECRETARY_PHONE = "+45 00 00 00 00";
+export const DOCTORS_SECRETARY_PHONE = "+45 00 00 00 00"; // This is a fake number for prototyping purposes

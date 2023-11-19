@@ -3,10 +3,13 @@ import { useCitizen } from "providers/CitizenProvider";
 import { translateEnum } from "utils";
 
 export default function CitizenNoteInputs() {
+  // Note is set to nullable, as the citizen might not be loaded yet
   const { note } = useCitizen(true);
 
   return !note
+    // If the note is not loaded yet, we show a loading message
     ? <p className="loading">Indlæser...</p>
+    // Render read-only inputs with the note data
     : (
       <form className="citizen-note-inputs">
         <FormGroup label="Bilhøjde" htmlFor="car-height">

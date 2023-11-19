@@ -10,6 +10,7 @@ export type CitizenProviderContextType = {
   setCitizen: (citizen: Citizen) => void;
 };
 
+// TypeScript can map over types, so we can use this to make all the values in the context nullable aside from functions
 export type NullableCitizenProviderContextType = {
   [key in keyof CitizenProviderContextType]: 
     CitizenProviderContextType[key] extends Function 
@@ -17,6 +18,7 @@ export type NullableCitizenProviderContextType = {
       : Nullable<CitizenProviderContextType[key]>;
 }
 
+// UseBookingsReturn that supports the AllowNullable generic 
 export type UseBookingsReturnType<AllowNullable extends boolean> =
   AllowNullable extends true
     ? [Nullable<Booking>, Nullable<Array<Array<Booking>>>] // [latestBooking, [day1 bookings, day2 bookings, ...]]
