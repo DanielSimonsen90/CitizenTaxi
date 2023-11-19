@@ -20,20 +20,20 @@ export class BookingStep {
   ) {}
 }
 
-export function getStepData(step: string) {
+export function getStepData(step: number) {
   switch (step) {
-    case "1": return new BookingStep(
+    case 1: return new BookingStep(
       "Hvor skal du hen?",
       "Vælg din destination",
       BookTaxi__Step1,
       false);
 
-    case "2": return new BookingStep(
+    case 2: return new BookingStep(
       "Hvornår skal du være der?",
       "Vælg dato og tidspunkt for ankomst til din destination",
       BookTaxi__Step2);
 
-    case "3": return new BookingStep(
+    case 3: return new BookingStep(
       "Hvor skal vi hente dig?",
       "Vælg din lokation for afhentning",
       BookTaxi__Step3,

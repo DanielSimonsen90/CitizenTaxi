@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
@@ -12,38 +11,41 @@ import { useCitizen } from "providers/CitizenProvider";
 
 export default function BookTaxi() {
   const {
-    step = "1",
-    bookingId
+    bookingId,
+    ...params
   } = useParams();
   const navigate = useNavigate();
   const { citizen } = useCitizen(true);
+  const step = params.step ? Number(params.step) : 1;
 
   const [payload, setPayload] = useStateInQuery<BookingStepsPayload>('booking', {
     id: bookingId,
     citizenId: citizen?.id,
-    nextStep: 1
+    nextStep: 2
   });
   const { title, description, canContinue, canGoBack } = getStepData(step);
   const updatePayload = (data: BookingStepsPayload) => setPayload(prev => ({ ...prev, ...data }));
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = serializeForm<BookingStepsPayload>(e.target as HTMLFormElement);
-    updatePayload({ ...data, nextStep: Number(step) + 1 });
+    updatePayload({ ...data, nextStep: step + 1 });
   };
+  const navigateToStep = (step: number, payload: BookingStepsPayload) => navigate(
+    `${step}?booking=${JSON.stringify(payload)}`
+  );
 
   useUpdateEffect(() => {
-    if (canContinue && payload.nextStep > Number(step)) return navigate(
-      `${Number(step) + 1}?booking=${JSON.stringify({ 
-        ...payload, nextStep: false 
-      })}`
-    );
-    if (!canContinue && payload.nextStep > Number(step)) console.log('Submit payload', payload);
+    console.log('Step', step, 'Next', payload.nextStep);
+
+    if (canContinue && payload.nextStep > step) return navigateToStep(payload.nextStep, {
+      ...payload, nextStep: payload.nextStep + 1
+    } as BookingStepsPayload);
+    if (!canContinue && payload.nextStep > step) console.log('Submit payload', payload);
   }, [payload, step, canContinue, navigate]);
 
-  useEffect(() => {
-    if (!citizen?.id) return;
-    updatePayload({ citizenId: citizen?.id, nextStep: Number(step) });
-  }, [citizen?.id]);
+  useUpdateEffect(() => {
+    updatePayload({ citizenId: citizen?.id, nextStep: step });
+  }, [citizen?.id, step]);
 
   return (
     <div className="book-taxi">
@@ -63,7 +65,7 @@ export default function BookTaxi() {
 
             <footer className="button-container">
               <Button className={classNames('button secondary', canGoBack ? undefined : 'disabled')}
-                onClick={e => !canGoBack ? e.preventDefault() : navigate(-1)}
+                onClick={e => !canGoBack ? e.preventDefault() : navigateToStep(step - 1, { ...payload, nextStep: payload.nextStep - 2 })}
               >Tilbage</Button>
               <Progress step={step} />
               <Button type="submit">{canContinue ? 'Videre' : 'Afslut'}</Button>

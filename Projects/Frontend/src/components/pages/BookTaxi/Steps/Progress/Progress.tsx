@@ -3,12 +3,11 @@ import { MAX_STEPS } from "../../BookTaxiConstants";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
-  step: string;
+  step: number;
 };
 
-export default function Progress(props: Props) {
+export default function Progress({ step }: Props) {
   const navigate = useNavigate();
-  const step = Number(props.step);
   const steps = Array.from({ length: MAX_STEPS }, (_, i) => i + 1);
 
   const done = (s: number) => s < step;
