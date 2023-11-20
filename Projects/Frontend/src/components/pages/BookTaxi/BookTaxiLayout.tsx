@@ -46,11 +46,12 @@ export default function BookTaxi() {
     if (!payload.citizenId) return updatePayload({ citizenId: citizen?.id });
 
     (async function sendBooking() {
+      console.log('Sending booking', payload);
       await RequestBookings(payload.citizenId, {
-        method: 'id' in payload ? 'PUT' : 'POST',
+        method: 'id' in payload && payload.id ? 'PUT' : 'POST',
         body: {
           ...payload,
-          arrival: new Date(`${payload.date}T${payload.time}Z`)
+          arrival: new Date(`${payload.date}T${payload.time}Z`).toISOString()
         }
       });
       navigate('/');

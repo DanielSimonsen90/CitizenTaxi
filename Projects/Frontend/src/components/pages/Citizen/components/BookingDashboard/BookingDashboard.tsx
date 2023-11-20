@@ -1,16 +1,15 @@
 import { useRef } from "react";
 import { Button } from "danholibraryrjs";
+import { useNavigate } from "react-router-dom";
 
+import { RequestEntity } from "utils";
 import { RequestCitizen, useBookings, useCitizen } from "providers/CitizenProvider";
 import { Booking } from "models/backend/common";
-
 import Modal from "components/shared/Modal";
 import { DeleteBookingModalContent } from "components/shared/Modal/components";
 
 import BookingItem from "../BookingItem";
 import { useModalContentState } from "components/shared/Modal/ModalHooks";
-import { RequestEntity } from "utils";
-import { useNavigate } from "react-router-dom";
 
 export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 
@@ -32,13 +31,15 @@ export default function BookingDashboard() {
    * Navigates the citizen to the step-by-step booking process with the selected booking.
    * @param booking The booking to change
    */
-  const onChangeBooking = (booking: Booking) => {
-    const payload = {
-      ...booking,
-      date: booking.arrival.toISOString().split('T')[0],
-      time: booking.arrival.toISOString().split('T')[1].split('.')[0],
-    }
-    navigate(`/bestil/1?bookingId=${booking.id}&booking=${JSON.stringify(payload)}`);
+  const onChangeBooking = ({arrival, ...booking}: Booking) => {
+    const [date, timeString] = arrival.toISOString().split('T');
+    const [hour, minute] = timeString.split(':').map(Number);
+    const format = (num: number) => `${num}`.padStart(2, '0');
+    const time = `${format(hour + 1)}:${format(minute)}`;
+
+    navigate(`/bestil/1?bookingId=${booking.id}&booking=${JSON.stringify({ 
+      ...booking, date, time 
+    })}`);
   }
 
   /**

@@ -14,7 +14,11 @@ public class AuthService
     /// <summary>
     /// Configurable expiration times for access tokens
     /// </summary>
+#if DEBUG
+    public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.MaxValue;
+#else
     public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromMinutes(15);
+#endif
     /// <summary>
     /// Configurable expiration times for refresh tokens
     /// </summary>
@@ -32,7 +36,7 @@ public class AuthService
 
         return new AuthToken(token, expiresAt);
     }
-    #endregion
+#endregion
 
     private readonly CacheService _cacheService;
     public AuthService(CacheService cacheService)

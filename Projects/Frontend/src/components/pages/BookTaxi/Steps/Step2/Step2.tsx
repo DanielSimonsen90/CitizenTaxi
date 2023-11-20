@@ -7,8 +7,8 @@ export default function Step2() {
   const defaultDateValue = useDefaultStepValue('date');
   const defaultTimeValue = useDefaultStepValue('time');
 
-  const [date, setDate] = useState(defaultDateValue ?? "");
-  const [time, setTime] = useState(defaultTimeValue ?? "");
+  const [date, setDate] = useState(defaultDateValue ?? new Date().toISOString().split('T')[0]);
+  const [time, setTime] = useState(defaultTimeValue ?? '12:00');
 
   return (
     <>

@@ -137,6 +137,8 @@ export async function RequestEntity<TData>(endpoint: ApiEndpoints<string>, citiz
   const response = await Request<TData, Guid>(endpoint, { query: { citizenId }, ...options });
   if (response.success) return response.data;
 
+  if (response.status === 401) throw new Error('Unauthorized');
+
   console.error(response.text);
   return null;
 }
