@@ -136,19 +136,26 @@ public class NotificationHub : Hub
                 : new List<Booking> { booking });
 
             // Start a timer for the booking that will simulate the taxi arrival
-            BookingTimer.StartTimeout(async () =>
-            {
-                await OnTaxiTimeUpdated(booking, TimeSpan.FromHours(1));
+            BookingTimer.StartTimeout(async () => await Simulate(booking), booking.Arrival - DateTime.Now.AddHours(1));
+        }
+    }
 
-                int[] minutes = { 30, 15, 10, 5, 5 };
-                for (int i = 0; i < minutes.Length; i++)
-                {
-                    Thread.Sleep(minutes[i]);
+    /// <summary>
+    /// Simulate a taxi order for the given <paramref name="booking"/>.
+    /// </summary>
+    /// <param name="booking">The booking to simulate</param>
+    /// <returns></returns>
+    private async Task Simulate(Booking booking)
+    {
+        await OnTaxiTimeUpdated(booking, TimeSpan.FromHours(1));
 
-                    if (i != minutes.Length - 1) await OnTaxiTimeUpdated(booking, TimeSpan.FromMinutes(minutes[i]));
-                    else await OnTaxiTimeUpdated(booking, TimeSpan.Zero);
-                }
-            }, booking.Arrival - DateTime.Now.AddHours(1));
+        int[] minutes = { 30, 15, 10, 5, 5 };
+        for (int i = 0; i < minutes.Length; i++)
+        {
+            Thread.Sleep(minutes[i]);
+
+            if (i != minutes.Length - 1) await OnTaxiTimeUpdated(booking, TimeSpan.FromMinutes(minutes[i]));
+            else await OnTaxiTimeUpdated(booking, TimeSpan.Zero);
         }
     }
 
