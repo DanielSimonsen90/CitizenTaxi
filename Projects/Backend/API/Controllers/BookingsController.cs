@@ -3,6 +3,7 @@ using Business.Services;
 using Common.DTOs;
 using Common.Entities;
 using Common.Entities.User;
+using DanhoLibrary.Extensions;
 using DanhoLibrary.NLayer;
 using DataAccess.Repositories;
 using Mapster;
@@ -16,11 +17,16 @@ namespace API.Controllers;
 /// </summary>
 public class BookingsController : BaseController
 {
+    private readonly CacheService _cacheService;
+
     /// <summary>
     /// Constructor receives <see cref="UnitOfWork"/> through dependency injection.
     /// </summary>
     /// <param name="uow">UnitOfWork to modify the <see cref="Booking"/> model.</param>
-    public BookingsController(UnitOfWork uow) : base(uow) {}
+    public BookingsController(UnitOfWork uow, CacheService cacheService) : base(uow) 
+    {
+        _cacheService = cacheService;
+    }
 
     /// <summary>
     /// Create a <see cref="Booking"/> in the database from the given <paramref name="payload"/>.
@@ -28,8 +34,19 @@ public class BookingsController : BaseController
     /// </summary>
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
-    [HttpPost] public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload) => 
-        await CreateEntity<BookingModifyPayload, BookingDTO, Booking>(payload, unitOfWork.Bookings);
+    [HttpPost] 
+    public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload)
+    {
+        IActionResult result = await CreateEntity<BookingModifyPayload, BookingDTO, Booking>(payload, unitOfWork.Bookings);
+        if (result is not CreatedResult createdResult) return result;
+        if (createdResult.Value is not BookingDTO bookingDTO) return result;
+
+        // If the booking was created successfully, raise change event for the cache
+        Booking booking = bookingDTO.Adapt<Booking>();
+        _cacheService.Bookings.RaiseBookingUpsertEvent(payload.CitizenId, booking);
+
+        return result;
+    }
 
     /// <summary>
     /// Get all <see cref="Booking"/>s from the database.
@@ -68,8 +85,18 @@ public class BookingsController : BaseController
     /// <param name="bookingId">Id of the <see cref="Booking"/> entity</param>
     /// <param name="payload">Received payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.UpdateEntity{TPayload, TEntity, TRepository}(Guid, TPayload, TRepository, System.Linq.Expressions.Expression{Func{TEntity, object?}}[])"/></returns>
-    [HttpPut("{bookingId:Guid}")] public async Task<IActionResult> UpdateBooking([FromRoute] Guid bookingId, [FromBody] BookingModifyPayload payload) => 
-        await UpdateEntity<BookingModifyPayload, Booking, BookingRepository>(bookingId, payload, unitOfWork.Bookings);
+    [HttpPut("{bookingId:Guid}")] 
+    public async Task<IActionResult> UpdateBooking([FromRoute] Guid bookingId, [FromBody] BookingModifyPayload payload)
+    {
+        IActionResult result = await UpdateEntity<BookingModifyPayload, Booking, BookingRepository>(bookingId, payload, unitOfWork.Bookings);
+        if (result is not NoContentResult) return result;
+
+        // If the booking was updated successfully, raise change event for the cache
+        Booking update = unitOfWork.Bookings.Get(bookingId);
+        _cacheService.Bookings.RaiseBookingUpsertEvent(update.CitizenId, update);
+
+        return result;
+    }
 
     /// <summary>
     /// Delete a <see cref="Booking"/> from the database with the given <paramref name="bookingId"/>.
@@ -77,6 +104,15 @@ public class BookingsController : BaseController
     /// </summary>
     /// <param name="bookingId">Id of the <see cref="Booking"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
-    [HttpDelete("{bookingId:Guid}")] public async Task<IActionResult> DeleteBooking([FromRoute] Guid bookingId) =>
-        await DeleteEntity<Booking, BookingRepository>(bookingId, unitOfWork.Bookings);
+    [HttpDelete("{bookingId:Guid}")] 
+    public async Task<IActionResult> DeleteBooking([FromRoute] Guid bookingId)
+    {
+        IActionResult result = await DeleteEntity<Booking, BookingRepository>(bookingId, unitOfWork.Bookings);
+        if (result is not NoContentResult) return result;
+
+        // If the booking was deleted successfully, raise change event for the cache
+        _cacheService.Bookings.RaiseBookingDeleteEvent(bookingId);
+
+        return result;
+    }
 }

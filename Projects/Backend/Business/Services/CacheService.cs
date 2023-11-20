@@ -1,6 +1,8 @@
-﻿using Business.Models;
+﻿using Business.Helpers;
+using Business.Models;
 using Common.Entities;
 using Common.Entities.User;
+using DanhoLibrary.Extensions;
 
 namespace Business.Services;
 
@@ -26,5 +28,5 @@ public class CacheService
     /// <summary>
     /// Bookings cache consisting of all bookings for today
     /// </summary>
-    public readonly Dictionary<Guid, IEnumerable<Booking>> Bookings = new(); // <citizenId, bookings>
+    public readonly BookingCache Bookings = new(); // <citizenId, bookings>
 }

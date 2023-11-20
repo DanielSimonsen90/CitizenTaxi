@@ -24,6 +24,7 @@ public class NotificationHub : Hub
         _cacheService = cacheService;
 
         BookingTimer.StartTimeout(OnDayChanged, TimeSpan.FromDays(1));
+        cacheService.Bookings.BookingUpsert += OnBookingUpserted;
     }
 
     /// <summary>
@@ -124,8 +125,7 @@ public class NotificationHub : Hub
 
         // Get all bookings that are after now but before tomorrow
         IEnumerable<Booking> bookings = _uow.Bookings.GetAll()
-            .Where(b => b.Arrival > DateTime.Now
-                    && b.Arrival < DateTime.Now.AddDays(1));
+            .Where(b => b.Arrival.Date == DateTime.Now.Date);
 
         foreach (Booking booking in bookings)
         {
@@ -142,6 +142,13 @@ public class NotificationHub : Hub
         }
     }
 
+    public void OnBookingUpserted(Guid citizenId, Booking booking)
+    {
+        if (booking.Arrival.Date != DateTime.Now.Date) return;
+
+        BookingTimer.StartTimeout(async () => await Simulate(booking), booking.Arrival - DateTime.Now.AddHours(1));
+    }
+
     /// <summary>
     /// Simulate a taxi order for the given <paramref name="booking"/>.
     /// </summary>
@@ -155,6 +162,10 @@ public class NotificationHub : Hub
         for (int i = 0; i < minutes.Length; i++)
         {
             Thread.Sleep(minutes[i]);
+
+            if (_cacheService.Bookings.ContainsKey(booking.CitizenId) 
+                && !_cacheService.Bookings[booking.CitizenId].Contains(booking)) 
+                return; // If the booking is no longer in the cache, return
 
             if (i != minutes.Length - 1) await OnTaxiTimeUpdated(booking, TimeSpan.FromMinutes(minutes[i]));
             else await OnTaxiTimeUpdated(booking, TimeSpan.Zero);
