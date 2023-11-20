@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
+import { Button, classNames, useStack, useUpdateEffect } from "danholibraryrjs";
 
 import { serializeForm } from "utils";
 import { useStateInQuery } from "hooks";
@@ -8,6 +8,7 @@ import { getStepData } from "./BookTaxiConstants";
 import { BookingStepsPayload } from "./BookTaxiTypes";
 import Progress from "./Steps/Progress";
 import { useCitizen } from "providers/CitizenProvider";
+import { useState } from "react";
 
 export default function BookTaxi() {
   const {
@@ -21,31 +22,32 @@ export default function BookTaxi() {
   const [payload, setPayload] = useStateInQuery<BookingStepsPayload>('booking', {
     id: bookingId,
     citizenId: citizen?.id,
-    nextStep: 2
   });
   const { title, description, canContinue, canGoBack } = getStepData(step);
-  const updatePayload = (data: BookingStepsPayload) => setPayload(prev => ({ ...prev, ...data }));
+  const [submitted, setSubmitted] = useState(false);
+  const updatePayload = (data: Partial<BookingStepsPayload>) => setPayload(prev => ({ ...prev, ...data }));
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = serializeForm<BookingStepsPayload>(e.target as HTMLFormElement);
-    updatePayload({ ...data, nextStep: step + 1 });
+    updatePayload(data);
+    setSubmitted(true);
   };
-  const navigateToStep = (step: number, payload: BookingStepsPayload) => navigate(
+
+  const navigateToStep = (step: number) => navigate(
     `${step}?booking=${JSON.stringify(payload)}`
   );
 
   useUpdateEffect(() => {
-    console.log('Step', step, 'Next', payload.nextStep);
-
-    if (canContinue && payload.nextStep > step) return navigateToStep(payload.nextStep, {
-      ...payload, nextStep: payload.nextStep + 1
-    } as BookingStepsPayload);
-    if (!canContinue && payload.nextStep > step) console.log('Submit payload', payload);
-  }, [payload, step, canContinue, navigate]);
+    if (canContinue && submitted) {
+      setSubmitted(false);
+      return navigateToStep(step + 1);
+    }
+    if (!canContinue) console.log('Submit payload', payload);
+  }, [submitted, payload, canContinue, navigate]);
 
   useUpdateEffect(() => {
-    updatePayload({ citizenId: citizen?.id, nextStep: step });
-  }, [citizen?.id, step]);
+    updatePayload({ citizenId: citizen?.id });
+  }, [citizen?.id]);
 
   return (
     <div className="book-taxi">
@@ -64,8 +66,10 @@ export default function BookTaxi() {
             <Outlet />
 
             <footer className="button-container">
-              <Button className={classNames('button secondary', canGoBack ? undefined : 'disabled')}
-                onClick={e => !canGoBack ? e.preventDefault() : navigateToStep(step - 1, { ...payload, nextStep: payload.nextStep - 2 })}
+              <Button type="button" className={classNames('button secondary', canGoBack ? undefined : 'disabled')}
+                onClick={e => !canGoBack 
+                  ? e.preventDefault() 
+                  : navigateToStep(step - 1)}
               >Tilbage</Button>
               <Progress step={step} />
               <Button type="submit">{canContinue ? 'Videre' : 'Afslut'}</Button>
