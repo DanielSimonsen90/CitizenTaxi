@@ -10,6 +10,7 @@ export { API_ENDPOINT_SECURE };
 
 // Export path for SignalR
 export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/notificationhub";
+export const AUTH_COOKIE_NAME = "citizen_taxi_authentication";
 
 // An ApiEndpoint paramter can be either a string or undefined
 type TParam = string | undefined;

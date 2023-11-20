@@ -41,6 +41,7 @@ public class NotificationHub : Hub
         return Task.CompletedTask;
     }
 
+    #region HubActions
     /// <summary>
     /// Registers <see cref="AUser"/> object to the hub.
     /// This is used so the client/citizen can receive notifications when the latest taxi "is on the way".
@@ -62,6 +63,7 @@ public class NotificationHub : Hub
 
         return Task.CompletedTask;
     }
+    #endregion
 
     #region HubEvents
     /// <summary>
