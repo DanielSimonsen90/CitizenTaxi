@@ -33,6 +33,7 @@ li.booking-item {
     gap: .5ch;
     margin-left: 1em;
     align-items: stretch;
+    justify-content: center;
 
     &::before {
       content: '';
