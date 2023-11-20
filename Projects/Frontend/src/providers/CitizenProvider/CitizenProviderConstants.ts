@@ -21,7 +21,11 @@ export const CitizenProviderContext = createContext<NullableCitizenProviderConte
 export const RequestNote = async (citizenId?: Guid) => citizenId ? RequestEntity<Note>(`notes`, citizenId) : null;
 export const RequestCitizen = async (citizenId?: Guid) => citizenId ? RequestEntity<Citizen>(`users/${citizenId}`) : null;
 export const RequestBookings = async (citizenId?: Guid, options?: RequestOptions) => citizenId
-  ? RequestEntity<Array<Booking>>(`bookings`, citizenId, options).then(booking => {
+  ? RequestEntity<Array<Booking>>(
+    options?.body?.id ? `bookings/${options.body.id}` : 'bookings',
+    citizenId,
+    options
+  ).then(booking => {
     if (booking && booking instanceof Array) {
       // Convert the arrival date to a Date object, because it arrives as a string
       return booking.map(b => ({

@@ -32,7 +32,14 @@ export default function BookingDashboard() {
    * Navigates the citizen to the step-by-step booking process with the selected booking.
    * @param booking The booking to change
    */
-  const onChangeBooking = (booking: Booking) => navigate(`/bestil/1?bookingId=${booking.id}`);
+  const onChangeBooking = (booking: Booking) => {
+    const payload = {
+      ...booking,
+      date: booking.arrival.toISOString().split('T')[0],
+      time: booking.arrival.toISOString().split('T')[1].split('.')[0],
+    }
+    navigate(`/bestil/1?bookingId=${booking.id}&booking=${JSON.stringify(payload)}`);
+  }
 
   /**
    * Shows the modal with the DeleteBookingModalContent component.

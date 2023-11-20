@@ -24,7 +24,7 @@ export default function BookingItem({
     <li id={id} className="booking-item" data-is-latest={isLatest}>
       <header>
         <label>Til {destination}</label>
-        <time dateTime={arrival.toISOString()}>{arrival.toLocaleString()}</time>
+        <time dateTime={arrival.toISOString()}>{arrival.toLocaleString("en-UK")}</time>
       </header>
       <section>
         <label>Fra {pickup}</label>

@@ -13,13 +13,13 @@ export default function Step2() {
   return (
     <>
       <FormGroup label="Vælg dato" htmlFor="date">
-        <input type="date" name="date" id="date" defaultValue={defaultDateValue}
+        <input type="date" name="date" id="date"
           {...getValidationMessage('en dato', date, setDate)}
         />
       </FormGroup>
 
       <FormGroup label="Vælg tidspunkt" htmlFor="time">
-        <input type="time" name="time" id="time" defaultValue={defaultTimeValue} 
+        <input type="time" name="time" id="time" 
           {...getValidationMessage('et tidspunkt', time, setTime)}
         />
       </FormGroup>

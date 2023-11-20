@@ -47,8 +47,11 @@ export default function BookTaxi() {
 
     (async function sendBooking() {
       await RequestBookings(payload.citizenId, {
-        method: 'POST',
-        body: payload
+        method: 'id' in payload ? 'PUT' : 'POST',
+        body: {
+          ...payload,
+          arrival: new Date(`${payload.date}T${payload.time}Z`)
+        }
       });
       navigate('/');
     })();
