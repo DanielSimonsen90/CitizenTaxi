@@ -11,10 +11,13 @@ type Props = {
 };
 
 export default function LoginContainer({ onSubmit, onCreateClick }: Props) {
+  // Get the loggingIn state from the AuthProvider to disable the login button 
+  // while logging in so the user can't spam the button
   const { loggingIn } = useAuth();
 
   return (
     <form className="login-container" onSubmit={e => {
+      // Create our own payload and pass it to the onSubmit callback
       e.preventDefault();
       const data = serializeForm<LoginPayload>(e.currentTarget);
       onSubmit(data);

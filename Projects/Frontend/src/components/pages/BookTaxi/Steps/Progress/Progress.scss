@@ -1,0 +1,35 @@
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  min-width: 9em;
+  background-color: var(--background-primary);
+  padding: .5em 1em;
+  border-radius: 2em;
+}
+
+.progress-step {
+  height: 1.4em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: unset;
+  font-size: 1rem;
+
+  --background-color: transparent;
+  --border-color: var(--brand-primary);
+  background-color: var(--background-color);
+  border: 2px solid var(--border-color);
+  
+  &[data-state=active] {
+    --background-color: var(--brand-secondary);
+  }
+  &[data-state=done] {
+    --background-color: var(--brand-primary);
+    --border-color: var(--brand-primary);
+
+    &:hover {
+      cursor: pointer;
+      --background-color: var(--brand-secondary);
+      --border-color: var(--brand-secondary);
+    }
+  }
+}

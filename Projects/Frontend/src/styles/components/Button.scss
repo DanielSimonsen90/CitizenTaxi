@@ -33,7 +33,8 @@
     cursor: pointer;
   }
 
-  &:disabled {
+  &:disabled,
+  .disabled {
     color: var(--text-muted);
     border-color: var(--text-muted);
     cursor: not-allowed;
@@ -74,10 +75,21 @@ button,
         colors.$crud-delete,
         colors.$crud-delete);
     }
+
+    &.disabled {
+      color: var(--text-muted);
+      border-color: var(--text-muted);
+
+      &:hover {
+        cursor: not-allowed;
+        color: var(--text-muted);
+        box-shadow: unset;
+      }
+    }
   }
 
   &.tertiary {
-    @include createButton(colors.$background-tertiary);
+    @include createButton(transparent);
 
     &:hover {
       box-shadow: unset !important;

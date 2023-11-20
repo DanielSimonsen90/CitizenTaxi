@@ -1,0 +1,39 @@
+.book-taxi {
+  background-color: var(--background-secondary);
+  margin: .5em;
+  border-radius: 1em;
+  padding: 1em;
+
+  header {
+    display: flex;
+  }
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: .5rem;
+  }
+
+  p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  input {
+    font-size: 1rem;
+    padding: .25em;
+  }
+
+  form, .button-container {
+    margin-top: 1em;
+  }
+
+  .button-container {
+    justify-content: space-between;
+
+    > * {
+      font-size: 1rem;
+    }
+  }
+}

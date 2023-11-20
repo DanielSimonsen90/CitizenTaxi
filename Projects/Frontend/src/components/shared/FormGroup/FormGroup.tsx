@@ -6,6 +6,11 @@
   error?: string;
 }
 
+/**
+ * Grouping label and children together with error message if any
+ * @param props Necessary properties to render the component
+ * @returns div.form-group with label, children (and error)
+ */
 export default function FormGroup({ label, htmlFor, children, error }: Props) {
   return (
     <div className="form-group">
