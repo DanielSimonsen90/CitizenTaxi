@@ -83,7 +83,7 @@ public class NotificationHub : Hub
     private async Task SendLog(string type, string message)
     {
         // Only send the log to the client that called the method
-        await Clients.Caller.SendAsync(HubEvents.LOG, DateTime.Now, $"[{type}] {message}"); // [timestamp: DateTime, message: string]
+        await Clients.Caller.SendAsync(HubEvents.LOG, DateTime.Now, type , message); // [timestamp: DateTime, type: string, message: string]
     }
     /// <summary>
     /// Send an error message to the client
