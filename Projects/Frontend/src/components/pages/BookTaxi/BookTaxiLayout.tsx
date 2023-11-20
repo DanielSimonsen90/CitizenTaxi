@@ -1,14 +1,14 @@
+import { useState } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { Button, classNames, useStack, useUpdateEffect } from "danholibraryrjs";
+import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
 import { serializeForm } from "utils";
 import { useStateInQuery } from "hooks";
+import { RequestBookings, useCitizen } from "providers/CitizenProvider";
 
 import { getStepData } from "./BookTaxiConstants";
 import { BookingStepsPayload } from "./BookTaxiTypes";
 import Progress from "./Steps/Progress";
-import { useCitizen } from "providers/CitizenProvider";
-import { useState } from "react";
 
 export default function BookTaxi() {
   const {
@@ -19,12 +19,12 @@ export default function BookTaxi() {
   const { citizen } = useCitizen(true);
   const step = params.step ? Number(params.step) : 1;
 
+  const [submitted, setSubmitted] = useState(false);
   const [payload, setPayload] = useStateInQuery<BookingStepsPayload>('booking', {
     id: bookingId,
     citizenId: citizen?.id,
   });
   const { title, description, canContinue, canGoBack } = getStepData(step);
-  const [submitted, setSubmitted] = useState(false);
   const updatePayload = (data: Partial<BookingStepsPayload>) => setPayload(prev => ({ ...prev, ...data }));
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,15 +38,23 @@ export default function BookTaxi() {
   );
 
   useUpdateEffect(() => {
-    if (canContinue && submitted) {
+    if (!submitted) return;
+    if (canContinue) {
       setSubmitted(false);
       return navigateToStep(step + 1);
-    }
-    if (!canContinue) console.log('Submit payload', payload);
+    } 
+    if (!payload.citizenId) return updatePayload({ citizenId: citizen?.id });
+
+    (async function sendBooking() {
+      await RequestBookings(payload.citizenId, {
+        method: 'POST',
+        body: payload
+      });
+      navigate('/');
+    })();
   }, [submitted, payload, canContinue, navigate]);
 
   useUpdateEffect(() => {
-    updatePayload({ citizenId: citizen?.id });
   }, [citizen?.id]);
 
   return (

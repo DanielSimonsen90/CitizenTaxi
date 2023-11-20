@@ -1,18 +1,27 @@
 import FormGroup from "components/shared/FormGroup/FormGroup";
 import { useDefaultStepValue } from "../StepHooks";
+import { getValidationMessage } from "../../BookTaxiConstants";
+import { useState } from "react";
 
 export default function Step2() {
   const defaultDateValue = useDefaultStepValue('date');
   const defaultTimeValue = useDefaultStepValue('time');
 
+  const [date, setDate] = useState(defaultDateValue ?? "");
+  const [time, setTime] = useState(defaultTimeValue ?? "");
+
   return (
     <>
       <FormGroup label="Vælg dato" htmlFor="date">
-        <input type="date" name="date" id="date" defaultValue={defaultDateValue} />
+        <input type="date" name="date" id="date" defaultValue={defaultDateValue}
+          {...getValidationMessage('en dato', date, setDate)}
+        />
       </FormGroup>
 
       <FormGroup label="Vælg tidspunkt" htmlFor="time">
-        <input type="time" name="time" id="time" defaultValue={defaultTimeValue} />
+        <input type="time" name="time" id="time" defaultValue={defaultTimeValue} 
+          {...getValidationMessage('et tidspunkt', time, setTime)}
+        />
       </FormGroup>
     </>
   );

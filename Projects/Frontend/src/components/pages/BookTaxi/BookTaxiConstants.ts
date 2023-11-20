@@ -1,3 +1,4 @@
+import { DetailedHTMLProps, FormEvent, InputHTMLAttributes } from "react";
 import { FunctionComponent } from "danholibraryrjs";
 import { StepProps } from "./Steps/StepTypes";
 
@@ -44,5 +45,20 @@ export function getStepData(step: number) {
       "Trinnet du leder efter findes ikke",
       NotFound
     );
+  }
+}
+
+export function getValidationMessage(
+  property: string, 
+  value: string, 
+  onChange: (newValue: string) => void
+): DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+  return {
+    required: true, 
+    onInvalid: (e: FormEvent) => (e.target as HTMLInputElement).setCustomValidity(
+      `Du skal indtaste ${property}, før du kan fortsætte`
+    ),
+    value, 
+    onChange: e => onChange(e.currentTarget.value)
   }
 }
