@@ -1,4 +1,10 @@
-﻿using Business.Services;
+﻿using Business.Helpers;
+using Business.Models;
+using Business.Services;
+using Common.Entities;
+using Common.Entities.User;
+using DanhoLibrary.Extensions;
+using DanhoLibrary.NLayer;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Business.Hubs;
@@ -10,10 +16,14 @@ public class NotificationHub : Hub
     /// </summary>
     public const string ENDPOINT = "notificationhub";
     private readonly UnitOfWork _uow;
+    private readonly CacheService _cacheService;
 
-    public NotificationHub(UnitOfWork uow)
+    public NotificationHub(UnitOfWork uow, CacheService cacheService)
     {
         _uow = uow;
+        _cacheService = cacheService;
+
+        BookingTimer.StartTimeout(OnDayChanged, TimeSpan.FromDays(1));
     }
 
     /// <summary>
@@ -23,8 +33,123 @@ public class NotificationHub : Hub
     /// <returns></returns>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
+        base.OnDisconnectedAsync(exception);
+
         // TODO: Stop simulation if user disconnects
-        return base.OnDisconnectedAsync(exception);
+
+        _cacheService.ConnectedUsers.Remove(Context.ConnectionId);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Registers <see cref="AUser"/> object to the hub.
+    /// This is used so the client/citizen can receive notifications when the latest taxi "is on the way".
+    /// </summary>
+    /// <param name="accessToken">The access token of the user</param>
+    /// <param name="citizenId">The id of the citizen</param>
+    /// <returns></returns>
+    public Task Subscribe(string accessToken, Guid citizenId)
+    {
+        AuthTokens? authTokens = _cacheService.AuthTokens[accessToken];
+        if (authTokens is null) return SendError("Invalid access token.");
+
+        AUser? user = TryGetUser(authTokens.UserId);
+        if (user is null) return SendError($"User with id {authTokens.UserId} not found.");
+        if (user is Citizen && user.Id != citizenId) return SendError("Unauthorized.");
+        if (!_uow.Citizens.Exists(citizenId)) return SendError($"Citizen with id {citizenId} not found.");
+
+        _cacheService.ConnectedUsers.Add(Context.ConnectionId, user);
+
+        return Task.CompletedTask;
+    }
+
+    #region HubEvents
+    /// <summary>
+    /// Send a notification to the client.
+    /// </summary>
+    /// <param name="message">The message to send</param>
+    /// <returns></returns>
+    private async Task SendNotification(string message, string[] connectionIds)
+    {
+        // Only send the notification to the client that called the method
+        await Clients.Clients(connectionIds).SendAsync(HubEvents.NOTIFICATION, DateTime.Now, message); // [timestamp: DateTime, message: string]
+    }
+    /// <summary>
+    /// Log a message to the client.
+    /// </summary>
+    /// <param name="type">Type of log. Sending or Receiving</param>
+    /// <param name="message">Message of the log</param>
+    /// <returns></returns>
+    private async Task SendLog(string type, string message)
+    {
+        // Only send the log to the client that called the method
+        await Clients.Caller.SendAsync(HubEvents.LOG, DateTime.Now, $"[{type}] {message}"); // [timestamp: DateTime, message: string]
+    }
+    /// <summary>
+    /// Send an error message to the client
+    /// </summary>
+    /// <param name="message">Message to send</param>
+    private async Task SendError(string message)
+    {
+        await Clients.Caller.SendAsync(HubEvents.ERROR, message); // [message: string]
+        await SendLog("ERROR", message);
+    }
+    #endregion
+
+    #region Internal
+    /// <summary>
+    /// Queries citizens for <paramref name="userId"/> and if fail, queries admins. Ultimately returns null if no user is found.
+    /// </summary>
+    /// <param name="userId">Id of the user to find</param>
+    /// <returns>User if any</returns>
+    private AUser? TryGetUser(Guid userId)
+    {
+        try { return _uow.Citizens.Get(userId); }
+        catch (EntityNotFoundException<Citizen, Guid>)
+        {
+            try { return _uow.Admins.Get(userId); }
+            catch (EntityNotFoundException<Admin, Guid>) { return null; }
+        }
+    }
+
+    /// <summary>
+    /// When the day changes, reset the bookings cache and start a timer for each booking that will simulate the taxi arrival.
+    /// </summary>
+    private void OnDayChanged()
+    {
+        // Clear the cache
+        _cacheService.Bookings.Clear();
+
+        // Get all bookings that are after now but before tomorrow
+        IEnumerable<Booking> bookings = _uow.Bookings.GetAll()
+            .Where(b => b.Arrival > DateTime.Now
+                    && b.Arrival < DateTime.Now.AddDays(1));
+
+        foreach (Booking booking in bookings)
+        {
+            var bookingsCache = _cacheService.Bookings;
+            Guid key = booking.CitizenId;
+
+            // Add the bookings to the cache
+            bookingsCache.Set(key, bookingsCache.ContainsKey(key)
+                ? bookingsCache[key].Append(booking)
+                : new List<Booking> { booking });
+
+            // Start a timer for the booking that will simulate the taxi arrival
+            BookingTimer.StartTimeout(async () =>
+            {
+                await OnTaxiTimeUpdated(booking, TimeSpan.FromHours(1));
+
+                int[] minutes = { 30, 15, 10, 5, 5 };
+                for (int i = 0; i < minutes.Length; i++)
+                {
+                    Thread.Sleep(minutes[i]);
+
+                    if (i != minutes.Length - 1) await OnTaxiTimeUpdated(booking, TimeSpan.FromMinutes(minutes[i]));
+                    else await OnTaxiTimeUpdated(booking, TimeSpan.Zero);
+                }
+            }, booking.Arrival - DateTime.Now.AddHours(1));
+        }
     }
 
     /// <summary>
@@ -33,32 +158,20 @@ public class NotificationHub : Hub
     /// <param name="bookingId">Id of the <see cref="Common.Entities.Booking"/> that should be simulated</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public Task Simulate(Guid bookingId)
+    private async Task OnTaxiTimeUpdated(Booking booking, TimeSpan timeLeft)
     {
-        throw new NotImplementedException();
-    }
+        string[] connectionIds = _cacheService.ConnectedUsers
+            .Where(kvp => kvp.Value is Citizen citizen && citizen.Id == booking.CitizenId)
+            .Select(kvp => kvp.Key)
+            .ToArray();
 
-    /// <summary>
-    /// Send a notification to the client.
-    /// </summary>
-    /// <param name="message">The message to send</param>
-    /// <returns></returns>
-    private async Task SendNotification(string message)
-    {
-        // Only send the notification to the client that called the method
-        await Clients.Caller.SendAsync(HubEvents.NOTIFICATION, DateTime.Now, message); // [timestamp: DateTime, message: string]
+        if (!connectionIds.Any()) return;
+        if (timeLeft != TimeSpan.Zero)
+        {
+            string timeMessage = timeLeft.Hours > 0 ? $"{timeLeft.Hours} time" : $"{timeLeft.Minutes} minutter";
+            await SendNotification($"Der er nu {timeMessage} tilbage til at din taxa ankommer.", connectionIds);
+        }
+        else await SendNotification("Din taxa er nu ankommet.", connectionIds);
     }
-
-    /// <summary>
-    /// Log a message to the client.
-    /// </summary>
-    /// <param name="type">Type of log. Sending or Receiving</param>
-    /// <param name="message">Message of the log</param>
-    /// <returns></returns>
-    private async Task Log(string type, string message)
-    {
-        // Only send the log to the client that called the method
-        await Clients.Caller.SendAsync(HubEvents.LOG, DateTime.Now, 
-            $"[{type}] {message}"); // [timestamp: DateTime, message: string]
-    }
+    #endregion
 }
