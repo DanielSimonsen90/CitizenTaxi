@@ -125,5 +125,5 @@ public class BookingsController : BaseController
         return new KeyValuePair<Guid, IEnumerable<BookingDTO>>(kvp.Key, kvp.Value.Adapt<List<BookingDTO>>());
     }));
     [HttpGet("timeouts")]
-    public IActionResult GetTimeouts() => Ok(BookingTimer.TimeoutsStarted);
+    public IActionResult GetTimeouts() => Ok(BookingTimer.Items);
 }

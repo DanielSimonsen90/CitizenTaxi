@@ -24,7 +24,7 @@ public class NotificationHub : Hub
         _uow = uow;
         _cacheService = cacheService;
         _notificationService = notificationService;
-        _notificationService.Reset(uow, SendNotification);
+        _notificationService.Reset(SendNotification);
     }
 
     /// <summary>
@@ -59,6 +59,8 @@ public class NotificationHub : Hub
         if (!_uow.Citizens.Exists(citizenId)) return SendError($"Citizen with id {citizenId} not found.");
 
         _cacheService.ConnectedUsers.Set(Context.ConnectionId, user);
+
+        _notificationService.Register(citizenId, _uow);
 
         return SendNotification($"Du er nu tilmeldt notifikationer med id: {Context.ConnectionId}.", new[] { Context.ConnectionId });
     }
