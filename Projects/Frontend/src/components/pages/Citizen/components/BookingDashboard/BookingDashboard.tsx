@@ -3,7 +3,7 @@ import { Button } from "danholibraryrjs";
 import { useNavigate } from "react-router-dom";
 
 import { RequestEntity } from "utils";
-import { RequestCitizen, useBookings, useCitizen } from "providers/CitizenProvider";
+import { RequestCitizen, useBookings, useCitizen, useLatestBookingNotifications } from "providers/CitizenProvider";
 import { Booking } from "models/backend/common";
 import Modal from "components/shared/Modal";
 import { DeleteBookingModalContent } from "components/shared/Modal/components";
@@ -65,6 +65,8 @@ export default function BookingDashboard() {
     // Show the modal
     modalRef.current?.showModal();
   }
+
+  useLatestBookingNotifications(latest);
 
   return (
     <div className="booking-dashboard">

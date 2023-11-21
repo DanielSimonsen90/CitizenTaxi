@@ -14,7 +14,10 @@ export default function CitizenProviderProvider({ children }: PropsWithChildren)
   const [note, setNote] = useState<Nullable<Note>>(null);
 
   const latestBooking = useMemo(() => bookings.sort((a, b) => 
-    a.arrival.getTime() - b.arrival.getTime()
+    // Order by today, future and past
+    a.arrival.getTime() < Date.now() ? 1 :
+    b.arrival.getTime() < Date.now() ? -1 :
+    0
   )[0], [bookings]);
 
   useAsyncEffect(async () => {

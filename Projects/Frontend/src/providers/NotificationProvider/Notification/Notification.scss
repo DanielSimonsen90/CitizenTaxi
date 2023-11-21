@@ -1,0 +1,93 @@
+@use '../../../styles/colors' as colors;
+@use '../../../styles/mixins' as mixins;
+
+@mixin createNotification($type-color) {
+  $gap: 1em;
+
+  @include mixins.transition(300ms);
+
+  position: fixed;
+  inset: auto $gap $gap auto;
+  background-color: rgba($type-color, 80%);
+  border: 2px solid $type-color;
+  border-radius: .5em;
+  padding: .5em;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 1em 0 var(--background-secondary);
+  max-width: 40ch;
+  animation: slide-in-rtl var(--transition-time) ease-in-out forwards;
+  z-index: 10;
+
+  &.animating {
+    animation: slide-out-rtl var(--transition-time) ease-in-out forwards;
+  }
+
+  &:hover hr {
+    animation-play-state: paused;
+  }
+
+  h1 {
+    @include mixins.transition(250ms);
+
+    margin: .5ch;
+    color: mix($type-color, white, 20%);
+    text-transform: uppercase;
+    font-size: 1.5em;
+
+    &:hover {
+      text-shadow: 0 0 .25em $type-color;
+    }
+  }
+
+  span {
+    position: absolute;
+    top: -.4em;
+    right: 0;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  p {
+    margin: .5ch;
+    margin-bottom: 1.5ch;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  .load-wrapper {
+    background-color: darken($type-color, 20%);
+    width: 100%;
+    border-radius: 2em;
+    margin: .5ch 0;
+    height: 4px;
+  }
+
+  hr {
+    --_lifespan: infinite;
+
+    display: block;
+    border-radius: 2em;
+    position: absolute;
+    margin: unset;
+
+    border: 2px solid $type-color;
+    animation: loading-rtl var(--_lifespan) ease-in-out forwards;
+  }
+}
+
+.notification {
+  @include createNotification(colors.$brand-alt);
+
+  &--success {
+    @include createNotification(colors.$crud-success);
+  }
+
+  &--error {
+    @include createNotification(colors.$crud-delete);
+  }
+}
