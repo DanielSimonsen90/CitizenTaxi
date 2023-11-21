@@ -6,17 +6,17 @@ public class BookingTimer
     private CancellationTokenSource _tokenSource;
     public static int TimeoutsStarted = 0;
 
-    public static Action StartTimeout(Func<Task> callback, TimeSpan timeout)
+    public static Action StartTimeout(Action callback, TimeSpan timeout)
     {
         TimeoutsStarted++;
-        return new BookingTimer(async () =>
+        return new BookingTimer(() =>
         {
             TimeoutsStarted--;
-            await callback();
+            callback();
         }, timeout).Cancel;
     }
 
-    public BookingTimer(Func<Task> callback, TimeSpan timeout)
+    public BookingTimer(Action callback, TimeSpan timeout)
     {
         _tokenSource = new CancellationTokenSource();
         _timer = new Timer(
@@ -30,11 +30,11 @@ public class BookingTimer
     {
         _tokenSource.Cancel();
         _tokenSource = new CancellationTokenSource();
-        _timer.Change(milliseconds, Timeout.Infinite);
     }
 
     public void Cancel()
     {
+        TimeoutsStarted--;
         _tokenSource.Cancel();
         _timer.Change(Timeout.Infinite, Timeout.Infinite);
     }

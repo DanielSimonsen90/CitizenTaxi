@@ -25,7 +25,7 @@ internal class BookingsControllerTest : ABaseControllerTest<
     /// </summary>
     /// <param name="uow"></param>
     /// <returns></returns>
-    protected override BaseController CreateController(UnitOfWork uow) => new BookingsController(uow);
+    protected override BaseController CreateController(UnitOfWork uow) => new BookingsController(uow, new CacheService());
     /// <summary>
     /// Point to <see cref="UnitOfWork.Bookings"/>
     /// </summary>

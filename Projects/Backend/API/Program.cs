@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 // Add business services
 builder.Services.AddSingleton<CacheService>();
 builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<NotificationService>();
 
 builder.Services.AddDbContext<CitizenTaxiDbContext>(options =>
 {
