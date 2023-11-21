@@ -1,8 +1,15 @@
 import { useContext, useEffect } from "react";
-import { CitizenProviderContext } from "./CitizenProviderConstants";
-import { CitizenProviderContextType, NullableCitizenProviderContextType, TimeLeft, UseBookingsReturnType } from './CitizenProviderTypes';
+
 import { Booking } from "models/backend/common";
 import { useNotification } from "providers/NotificationProvider";
+import { NotificationContextType } from "providers/NotificationProvider/NotificationProviderTypes";
+
+import { CitizenProviderContext } from "./CitizenProviderConstants";
+import { 
+  CitizenProviderContextType, 
+  NullableCitizenProviderContextType, 
+  TimeLeft, UseBookingsReturnType
+} from './CitizenProviderTypes';
 
 /**
  * The hook to get the CitizenProviderContext data
@@ -37,23 +44,12 @@ export function useBookings<AllowNullable extends boolean = true>(
   return [latestBooking, sortedBookingsByDay] as any;
 }
 
-// Get booking arrival
-// If booking arrival is more than an hour, get time to wait until there's an hour left
-// When there's an hour left, send notification and send notification every 15 minutes
-// until The last 15 minutes, then send notification 5 minutes
-export function useLatestBookingNotifications(booking?: Booking) {
+/**
+ * Sends notifications to the user when the taxi is about to arrive
+ * @param booking The booking to get the notifications for
+ */
+export function useBookingNotifications(booking?: Booking) {
   const { setNotification } = useNotification();
-  const getTimeLeft = (): TimeLeft => {
-    const seconds = (booking!.arrival.getTime() - Date.now()) / 1000;
-    const minutes = seconds / 60;
-    const hours = minutes / 60;
-
-    return {
-      seconds: Math.floor(seconds % 60),
-      minutes: Math.floor(minutes % 60),
-      hours: Math.floor(hours)
-    };
-  };
 
   useEffect(() => {
     if (!booking) return;
@@ -62,43 +58,69 @@ export function useLatestBookingNotifications(booking?: Booking) {
     if (!timeToWait) return;
 
     const timeout = setTimeout(() => {
-      notify(getTimeLeft());
+      notify(getTimeLeft(booking), setNotification);
       getTimeToWait();
     }, timeToWait);
 
-    notify(getTimeLeft());
+    notify(getTimeLeft(booking), setNotification);
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
 
   }, [booking, setNotification]);
+}
 
-  function getTimeToWait() {
-    const timeLeft = getTimeLeft();
+/**
+ * Get the time left before the taxi arrives
+ * @param booking The booking to get the time left for
+ * @returns The time left before the taxi arrives
+ */
+function getTimeLeft(booking?: Booking): TimeLeft {
+  const seconds = (booking!.arrival.getTime() - Date.now()) / 1000;
+  const minutes = seconds / 60;
+  const hours = minutes / 60;
 
-    // If timeLeft.hours > 1, notify when there's an hour left
-    if (timeLeft.hours > 1) return (timeLeft.hours - 1) * 60 * 60 * 1000;
+  return {
+    seconds: Math.floor(seconds % 60),
+    minutes: Math.floor(minutes % 60),
+    hours: Math.floor(hours)
+  };
+};
 
-    // If timeLeft.minutes > 15, notify every 15 minutes
-    if (timeLeft.minutes > 15) return (timeLeft.minutes - 15) * 60 * 1000;
+/**
+ * Get the time to wait before notifying the user
+ * @returns The time to wait before notifying the user
+ */
+function getTimeToWait(booking?: Booking) {
+  const timeLeft = getTimeLeft();
 
-    // If timeLeft.minutes > 5, notify every 5 minutes
-    if (timeLeft.minutes > 5) return (timeLeft.minutes - 5) * 60 * 1000;
+  // If timeLeft.hours > 1, notify when there's an hour left
+  if (timeLeft.hours > 1) return (timeLeft.hours - 1) * 60 * 60 * 1000;
 
-    return booking!.arrival.getTime() - Date.now() + 1000;
-  }
+  // If timeLeft.minutes > 15, notify every 15 minutes
+  if (timeLeft.minutes > 15) return (timeLeft.minutes - 15) * 60 * 1000;
 
-  function notify(timeLeft: TimeLeft) {
-    const timeString = timeLeft.hours > 0 ? `${timeLeft.hours} timer`
-      : timeLeft.minutes > 0 ? `${timeLeft.minutes} minutter`
-      : timeLeft.seconds > 1 ? `${timeLeft.seconds} sekunder`
-      : timeLeft.minutes < -5 ? undefined
-      : null;
+  // If timeLeft.minutes > 5, notify every 5 minutes
+  if (timeLeft.minutes > 5) return (timeLeft.minutes - 5) * 60 * 1000;
 
-    const message = timeString === null ? 'Din taxa ankommer snart'
-      : timeString === undefined ? ''
-      : `Din taxa ankommer om ${timeString}` 
-    setNotification({ message });
-  }
+  // Return the remaining time left
+  return booking!.arrival.getTime() - Date.now() + 1000;
+}
+
+/**
+ * Notify the user about the time left before the taxi arrives
+ * @param timeLeft The time left
+ */
+function notify(timeLeft: TimeLeft, setNotification: NotificationContextType['setNotification']) {
+  const timeString = timeLeft.hours > 0 ? `${timeLeft.hours} timer`
+    : timeLeft.minutes > 0 ? `${timeLeft.minutes} minutter`
+    : timeLeft.seconds > 1 ? `${timeLeft.seconds} sekunder`
+    : timeLeft.minutes < -5 ? undefined
+    : null;
+
+  const message = timeString === null ? 'Din taxa ankommer snart'
+    : timeString === undefined ? ''
+    : `Din taxa ankommer om ${timeString}`;
+  setNotification({ message });
 }

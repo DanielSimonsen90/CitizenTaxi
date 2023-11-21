@@ -1,9 +1,7 @@
-import { useEffect, useRef } from "react";
-import { classNames, useEffectOnce } from "danholibraryrjs";
+import { useCallback, useEffect, useRef } from "react";
+import { classNames } from "danholibraryrjs";
 import { NOTIFICATION_TIMEOUT_S } from "../NotificationProviderConstants";
 import { NotificationProps } from "../NotificationProviderTypes";
-
-
 
 type Props = NotificationProps & {
   close(): void;
@@ -16,13 +14,13 @@ export default function Notification({
 }: Props) {
   const toastRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLHRElement>(null);
-  const internalClose = () => {
+  const internalClose = useCallback(() => {
     if (!toastRef.current) return console.error(`Unable to find toast`);
 
     toastRef.current.classList.add('animating');
     const transitionTime = parseFloat(getComputedStyle(toastRef.current).getPropertyValue('--transition-time'));
     setTimeout(close, transitionTime);
-  }
+  }, [toastRef, close]);
 
   useEffect(() => {
     if (!toastRef.current) return;
@@ -33,7 +31,7 @@ export default function Notification({
       loadRef.current.style.setProperty('--_lifespan', `${duration}s`);
       loadRef.current.addEventListener('animationend', internalClose, { once: true });
     }, { once: true });
-  }, [toastRef.current]);
+  }, [toastRef, loadRef, duration, internalClose]);
 
   return message ? (
     <section ref={toastRef} className={classNames('notification', `notification--${type}`)}>
