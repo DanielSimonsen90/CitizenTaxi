@@ -6,6 +6,7 @@ import { Booking, Citizen, Note } from 'models/backend/common';
 
 import { CitizenProviderContext, RequestBookings, RequestCitizen, RequestNote } from './CitizenProviderConstants';
 import { useAuth } from 'providers/AuthProvider';
+import { useBookingNotifications } from './CitizenProviderHooks';
 
 export default function CitizenProviderProvider({ children }: PropsWithChildren) {
   const { user } = useAuth(false);
@@ -14,9 +15,13 @@ export default function CitizenProviderProvider({ children }: PropsWithChildren)
   const [note, setNote] = useState<Nullable<Note>>(null);
 
   const latestBooking = useMemo(() => bookings.sort((a, b) => 
-    a.arrival.getTime() - b.arrival.getTime()
+    // Order by today, future and past
+    a.arrival.getTime() < Date.now() ? 1 :
+    b.arrival.getTime() < Date.now() ? -1 :
+    0
   )[0], [bookings]);
 
+  // Update citizen entities when citizen changes
   useAsyncEffect(async () => {
     const note = await RequestNote(citizen?.id);
     const bookings = await RequestBookings(citizen?.id);
@@ -33,6 +38,8 @@ export default function CitizenProviderProvider({ children }: PropsWithChildren)
     const citizen = await RequestCitizen(user?.id);
     if (citizen) setCitizen(citizen);
   }, [user?.id]);
+
+  useBookingNotifications(latestBooking);
 
   return (
     <CitizenProviderContext.Provider value={{

@@ -1,4 +1,3 @@
-using Business.Hubs;
 using Business.Middlewares;
 using Business.Services;
 using DataAccess;
@@ -50,6 +49,5 @@ app.UseAuthorization();
 app.UseMiddleware<AuthMiddleware>();
 
 app.MapControllers();
-app.MapHub<NotificationHub>($"api/{NotificationHub.ENDPOINT}");
 
 app.Run();
