@@ -14,9 +14,15 @@ export default function Notification({
   duration = NOTIFICATION_TIMEOUT_S,
   type = 'info',
 }: Props) {
-  
   const toastRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLHRElement>(null);
+  const internalClose = () => {
+    if (!toastRef.current) return console.error(`Unable to find toast`);
+
+    toastRef.current.classList.add('animating');
+    const transitionTime = parseFloat(getComputedStyle(toastRef.current).getPropertyValue('--transition-time'));
+    setTimeout(close, transitionTime);
+  }
 
   useEffect(() => {
     if (!toastRef.current) return;
@@ -25,13 +31,7 @@ export default function Notification({
       if (!loadRef.current) return console.error(`Unable to find loader`);
 
       loadRef.current.style.setProperty('--_lifespan', `${duration}s`);
-      loadRef.current.addEventListener('animationend', () => {
-        if (!toastRef.current) return console.error(`Unable to find toast`);
-
-        toastRef.current.classList.add('animating');
-        const transitionTime = parseFloat(getComputedStyle(toastRef.current).getPropertyValue('--transition-time'));
-        setTimeout(close, transitionTime);
-      }, { once: true });
+      loadRef.current.addEventListener('animationend', internalClose, { once: true });
     }, { once: true });
   }, [toastRef.current]);
 
@@ -39,7 +39,7 @@ export default function Notification({
     <section ref={toastRef} className={classNames('notification', `notification--${type}`)}>
       <header>
         <h1>{type}</h1>
-        <span onClick={close}>&times;</span>
+        <span onClick={internalClose}>&times;</span>
       </header>
       <p>{message}</p>
       <div className="load-wrapper">
