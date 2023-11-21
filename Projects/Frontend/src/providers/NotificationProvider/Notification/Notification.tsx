@@ -20,8 +20,6 @@ export default function Notification({
 
   useEffect(() => {
     if (!toastRef.current) return;
-    console.log('toast updated');
-    
 
     toastRef.current.addEventListener('animationend', () => {
       if (!loadRef.current) return console.error(`Unable to find loader`);

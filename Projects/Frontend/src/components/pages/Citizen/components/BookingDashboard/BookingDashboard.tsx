@@ -66,8 +66,6 @@ export default function BookingDashboard() {
     modalRef.current?.showModal();
   }
 
-  useLatestBookingNotifications(latest);
-
   return (
     <div className="booking-dashboard">
       <Modal modalRef={modalRef}>

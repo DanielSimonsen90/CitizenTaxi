@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { CitizenProviderContext } from "./CitizenProviderConstants";
-import { CitizenProviderContextType, NullableCitizenProviderContextType, UseBookingsReturnType } from './CitizenProviderTypes'
+import { CitizenProviderContextType, NullableCitizenProviderContextType, TimeLeft, UseBookingsReturnType } from './CitizenProviderTypes';
 import { Booking } from "models/backend/common";
 import { useNotification } from "providers/NotificationProvider";
 
@@ -11,12 +11,11 @@ import { useNotification } from "providers/NotificationProvider";
  */
 export function useCitizen<AllowNullable extends boolean>(
   allowNullable: AllowNullable
-): AllowNullable extends true 
-  ? NullableCitizenProviderContextType 
-  : CitizenProviderContextType 
-{
+): AllowNullable extends true
+  ? NullableCitizenProviderContextType
+  : CitizenProviderContextType {
   return useContext(CitizenProviderContext) as any;
-} 
+}
 
 /**
  * Get the citizen's bookings sorted by day
@@ -27,7 +26,7 @@ export function useBookings<AllowNullable extends boolean = true>(
   allowNullable: AllowNullable = true as AllowNullable
 ): UseBookingsReturnType<AllowNullable> {
   const { bookings, latestBooking } = useCitizen(allowNullable);
-  
+
   const sortedBookingsByDay = bookings?.reduce((acc, booking) => {
     const day = new Date(booking.arrival).getDay();
     acc[day] = acc[day] || [];
@@ -44,56 +43,62 @@ export function useBookings<AllowNullable extends boolean = true>(
 // until The last 15 minutes, then send notification 5 minutes
 export function useLatestBookingNotifications(booking?: Booking) {
   const { setNotification } = useNotification();
+  const getTimeLeft = (): TimeLeft => {
+    const seconds = (booking!.arrival.getTime() - Date.now()) / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
+
+    return {
+      seconds: Math.floor(seconds % 60),
+      minutes: Math.floor(minutes % 60),
+      hours: Math.floor(hours)
+    };
+  };
 
   useEffect(() => {
-    if (!booking) return console.warn('No booking');
-    console.log('booking', booking);
-    
+    if (!booking) return;
 
-    let timeout: NodeJS.Timeout;
-    const { arrival } = booking;
-    const now = new Date();
+    const timeToWait = getTimeToWait();
+    if (!timeToWait) return;
 
-    const timeToWait = arrival.getTime() - now.getTime();
-    if (timeToWait < 0) return setNotification({ message: '' });
+    const timeout = setTimeout(() => {
+      notify(getTimeLeft());
+      getTimeToWait();
+    }, timeToWait);
 
-    const timeToWaitInMinutes = Math.floor(timeToWait / 1000 / 60);
-    const timeToWaitInHours = Math.floor(timeToWaitInMinutes / 60);
-
-    const timeString = timeToWaitInHours > 1 ? `${timeToWaitInHours} timer` : `${timeToWaitInMinutes} minutter`;
-    setNotification({ message: `Din taxa ankommer om ${timeString}.` });
-
-    if (timeToWaitInHours > 1) {
-      console.log('timeToWaitInHours', timeToWaitInHours)
-      
-      // Wait until there's an hour left
-      timeout = setTimeout(() => {
-        setNotification({ message: `Din taxa ankommer om ${timeToWaitInHours} timer` });
-      }, timeToWait - (60 * 60 * 1000));
-    } else if (timeToWaitInMinutes > 15) {
-      console.log('timeToWaitInMinutes', timeToWaitInMinutes)
-
-      // Send notification every 15 minutes
-      const minutesLeft = timeToWaitInMinutes % 15;
-      timeout = setInterval(() => {
-        setNotification({ message: `Din taxa ankommer om ${minutesLeft} minutter` });
-      }, 15 * 60 * 1000);
-    } else if (timeToWaitInMinutes >= 5) {
-      console.log('timeToWaitInMinutes', timeToWaitInMinutes)
-
-      // Send notification every 5 minutes
-      const minutesLeft = timeToWaitInMinutes % 5;
-      timeout = setInterval(() => {
-        setNotification({ message: `Din taxa ankommer om ${minutesLeft} minutter` });
-      }, 5 * 60 * 1000);
-    } else {
-      console.log('timeToWaitInMinutes', timeToWaitInMinutes)
-      setNotification({ message: `Din taxa ankommer om ${timeToWaitInMinutes} minutter` });
-    }
+    notify(getTimeLeft());
 
     return () => {
-      clearTimeout(timeout);
-      clearInterval(timeout);
-    }
+      if (timeout) clearTimeout(timeout);
+    };
+
   }, [booking, setNotification]);
+
+  function getTimeToWait() {
+    const timeLeft = getTimeLeft();
+
+    // If timeLeft.hours > 1, notify when there's an hour left
+    if (timeLeft.hours > 1) return (timeLeft.hours - 1) * 60 * 60 * 1000;
+
+    // If timeLeft.minutes > 15, notify every 15 minutes
+    if (timeLeft.minutes > 15) return (timeLeft.minutes - 15) * 60 * 1000;
+
+    // If timeLeft.minutes > 5, notify every 5 minutes
+    if (timeLeft.minutes > 5) return (timeLeft.minutes - 5) * 60 * 1000;
+
+    return booking!.arrival.getTime() - Date.now() + 1000;
+  }
+
+  function notify(timeLeft: TimeLeft) {
+    const timeString = timeLeft.hours > 0 ? `${timeLeft.hours} timer`
+      : timeLeft.minutes > 0 ? `${timeLeft.minutes} minutter`
+      : timeLeft.seconds > 1 ? `${timeLeft.seconds} sekunder`
+      : timeLeft.minutes < -5 ? undefined
+      : null;
+
+    const message = timeString === null ? 'Din taxa ankommer snart'
+      : timeString === undefined ? ''
+      : `Din taxa ankommer om ${timeString}` 
+    setNotification({ message });
+  }
 }
