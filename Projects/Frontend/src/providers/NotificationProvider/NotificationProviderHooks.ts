@@ -4,6 +4,7 @@ import { NotificationProviderContextType } from "./NotificationProviderTypes";
 import { Citizen } from "models/backend/common";
 import ActionReducer from "./Actions/_Setup/ActionReducer";
 import { Nullable } from "types";
+import NotificationHubConnection from "./NotificationHubConnection";
 
 export const useNotifications = () => useContext(NotificationProviderContext);
 
@@ -18,5 +19,5 @@ export const useSubscribeToHub = (citizen: Nullable<Citizen>) => {
     if (!citizen) return;
 
     ActionReducer('subscribe', { citizen });
-  }, [citizen?.id]);
+  }, [citizen, citizen?.id]);
 };

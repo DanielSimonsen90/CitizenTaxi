@@ -9,6 +9,7 @@ import type { Request } from "utils";
  */
 export type HubActions = {
   subscribe: [accessToken: string, citizenId: Guid];
+  ping: [];
 }
 
 export type HubActionNames = keyof HubActions;

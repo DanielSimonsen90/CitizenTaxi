@@ -1,22 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Business.Helpers;
+﻿namespace Business.Helpers;
 
 public class BookingTimer
 {
     private readonly Timer _timer;
     private CancellationTokenSource _tokenSource;
+    public static int TimeoutsStarted = 0;
 
-    public static Action StartTimeout(Action callback, TimeSpan timeout) => new BookingTimer(callback, timeout).Cancel;
+    public static Action StartTimeout(Func<Task> callback, TimeSpan timeout)
+    {
+        TimeoutsStarted++;
+        return new BookingTimer(async () =>
+        {
+            TimeoutsStarted--;
+            await callback();
+        }, timeout).Cancel;
+    }
 
-    public BookingTimer(Action callback, TimeSpan timeout)
+    public BookingTimer(Func<Task> callback, TimeSpan timeout)
     {
         _tokenSource = new CancellationTokenSource();
-        _timer = new Timer((_) => callback(), null, (int)timeout.TotalMicroseconds, Timeout.Infinite);
+        _timer = new Timer(
+            callback: (_) => callback(),
+            state: null,
+            dueTime: timeout,
+            period: new TimeSpan(0, 0, 0, 0, -1));
     }
 
     public void ChangeTimeout(int milliseconds)

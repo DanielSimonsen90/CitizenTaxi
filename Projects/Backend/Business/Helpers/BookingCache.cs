@@ -15,6 +15,7 @@ public class BookingCache : Dictionary<Guid, IEnumerable<Booking>>
     public void RaiseBookingUpsertEvent(Guid citizenId, Booking booking) => BookingUpsert(citizenId, booking);
     private void OnBookingUpserted(Guid citizenId, Booking booking)
     {
+        OnBookingDeleted(booking.Id);
         this.Set(citizenId, ContainsKey(citizenId)
             ? this[citizenId].Append(booking)
             : new List<Booking> { booking });

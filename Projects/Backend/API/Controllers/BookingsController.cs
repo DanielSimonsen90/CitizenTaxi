@@ -1,4 +1,5 @@
-﻿using Business.Models.Payloads;
+﻿using Business.Helpers;
+using Business.Models.Payloads;
 using Business.Services;
 using Common.DTOs;
 using Common.Entities;
@@ -28,6 +29,7 @@ public class BookingsController : BaseController
         _cacheService = cacheService;
     }
 
+    #region Basic CRUD
     /// <summary>
     /// Create a <see cref="Booking"/> in the database from the given <paramref name="payload"/>.
     /// This uses the <see cref="BaseController.CreateEntity{TPayload,TEntity}"/> method to DRY up the code.
@@ -115,4 +117,13 @@ public class BookingsController : BaseController
 
         return result;
     }
+    #endregion
+
+    [HttpGet("cache")]
+    public IActionResult GetCache() => Ok(_cacheService.Bookings.ToArray().Map(kvp =>
+    {
+        return new KeyValuePair<Guid, IEnumerable<BookingDTO>>(kvp.Key, kvp.Value.Adapt<List<BookingDTO>>());
+    }));
+    [HttpGet("timeouts")]
+    public IActionResult GetTimeouts() => Ok(BookingTimer.TimeoutsStarted);
 }

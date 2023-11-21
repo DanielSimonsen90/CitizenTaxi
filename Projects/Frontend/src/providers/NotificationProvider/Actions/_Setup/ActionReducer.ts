@@ -2,7 +2,7 @@ import { AUTH_COOKIE_NAME, Request } from "utils";
 import NotificationHubConnection from "providers/NotificationProvider/NotificationHubConnection";
 import { AuthTokens } from "models/backend/business/models/AuthTokens";
 
-import { ActionProps, HubActionNames } from "./HubActionTypes";
+import { ActionProps, HubActionNames, HubActions } from "./HubActionTypes";
 import Actions from "..";
 
 export type ActionReducerProps<Action extends HubActionNames> = Pick<ActionProps<Action>, 'citizen'>;
@@ -20,6 +20,7 @@ export default async function ActionReducer<Action extends HubActionNames>(
       citizen,
       request: Request,
       authTokens: getAuthTokens(),
+      // @ts-expect-error
       broadcast: (...args) => connection.send(action, ...args),
     });
   } catch (error) {
@@ -36,7 +37,7 @@ function getAuthTokens() {
   if (!authCookie) throw new Error(`No cookie found with name ${AUTH_COOKIE_NAME}`);
 
   const authCookieValue = authCookie.split('=')[1];
-  const authTokens = JSON.parse(atob(authCookieValue)) as AuthTokens;
+  const authTokens = JSON.parse(decodeURIComponent(authCookieValue)) as AuthTokens;
 
   // Convert authTokens.accessToken's and .refreshToken's .expiresIn to Date objects
   authTokens.accessToken.expiresAt = new Date(authTokens.accessToken.expiresAt);

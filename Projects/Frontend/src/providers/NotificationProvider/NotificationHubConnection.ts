@@ -1,4 +1,4 @@
-import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 
 import { Promiseable } from "types";
 import { API_ENDPOINT_SECURE_SIGNALR } from "utils";
@@ -12,7 +12,7 @@ export default class NotificationHubConnection {
   private static _hubConnectionSecure = new HubConnectionBuilder()
     .withUrl(API_ENDPOINT_SECURE_SIGNALR)
     .withAutomaticReconnect()
-    // .configureLogging(LogLevel.Information)
+    .configureLogging(LogLevel.Information)
     .build();
 
   private _hubConnection: HubConnection = NotificationHubConnection._hubConnectionSecure;
@@ -67,6 +67,10 @@ export default class NotificationHubConnection {
     this._hubConnection.on(event, _callback);
     this.callbacks.set([event, callback], _callback);
   };
+
+  public onreconnected(callback: (connectionId?: string | undefined) => Promiseable<void>) {
+    this._hubConnection.onreconnected(callback);
+  }
 
   public async send<
     Action extends HubActionNames,

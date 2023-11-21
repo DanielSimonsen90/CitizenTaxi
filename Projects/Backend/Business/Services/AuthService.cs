@@ -15,7 +15,7 @@ public class AuthService
     /// Configurable expiration times for access tokens
     /// </summary>
 #if DEBUG
-    public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.MaxValue;
+    public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromDays(1);
 #else
     public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromMinutes(15);
 #endif
@@ -80,7 +80,6 @@ public class AuthService
             new CookieOptions()
             {
                 Expires = auth.AccessToken.ExpiresAt, // Set expiration time
-                HttpOnly = true, // Only allow http access
                 SameSite = SameSiteMode.None, // Allow cross-site cookies
                 Secure = true, // Only allow https access
             });

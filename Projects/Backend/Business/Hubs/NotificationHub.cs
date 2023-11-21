@@ -23,7 +23,13 @@ public class NotificationHub : Hub
         _uow = uow;
         _cacheService = cacheService;
 
-        BookingTimer.StartTimeout(OnDayChanged, TimeSpan.FromDays(1));
+        BookingTimer.StartTimeout(() =>
+        {
+            OnDayChanged();
+            return Task.CompletedTask;
+        }, TimeSpan.FromDays(1));
+        OnDayChanged();
+
         cacheService.Bookings.BookingUpsert += OnBookingUpserted;
     }
 
@@ -60,10 +66,11 @@ public class NotificationHub : Hub
         if (user is Citizen && user.Id != citizenId) return SendError("Unauthorized.");
         if (!_uow.Citizens.Exists(citizenId)) return SendError($"Citizen with id {citizenId} not found.");
 
-        _cacheService.ConnectedUsers.Add(Context.ConnectionId, user);
+        _cacheService.ConnectedUsers.Set(Context.ConnectionId, user);
 
-        return Task.CompletedTask;
+        return SendNotification($"Du er nu tilmeldt notifikationer med id: {Context.ConnectionId}.", new[] { Context.ConnectionId });
     }
+    public Task Ping() => SendNotification($"Pong! - {Context.ConnectionId}", new[] { Context.ConnectionId });
     #endregion
 
     #region HubEvents
@@ -76,6 +83,7 @@ public class NotificationHub : Hub
     {
         // Only send the notification to the client that called the method
         await Clients.Clients(connectionIds).SendAsync(HubEvents.NOTIFICATION, DateTime.Now, message); // [timestamp: DateTime, message: string]
+        await SendLog("NOTIFICATION", message);
     }
     /// <summary>
     /// Log a message to the client.
@@ -138,7 +146,7 @@ public class NotificationHub : Hub
                 : new List<Booking> { booking });
 
             // Start a timer for the booking that will simulate the taxi arrival
-            BookingTimer.StartTimeout(async () => await Simulate(booking), booking.Arrival - DateTime.Now.AddHours(1));
+            OnBookingUpserted(key, booking);
         }
     }
 
@@ -146,7 +154,12 @@ public class NotificationHub : Hub
     {
         if (booking.Arrival.Date != DateTime.Now.Date) return;
 
-        BookingTimer.StartTimeout(async () => await Simulate(booking), booking.Arrival - DateTime.Now.AddHours(1));
+        TimeSpan timeout = booking.Arrival - DateTime.Now;
+        if (timeout > TimeSpan.Zero) BookingTimer.StartTimeout(
+            async () => await Simulate(booking), 
+            timeout.Minutes >= 5 
+                ? timeout.Subtract(TimeSpan.FromMinutes(5)) 
+                : timeout);
     }
 
     /// <summary>
@@ -158,10 +171,11 @@ public class NotificationHub : Hub
     {
         await OnTaxiTimeUpdated(booking, TimeSpan.FromHours(1));
 
-        int[] minutes = { 30, 15, 10, 5, 5 };
+        //int[] minutes = { 15, 10, 5, 5 };
+        int[] minutes = { 1, 1, 1, 1 };
         for (int i = 0; i < minutes.Length; i++)
         {
-            Thread.Sleep(minutes[i]);
+            Thread.Sleep(TimeSpan.FromMinutes(minutes[i]).Milliseconds);
 
             if (_cacheService.Bookings.ContainsKey(booking.CitizenId) 
                 && !_cacheService.Bookings[booking.CitizenId].Contains(booking)) 
@@ -170,6 +184,8 @@ public class NotificationHub : Hub
             if (i != minutes.Length - 1) await OnTaxiTimeUpdated(booking, TimeSpan.FromMinutes(minutes[i]));
             else await OnTaxiTimeUpdated(booking, TimeSpan.Zero);
         }
+
+        _cacheService.Bookings.RaiseBookingDeleteEvent(booking.Id);
     }
 
     /// <summary>
