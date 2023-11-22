@@ -76,6 +76,10 @@ export default function BookingDashboard() {
         <Button className="alt" onClick={() => navigate('bestil/1')}>Bestil en ny tid</Button>
       </header>
       <main role="list">
+        {allBookings.length === 0 && <p className="muted" style={{
+          justifySelf: 'start'
+        }}>Du har ingen bestillinger endnu.</p>}
+
         {/* Map through all bookings, ordered by day */}
         {allBookings.map(bookings => (
           <ul key={bookings[0].arrival.getDate()}>

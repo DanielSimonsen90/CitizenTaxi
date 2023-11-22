@@ -51,7 +51,7 @@
   &__note {
     form.citizen-note-inputs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 13em);
       grid-column-gap: 1em;
     }
 

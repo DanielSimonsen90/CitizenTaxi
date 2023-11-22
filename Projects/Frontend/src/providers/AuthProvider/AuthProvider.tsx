@@ -5,10 +5,12 @@ import { AuthProviderContext } from './AuthProviderConstants';
 import { Request } from 'utils';
 import { LoginPayload } from 'models/backend/business/models/payloads';
 import { Guid, Nullable } from 'types';
+import { useNavigate } from 'react-router-dom';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<Nullable<User>>(null);
   const [logginIn, setLogginIn] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const login = useCallbackOnce(async (username: string, password: string) => {
     setLogginIn(true);
@@ -35,6 +37,7 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     if (!response.success) return alert(response.text);
 
     setUser(null);
+    navigate('/')
   });
 
   // TODO: Remove this - it's only for development purposes

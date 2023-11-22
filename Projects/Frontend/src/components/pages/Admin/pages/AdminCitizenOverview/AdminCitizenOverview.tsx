@@ -17,7 +17,7 @@ export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
   const { setNotification } = useNotification();
 
-  const citizenModalProps = useCitizenModals({ onEditSubmit: onEditCitizenSubmit });
+  const citizenModalProps = useCitizenModals({ onEditSubmit: (payload) => onEditCitizenSubmit(payload, setNotification) });
 
   useAsyncEffectOnce(async () => {
     const response = await Request<Array<Citizen>, string>(`users?role=${Role.Citizen}`);
@@ -27,7 +27,10 @@ export default function AdminCitizenOverview() {
 
   return (
     <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens}
-      CreateModal={({ modalRef }) => <CitizenModal modalRef={modalRef} crud="create" onSubmit={onCreateCitizenSubmit} />}
+      CreateModal={({ modalRef }) => (
+        <CitizenModal modalRef={modalRef} crud="create"
+          onSubmit={payload => onCreateCitizenSubmit(payload, setNotification)} />
+      )}
 
       {...citizenModalProps}
 

@@ -6,7 +6,6 @@ import { Booking, Citizen, Note } from 'models/backend/common';
 
 import { CitizenProviderContext, RequestBookings, RequestCitizen, RequestNote } from './CitizenProviderConstants';
 import { useAuth } from 'providers/AuthProvider';
-import { useBookingNotifications } from './CitizenProviderHooks';
 import { CitizenProviderProps } from './CitizenProviderTypes';
 
 export default function CitizenProviderProvider({ children, citizen: defaultValue }: CitizenProviderProps) {
@@ -41,8 +40,6 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
     const citizen = await RequestCitizen(user?.id);
     if (citizen) setCitizen(citizen);
   }, [user?.id]);
-
-  useBookingNotifications(latestBooking);
 
   return (
     <CitizenProviderContext.Provider value={{

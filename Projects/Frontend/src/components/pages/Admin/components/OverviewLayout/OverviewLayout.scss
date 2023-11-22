@@ -1,6 +1,8 @@
 .citizen-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+  gap: 1em;
+  width: calc(100% - 2em);
 }
 
 .admin-overview {

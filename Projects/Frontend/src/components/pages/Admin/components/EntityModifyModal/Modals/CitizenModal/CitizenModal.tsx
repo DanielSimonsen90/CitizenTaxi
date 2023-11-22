@@ -12,7 +12,7 @@ type Props<TPayload, TEntity> = Pick<
 >;
 
 export default function CitizenModal({ modalRef, crud, defaultModel, onSubmit }: Props<UserModifyPayload<any>, Citizen>) {
-  const [hidePassword, setHidePassword] = useState(false);
+  const [hidePassword, setHidePassword] = useState(true);
   const [showNoteSection, setShowNoteSection] = useState(false);
 
   return (
@@ -21,7 +21,7 @@ export default function CitizenModal({ modalRef, crud, defaultModel, onSubmit }:
       payload={{} as UserModifyPayload<any>}
       defaultModel={defaultModel}
     >
-      <CreateCitizenSection hidePassword={hidePassword} 
+      <CreateCitizenSection crud={crud} hidePassword={hidePassword} 
         setHidePassword={setHidePassword} />
 
       {!showNoteSection

@@ -1,4 +1,8 @@
 .citizen-note-inputs {
+  &.loading {
+    text-align: center;
+  }
+
   label {
     font-size: 1.25rem;
     font-weight: 400;

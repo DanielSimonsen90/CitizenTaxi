@@ -36,7 +36,9 @@ export default function EntityModifyModal<
   
   return (
     <Modal modalRef={modalRef}>
-      <h1>{crud} {entityName}</h1>
+      <h1>{crud === 'create' ? 'Opret' 
+        : crud === 'update' ? 'Opdater' 
+        : 'Slet'} {entityName}</h1>
       <form onSubmit={onSubmit}>
         {children}
       </form>
