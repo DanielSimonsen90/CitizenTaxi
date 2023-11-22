@@ -11,11 +11,11 @@ type Props = {
 
 export default function OverviewLayout({ pageTitle, entity, citizens }: Props) {
   return (
-    <main>
+    <main className="admin-overview">
       <header>
-        <Button importance="secondary">Tilbage til oversigt</Button>
+        <Button type="button" importance="secondary" className="alt">Tilbage til oversigt</Button>
         <h1>{pageTitle}</h1>
-        <Button importance="primary" className="alt">Opret {entity}</Button>
+        <Button type="button" importance="primary" className="alt">Opret {entity}</Button>
       </header>
 
       <section className="citizen-list" role="list">

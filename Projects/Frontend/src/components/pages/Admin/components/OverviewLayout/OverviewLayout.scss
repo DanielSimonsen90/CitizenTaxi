@@ -2,3 +2,18 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
+
+.admin-overview {
+  > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-inline: 1em;
+    width: calc(100% - 2em);
+
+    h1 {
+      margin: unset;
+    }
+  }
+}
