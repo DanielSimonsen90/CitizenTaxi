@@ -1,4 +1,5 @@
 import { Booking, Citizen, Note } from "models/backend/common";
+import { PropsWithChildren } from "react";
 import { Nullable } from "types";
 
 export type CitizenProviderContextType = {
@@ -9,6 +10,10 @@ export type CitizenProviderContextType = {
 
   setCitizen: (citizen: Citizen) => void;
 };
+
+export type CitizenProviderProps = PropsWithChildren & {
+  citizen?: Nullable<Citizen>;
+}
 
 // TypeScript can map over types, so we can use this to make all the values in the context nullable aside from functions
 export type NullableCitizenProviderContextType = {

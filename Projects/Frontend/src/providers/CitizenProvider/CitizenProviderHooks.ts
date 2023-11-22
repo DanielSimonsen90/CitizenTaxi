@@ -77,7 +77,9 @@ export function useBookingNotifications(booking?: Booking) {
  * @returns The time left before the taxi arrives
  */
 function getTimeLeft(booking?: Booking): TimeLeft {
-  const seconds = (booking!.arrival.getTime() - Date.now()) / 1000;
+  if (!booking) return { seconds: 0, minutes: 0, hours: 0 };
+
+  const seconds = (booking.arrival.getTime() - Date.now()) / 1000;
   const minutes = seconds / 60;
   const hours = minutes / 60;
 
@@ -105,7 +107,7 @@ function getTimeToWait(booking?: Booking) {
   if (timeLeft.minutes > 5) return (timeLeft.minutes - 5) * 60 * 1000;
 
   // Return the remaining time left
-  return booking!.arrival.getTime() - Date.now() + 1000;
+  return booking?.arrival.getTime() ?? 0 - Date.now() + 1000;
 }
 
 /**

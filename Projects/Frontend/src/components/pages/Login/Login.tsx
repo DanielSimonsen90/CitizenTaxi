@@ -32,7 +32,7 @@ export default function Login() {
   };
 
   return (
-    <main>
+    <main className="login">
       <header>
         <h1>Login</h1>
         <p className="muted">For at benytte {DOMAIN_NAME}, skal du logge ind.</p>

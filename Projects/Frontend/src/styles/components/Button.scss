@@ -70,6 +70,13 @@ button,
         colors.$brand-alt);
     }
 
+    &[data-crud=update] {
+      @include createButton(transparent,
+        colors.$crud-update,
+        colors.$crud-update);
+    
+    }
+
     &[data-crud=delete] {
       @include createButton(transparent,
         colors.$crud-delete,

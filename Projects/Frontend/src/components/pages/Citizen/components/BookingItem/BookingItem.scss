@@ -10,11 +10,20 @@ li.booking-item {
   padding: .5em;
   border-radius: .5em;
 
+  header {
+    display: flex;
+    gap: 2em;
+  }
+
   header label,
   time {
     color: var(--text-primary);
     font-weight: bold;
     font-size: 1.3rem;
+  }
+
+  time {
+    max-width: 10ch;
   }
 
   section {

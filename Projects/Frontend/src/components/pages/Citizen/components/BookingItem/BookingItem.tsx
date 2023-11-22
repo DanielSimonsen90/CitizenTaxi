@@ -8,6 +8,8 @@ type Props = {
   /** Whether or not this is the latest booking */
   isLatest: boolean;
 
+  /** Whether or not to show the "View all bookings" button */
+  onViewAllBookings?: Nullable<() => void>;
   /** Callback for when the user clicks on the "Ændre bestilling" button */
   onChangeBooking: Nullable<() => void>;
   /** Callback for when the user clicks on the "Afbestil" button */
@@ -17,8 +19,8 @@ type Props = {
 export default function BookingItem({ 
   // Destructure the booking object for easier access to the properties
   booking: { id, pickup, destination, arrival }, 
-  isLatest,
-  onChangeBooking, onDeleteBooking 
+  isLatest, 
+  onChangeBooking, onDeleteBooking, onViewAllBookings
 }: Props) {
   return (
     <li id={id} className="booking-item" data-is-latest={isLatest}>
@@ -35,8 +37,9 @@ export default function BookingItem({
       */}
       {onChangeBooking || onDeleteBooking ? (
         <footer className="button-container">
-          {onChangeBooking && <Button crud="update" onClick={onChangeBooking}>Ændre bestilling</Button>}
+          {onChangeBooking && <Button importance={onViewAllBookings ? 'secondary' : 'primary'} crud="update" onClick={onChangeBooking}>Ændre bestilling</Button>}
           {onDeleteBooking && <Button importance="secondary" crud="delete" onClick={onDeleteBooking}>Afbestil</Button>}
+          {onViewAllBookings && <Button importance="secondary" className="alt" onClick={onViewAllBookings}>Se alle bestillinger</Button>}
         </footer>
       ) : null}
     </li>

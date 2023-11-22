@@ -1,0 +1,76 @@
+.citizen-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+  padding: 1rem;
+  border-radius: 1em;
+  background-color: var(--background-tertiary);
+
+  header {
+    display: block;
+    text-align: left;
+
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0;
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  &__bookings ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1ch;
+    padding: 0;
+    margin-top: 1ch;
+
+    li.booking-item {
+      background-color: var(--background-quaternary);
+      grid-template-areas: "header" "section" "footer";
+      grid-template-columns: 1fr;
+
+      header {
+        justify-content: space-between;
+      }
+
+      .button-container {
+        flex-direction: row-reverse;
+        justify-content: end;
+      }
+
+      footer::before {
+        content: none;
+      }
+    }
+  }
+
+  &__note {
+    form.citizen-note-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 1em;
+    }
+
+    .form-group {
+      margin: .5em 0;
+
+      &:last-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    input,
+    select {
+      background-color: var(--background-quaternary);
+      border: 1px solid var(--text-muted);
+    }
+
+    .button-container {
+      margin-top: .25em;
+    }
+  }
+}

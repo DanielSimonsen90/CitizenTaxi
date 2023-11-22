@@ -5,6 +5,7 @@ import { Note } from "../Note";
 
 // The Citizen type should inherit properties from the AUser type and have the following additional properties:
 export type Citizen = User & {
+  email: string;
   bookings: Array<Booking>;
   note: Nullable<Note>;
 }

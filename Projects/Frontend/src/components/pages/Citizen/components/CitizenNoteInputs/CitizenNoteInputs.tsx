@@ -8,7 +8,7 @@ export default function CitizenNoteInputs() {
 
   return !note
     // If the note is not loaded yet, we show a loading message
-    ? <p className="loading">Indlæser...</p>
+    ? <p className="loading">Ingen note endnu.</p>
     // Render read-only inputs with the note data
     : (
       <form className="citizen-note-inputs">
