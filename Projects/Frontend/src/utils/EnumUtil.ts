@@ -1,7 +1,5 @@
 import { Role, CarHeight, Companion, Follow, HelpingUtil } from 'models/backend/common/enums';
-
-type Enum = Role | CarHeight | Companion | Follow | HelpingUtil;
-type EnumTypes = typeof Role | typeof CarHeight | typeof Companion | typeof Follow | typeof HelpingUtil;
+import { Enum, EnumTypes } from 'types';
 
 /**
  * Translate an enum value to a string

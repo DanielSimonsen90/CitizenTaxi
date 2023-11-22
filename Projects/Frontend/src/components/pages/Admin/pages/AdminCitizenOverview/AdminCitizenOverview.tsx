@@ -1,13 +1,23 @@
-import { Citizen, Role } from "models/backend/common";
 import { useState } from "react";
-import OverviewLayout from "../../components/OverviewLayout";
 import { useAsyncEffectOnce } from "danholibraryrjs";
+
 import { Request } from "utils";
+import { Citizen, Role } from "models/backend/common";
 import { useNotification } from "providers/NotificationProvider";
+
+import OverviewLayout from "../../components/OverviewLayout";
+import { CitizenModal } from "../../components/EntityModifyModal";
+import { useCitizenModals } from "./AdminOverviewHooks";
+import { 
+  onViewAllBookings, 
+  onCreateCitizenSubmit, onEditCitizenSubmit, onDeleteCitizenSubmit 
+} from './AdminCitizenOverviewConstants';
 
 export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
   const { setNotification } = useNotification();
+
+  const citizenModalProps = useCitizenModals({ onEditSubmit: onEditCitizenSubmit });
 
   useAsyncEffectOnce(async () => {
     const response = await Request<Array<Citizen>, string>(`users?role=${Role.Citizen}`);
@@ -15,5 +25,13 @@ export default function AdminCitizenOverview() {
     else setNotification({ type: "error", message: response.text });
   });
 
-  return <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens} />;
+  return (
+    <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens}
+      CreateModal={({ modalRef }) => <CitizenModal modalRef={modalRef} crud="create" onSubmit={onCreateCitizenSubmit} />}
+
+      {...citizenModalProps}
+
+      onViewAllBookings={onViewAllBookings}
+    />
+  );
 }
