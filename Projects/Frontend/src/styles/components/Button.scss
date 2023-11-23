@@ -63,6 +63,10 @@ button,
     @include createButton(colors.$crud-update);
   }
 
+  &[data-crud=delete] {
+    @include createButton(colors.$crud-delete);
+  }
+
   &.secondary {
     @include createButton(transparent,
       colors.$brand-secondary,
