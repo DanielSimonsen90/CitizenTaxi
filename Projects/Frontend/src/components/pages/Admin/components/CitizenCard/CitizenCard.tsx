@@ -50,6 +50,7 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
   } = useCitizenModals();
 
   const { name, email, note } = citizen;
+  const [firstName] = name.split(' ');
 
   return (
     <article className="citizen-card" role="listitem" data-citizen-id={citizen.id}>
@@ -61,10 +62,12 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
       <section className="citizen-card__bookings">
         <header>
           <h2>Borgerens næste bestilling</h2>
-          <Button importance="secondary" crud="create" onClick={() => onModalOpen({
+          <Button importance="secondary" crud="create" 
+            disabled={!note} title={!note ? `Du skal oprette et notat til ${firstName}, før du må bestille en taxa.` : undefined} 
+            onClick={() => onModalOpen({
             modal: CreateBookingModal,
             modalRef: createBookingModalRef
-          })}>Book en taxa</Button>
+          })}>Bestil en taxa til {firstName}</Button>
         </header>
         {latestBooking ?
           <ul className="bookings-list">
@@ -105,11 +108,11 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
                     modal: () => <DeleteNoteModal modalRef={deleteNoteModalRef} selected={note} selectedCitizen={citizen} />,
                     modalRef: deleteNoteModalRef
                   })}
-                >Slet notat</Button>
+                >Slet {firstName}s notat</Button>
                 <Button type="button" importance="secondary" crud="update" onClick={() => onModalOpen({
                   modal: () => <EditNoteModal modalRef={editNoteModalRef} selected={note} selectedCitizen={citizen} />,
                   modalRef: editNoteModalRef
-                })}>Redigér notat</Button>
+                })}>Redigér {firstName}s notat</Button>
               </div>
             </>
           )
@@ -120,7 +123,7 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
                 <Button type="button" crud="create" onClick={() => onModalOpen({
                   modal: () => <CreateNoteModal modalRef={createNoteModalRef} selectedCitizen={citizen} />,
                   modalRef: createNoteModalRef
-                })}>Tilføj notat</Button>
+                })}>Tilføj notat til {firstName}</Button>
               </div>
             </>
           )
@@ -133,13 +136,13 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
             modal: () => <DeleteCitizenModal modalRef={deleteCitizenModalRef} selected={citizen} />,
             modalRef: deleteCitizenModalRef
           })}
-        >Slet borger</Button>
+        >Slet {firstName}</Button>
         <Button type="button" importance="secondary" crud="update"
           onClick={() => onModalOpen({
             modal: () => <EditCitizenModal modalRef={editCitizenModalRef} selected={citizen} />,
             modalRef: editCitizenModalRef
           })}
-        >Redigér borger</Button>
+        >Redigér {firstName}</Button>
       </footer>
     </article>
   );

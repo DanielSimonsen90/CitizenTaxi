@@ -23,7 +23,7 @@ export function serializeForm<T extends object>(form: HTMLFormElement) {
       if (value === null) console.warn(`${name}.value returned null`, { element });
 
       console.log(`[FormUtil]`, { name, value });
-      acc[name] = !Number.isNaN(parseInt(value)) ? parseInt(value) : value;
+      acc[name] = /^\d$/.test(value) ? parseInt(value) : value;
     }
 
     return acc;

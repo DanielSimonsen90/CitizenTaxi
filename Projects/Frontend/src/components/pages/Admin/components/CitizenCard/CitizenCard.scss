@@ -8,7 +8,6 @@
 
   > * {
     margin-bottom: 1em;
-    max-width: calc(100% - 2.5rem);
 
     &::before {
       content: '';
@@ -112,7 +111,6 @@
     select {
       background-color: var(--background-quaternary);
       border: 1px solid var(--text-muted);
-      max-width: calc(100% - 1em);
     }
 
     .button-container {

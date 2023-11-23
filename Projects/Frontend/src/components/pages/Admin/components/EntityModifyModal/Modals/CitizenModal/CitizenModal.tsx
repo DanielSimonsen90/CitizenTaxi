@@ -20,6 +20,7 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
     e.preventDefault();
     const data = serializeForm<UserModifyPayload<any>>(e.currentTarget);
     props.onSubmit(data);
+    modalRef.current?.close();
   };
   const onCitizenWithNoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,6 +34,7 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
     // Create note
     const notePayload = serializeForm<NoteModifyPayload<any>>(e.currentTarget);
     props.onNoteSubmit?.(notePayload);
+    modalRef.current?.close();
   };
 
   return (
@@ -41,7 +43,9 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
         : crud === 'update' ? 'Opdater'
           : 'Slet'} Borger</h1>
       <form id={`${crud}-borger-form`} onSubmit={onCitizenSubmit}>
-        <input type="hidden" name="id" value={defaultModel?.id} />
+        {crud !== 'create' && (
+          <input type="hidden" name="id" value={defaultModel?.id} />
+        )}
 
         <CreateCitizenSection crud={crud} hidePassword={hidePassword} defaultModel={defaultModel}
           setHidePassword={setHidePassword} />
@@ -72,7 +76,7 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
             <Button type="reset" importance="secondary" crud="delete" onClick={() => setShowNoteSection(false)}>
               Fortryd notat
             </Button>
-            <Button type="submit" importance="primary" crud="create">Opret borger</Button>
+            <Button type="submit" importance="primary" crud="create">Opret borger med notat</Button>
           </section>
         </form>
       </>)}
