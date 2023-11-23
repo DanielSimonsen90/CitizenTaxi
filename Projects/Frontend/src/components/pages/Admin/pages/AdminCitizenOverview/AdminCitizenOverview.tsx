@@ -7,7 +7,6 @@ import { useNotification } from "providers/NotificationProvider";
 
 import OverviewLayout from "../../components/OverviewLayout";
 import { useBookingModals, useCitizenModals, useNoteModals } from "../AdminOverviewHooks";
-import { onViewAllBookings } from './AdminCitizenOverviewConstants';
 
 export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
@@ -29,7 +28,6 @@ export default function AdminCitizenOverview() {
       {...citizenModalProps}
       {...bookingModalProps}
       {...noteModalProps}
-      onViewAllBookings={onViewAllBookings}
     />
   );
 }

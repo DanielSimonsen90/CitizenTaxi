@@ -9,7 +9,7 @@ type Props = {
   isLatest: boolean;
 
   /** Whether or not to show the "View all bookings" button */
-  onViewAllBookings?: Nullable<() => void>;
+  onViewAllBookings?: () => void;
   /** Callback for when the user clicks on the "Ændre bestilling" button */
   onChangeBooking: Nullable<() => void>;
   /** Callback for when the user clicks on the "Afbestil" button */

@@ -4,11 +4,6 @@ import { NotificationContextType } from "providers/NotificationProvider/Notifica
 import { Guid } from "types";
 import { ApiEndpoints, Request } from "utils";
 
-export function onViewAllBookings(citizen: Citizen) {
-  // TODO: Implement redirect to list of all bookings for citizen
-  throw new Error("Not implemented");
-}
-
 async function onEntityCreateOrUpdate<
   TPayload extends BaseModifyPayload<any>
 >(

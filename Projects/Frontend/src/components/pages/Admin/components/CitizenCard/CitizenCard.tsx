@@ -4,6 +4,7 @@ import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/compone
 import { Booking, Citizen } from "models/backend/common";
 import { useBookings } from "providers/CitizenProvider";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
+import { useState } from "react";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -15,21 +16,19 @@ export type EntityModifyFunctions =
   & Omit<EntityOperations<'Citizen', Citizen>, 'onCreateCitizen'>
   & EntityOperations<'Booking', Booking>
   & EntityOperations<'Note', any>
-  & Record<'onViewAllBookings', () => void>;
 
 type Props = EntityModifyFunctions & {
   citizen: Citizen;
-  showAllBookings?: boolean;
 };
 
 export default function CitizenCard({
   citizen,
-  showAllBookings,
   onEditCitizen, onDeleteCitizen,
-  onViewAllBookings, onCreateBooking, onEditBooking, onDeleteBooking,
+  onCreateBooking, onEditBooking, onDeleteBooking,
   onCreateNote, onEditNote, onDeleteNote
 }: Props) {
   const [latestBooking, bookings] = useBookings();
+  const [showAllBookings, setShowAllBookings] = useState(false);
   const { name, email, note } = citizen;
 
   return (
@@ -47,9 +46,9 @@ export default function CitizenCard({
           }}>Book en taxa</Button>
         </header>
         {latestBooking ?
-          <ul>
+          <ul className="bookings-list">
             <BookingItem booking={latestBooking} isLatest
-              onViewAllBookings={onViewAllBookings}
+              onViewAllBookings={() => setShowAllBookings(v => !v)}
               onChangeBooking={onEditBooking ? () => onEditBooking(latestBooking) : null}
               onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(latestBooking) : null}
             />
@@ -62,6 +61,7 @@ export default function CitizenCard({
                     <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
                       onChangeBooking={onEditBooking ? () => onEditBooking(booking) : null}
                       onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
+                      onViewAllBookings={() => setShowAllBookings(v => !v)}
                     />
                   ))}
                 </ul>

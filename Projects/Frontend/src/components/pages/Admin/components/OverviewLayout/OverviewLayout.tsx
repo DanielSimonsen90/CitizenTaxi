@@ -40,13 +40,10 @@ type Props = EntityModalProps & {
   pageTitle: string;
   entity: string;
   citizens: Array<Citizen>;
-
-  onViewAllBookings: (citizen: Citizen) => void;
 };
 
 export default function OverviewLayout({
   pageTitle, entity, citizens,
-  onViewAllBookings,
   ...modalProps
 }: Props) {
   const [selectedCitizen, setSelectedCitizen] = useState<Citizen>();
@@ -104,8 +101,6 @@ export default function OverviewLayout({
                 setSelectedCitizen(citizen);
                 modalProps.deleteNoteModalRef?.current?.showModal();
               }}
-
-              onViewAllBookings={() => onViewAllBookings(citizen)}
             />
           </CitizenProvider>
         ))}

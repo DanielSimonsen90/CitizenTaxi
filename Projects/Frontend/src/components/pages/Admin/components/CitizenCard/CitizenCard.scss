@@ -60,6 +60,12 @@
       padding: 0;
       margin-top: 1ch;
 
+      &.bookings-list {
+        max-height: 10em;
+        overflow-y: auto;
+        border-radius: .5em;
+      }
+
       li.booking-item {
         background-color: var(--background-quaternary);
         grid-template-areas: "header" "section" "footer";
