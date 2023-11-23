@@ -1,11 +1,35 @@
 .citizen-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 5em 12em 19em 2em;
   gap: 1.25em;
   padding: 1rem;
   border-radius: 1em;
   background-color: var(--background-tertiary);
-  max-width: 33vw;
+
+  > * {
+    margin-bottom: 1em;
+    max-width: calc(100% - 2.5rem);
+
+    &::before {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 100%;
+
+      position: absolute;
+      bottom: -1em;
+
+      background-color: var(--text-muted);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+
+      &::before {
+        content: none;
+      }
+    }
+  }
 
   header {
     display: block;
@@ -23,7 +47,7 @@
   }
 
   &__bookings {
-    > header {
+    >header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -61,7 +85,7 @@
   &__note {
     form.citizen-note-inputs {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, calc(50% - .5em));
       grid-column-gap: 1em;
       max-width: 100%;
     }
@@ -82,11 +106,20 @@
     select {
       background-color: var(--background-quaternary);
       border: 1px solid var(--text-muted);
-      max-width: 15vw;
+      max-width: calc(100% - 1em);
     }
 
     .button-container {
       margin-top: .25em;
+    }
+
+    &:has(p.muted) .button-container {
+      justify-content: center;
+      height: calc(100% - 2.5em);
+
+      button {
+        font-size: 1.5rem;
+      }
     }
   }
 }

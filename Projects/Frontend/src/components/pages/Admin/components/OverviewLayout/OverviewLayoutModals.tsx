@@ -20,7 +20,7 @@ export default function OverviewLayoutModals({
 }: Props) {
 
   return (
-    <>
+    <div id="entity-modals">
       {CreateCitizenModal && createCitizenModalRef && (
         <CreateCitizenModal modalRef={createCitizenModalRef} />
       )}
@@ -50,6 +50,6 @@ export default function OverviewLayoutModals({
       {DeleteNoteModal && deleteNoteModalRef && (
         <DeleteNoteModal selectedCitizen={selectedCitizen} modalRef={deleteNoteModalRef} />
       )}
-    </>
+    </div>
   );
 }

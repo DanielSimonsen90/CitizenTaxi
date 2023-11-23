@@ -1,27 +1,27 @@
 import { useRef } from "react";
+
+import { useNotification } from "providers/NotificationProvider";
+
 import { ModifyCitizenModal } from "../components/OverviewLayout/OverviewLayout";
 import { CitizenModal } from "../components/EntityModifyModal";
-import { BookingModifyPayload, UserModifyPayload, BaseModifyPayload } from "models/backend/business/models/payloads";
 import EntityDeleteModal from "../components/EntityModifyModal/Modals/EntityDeleteModal";
+import { getBookingSubmits, getCitizenSubmits, getNoteSubmits } from "./AdminCitizenOverview/AdminCitizenOverviewConstants";
 
-type UseEntityModalsProps<TPayload extends BaseModifyPayload<true>> = {
-  onCreateSubmit(payload: TPayload): void;
-  onEditSubmit(payload: TPayload): void;
-};
-
-export function useCitizenModals({ onCreateSubmit, onEditSubmit }: UseEntityModalsProps<UserModifyPayload<true>>) {
+export function useCitizenModals() {
+  const { setNotification } = useNotification();
+  const { onCreateCitizenSubmit, onEditCitizenSubmit } = getCitizenSubmits(setNotification);
   const createCitizenModalRef = useRef<HTMLDialogElement>(null);
   const editCitizenModalRef = useRef<HTMLDialogElement>(null);
   const deleteCitizenModalRef = useRef<HTMLDialogElement>(null);
 
   const CreateCitizenModal = () => (
     <CitizenModal modalRef={createCitizenModalRef} crud="create"
-      onSubmit={onCreateSubmit}
+      onSubmit={onCreateCitizenSubmit}
     />
   );
   const EditCitizenModal: ModifyCitizenModal = ({ modalRef, selectedCitizen }) => (
     <CitizenModal modalRef={modalRef} crud="update"
-      onSubmit={onEditSubmit} defaultModel={selectedCitizen}
+      onSubmit={onEditCitizenSubmit} defaultModel={selectedCitizen}
     />
   );
 
@@ -38,7 +38,10 @@ export function useCitizenModals({ onCreateSubmit, onEditSubmit }: UseEntityModa
   };
 }
 
-export function useBookingModals({ onCreateSubmit, onEditSubmit }: UseEntityModalsProps<BookingModifyPayload<true>>) {
+export function useBookingModals() {
+  const { setNotification } = useNotification();
+  const { onCreateBookingSubmit, onEditBookingSubmit } = getBookingSubmits(setNotification);
+
   const createBookingModalRef = useRef<HTMLDialogElement>(null);
   const editBookingModalRef = useRef<HTMLDialogElement>(null);
   const deleteBookingModalRef = useRef<HTMLDialogElement>(null);
@@ -53,7 +56,10 @@ export function useBookingModals({ onCreateSubmit, onEditSubmit }: UseEntityModa
   };
 }
 
-export function useNoteModals({ onCreateSubmit, onEditSubmit }: UseEntityModalsProps<BookingModifyPayload<true>>) {
+export function useNoteModals() {
+  const { setNotification } = useNotification();
+  const { onCreateNoteSubmit, onEditNoteSubmit } = getNoteSubmits(setNotification);
+  
   const createNoteModalRef = useRef<HTMLDialogElement>(null);
   const editNoteModalRef = useRef<HTMLDialogElement>(null);
   const deleteNoteModalRef = useRef<HTMLDialogElement>(null);

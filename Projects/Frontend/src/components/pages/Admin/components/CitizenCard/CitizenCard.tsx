@@ -12,7 +12,8 @@ type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = 
 )
 
 export type EntityModifyFunctions =
-& EntityOperations<'Booking', Booking>
+  & Omit<EntityOperations<'Citizen', Citizen>, 'onCreateCitizen'>
+  & EntityOperations<'Booking', Booking>
   & EntityOperations<'Note', any>
   & Record<'onViewAllBookings', () => void>;
 
@@ -24,6 +25,7 @@ type Props = EntityModifyFunctions & {
 export default function CitizenCard({
   citizen,
   showAllBookings,
+  onEditCitizen, onDeleteCitizen,
   onViewAllBookings, onCreateBooking, onEditBooking, onDeleteBooking,
   onCreateNote, onEditNote, onDeleteNote
 }: Props) {
@@ -85,12 +87,21 @@ export default function CitizenCard({
             <>
               <p className="muted">Borgeren har ingen note.</p>
               <div className="button-container">
-                <Button type="button" crud="create" onClick={onCreateNote}>Tilføj note</Button>
+                <Button type="button" crud="create" onClick={onCreateNote}>Tilføj notat</Button>
               </div>
             </>
           )
         }
       </section>
+
+      <footer className="button-container">
+        <Button type="button" importance="secondary" crud="delete"
+          onClick={() => onDeleteCitizen(citizen)}
+        >Slet borger</Button>
+        <Button type="button" importance="secondary" crud="update"
+          onClick={() => onEditCitizen(citizen)}
+        >Redigér borger</Button>
+      </footer>
     </article>
   );
 }

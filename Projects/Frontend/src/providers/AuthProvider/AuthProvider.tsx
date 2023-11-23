@@ -6,11 +6,13 @@ import { Request } from 'utils';
 import { LoginPayload } from 'models/backend/business/models/payloads';
 import { Guid, Nullable } from 'types';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from 'providers/NotificationProvider';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<Nullable<User>>(null);
   const [logginIn, setLogginIn] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { setNotification } = useNotification();
 
   const login = useCallbackOnce(async (username: string, password: string) => {
     setLogginIn(true);
@@ -21,7 +23,10 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     const response = await Request<Guid>('users/authenticate', {
       method: 'POST',
       body: payload
-    });
+    }).catch(error => {
+      setNotification({ type: 'error', message: error.message });
+      return { success: false, text: error.message, data: null };
+    })
 
     setLogginIn(false);
     if (!response.success) return alert(response.text);

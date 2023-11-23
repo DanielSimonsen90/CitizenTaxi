@@ -1,7 +1,8 @@
-import Modal from "components/shared/Modal";
-import { Button, FunctionComponent } from "danholibraryrjs";
-import { useNotification } from "providers/NotificationProvider";
 import { RefObject } from "react";
+import { Button, FunctionComponent } from "danholibraryrjs";
+
+import Modal from "components/shared/Modal";
+import { useNotification } from "providers/NotificationProvider";
 import { Guid } from "types";
 import { ApiEndpoints, Request } from "utils";
 

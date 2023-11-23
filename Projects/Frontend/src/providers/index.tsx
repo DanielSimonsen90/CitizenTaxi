@@ -5,10 +5,10 @@ import NotificationProvider from "./NotificationProvider";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
-    <AuthProvider>
-      <NotificationProvider>
+    <NotificationProvider>
+      <AuthProvider>
         {children}
-      </NotificationProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </NotificationProvider>
   );
 }

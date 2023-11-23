@@ -1,37 +1,33 @@
-import { Button, FunctionComponent } from "danholibraryrjs";
+import { RefObject, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button, FunctionComponent } from "danholibraryrjs";
 
-import { CitizenProvider } from "providers/CitizenProvider";
+import { ModalProps } from "components/shared/Modal/Modal";
 import { Booking, Citizen, Note } from "models/backend/common";
+import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
+import { CitizenProvider } from "providers/CitizenProvider";
 
 import { CitizenCard } from "../CitizenCard";
-import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
-import { ModalProps } from "components/shared/Modal/Modal";
 import OverviewLayoutModals from "./OverviewLayoutModals";
 
 export type ModifyCitizenModal<P = {}> = FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen; } & P>;
-export type EntityModalProps = {
-  createCitizenModalRef?: RefObject<HTMLDialogElement>;
-  CreateCitizenModal: FunctionComponent<Pick<ModalProps, 'modalRef'>>;
-  editCitizenModalRef?: RefObject<HTMLDialogElement>;
-  EditCitizenModal?: ModifyCitizenModal;
-  deleteCitizenModalRef?: RefObject<HTMLDialogElement>;
-  DeleteCitizenModal?: ModifyCitizenModal;
-
-  createBookingModalRef?: RefObject<HTMLDialogElement>;
-  CreateBookingModal: ModifyCitizenModal;
-  editBookingModalRef?: RefObject<HTMLDialogElement>;
-  EditBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
-  deleteBookingModalRef?: RefObject<HTMLDialogElement>;
-  DeleteBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
-
-  createNoteModalRef?: RefObject<HTMLDialogElement>;
-  CreateNoteModal: ModifyCitizenModal;
-  editNoteModalRef?: RefObject<HTMLDialogElement>;
-  EditNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
-  deleteNoteModalRef?: RefObject<HTMLDialogElement>;
-  DeleteNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
-}
+type ModifyEntityModalProps<TEntityName extends string, TEntity extends BaseEntity> = (
+  & Record<
+    `${'create' | 'edit' | 'delete'}${TEntityName}ModalRef`, 
+    RefObject<HTMLDialogElement>>
+  & Record<
+    `Create${TEntityName}Modal`, 
+    FunctionComponent<Pick<ModalProps, 'modalRef'>>>
+  & Record<
+    `${'Create' | 'Edit' | 'Delete'}${TEntityName}Modal`, 
+    ModifyCitizenModal<Partial<Record<Lowercase<TEntityName>, TEntity>>>
+  >
+)
+export type EntityModalProps = Partial<(
+  & ModifyEntityModalProps<'Citizen', Citizen>
+  & ModifyEntityModalProps<'Booking', Booking>
+  & ModifyEntityModalProps<'Note', Note>
+)>
 
 type Props = EntityModalProps & {
   pageTitle: string;
@@ -74,6 +70,10 @@ export default function OverviewLayout({
                 modalProps.createNoteModalRef?.current?.showModal();
               }}
 
+              onEditCitizen={citizen => {
+                setSelectedCitizen(citizen);
+                modalProps.editCitizenModalRef?.current?.showModal();
+              }}
               onEditBooking={booking => {
                 setSelectedCitizen(citizen);
                 setSelectedBooking(booking);
@@ -82,8 +82,12 @@ export default function OverviewLayout({
               onEditNote={() => {
                 setSelectedCitizen(citizen);
                 modalProps.editNoteModalRef?.current?.showModal();
-              }}
+              }}  
 
+              onDeleteCitizen={citizen => {
+                setSelectedCitizen(citizen);
+                modalProps.deleteCitizenModalRef?.current?.showModal();
+              }}
               onDeleteBooking={booking => {
                 setSelectedCitizen(citizen);
                 setSelectedBooking(booking);

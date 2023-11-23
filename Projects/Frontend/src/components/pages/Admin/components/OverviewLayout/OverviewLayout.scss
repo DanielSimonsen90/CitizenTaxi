@@ -1,12 +1,18 @@
 .citizen-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+  grid-template-columns: 1fr;
   gap: 1em;
-  width: calc(100% - 2em);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, calc(50% - .5em));
+  }
 }
 
 .admin-overview {
   margin-inline: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 
   >header {
     display: flex;
