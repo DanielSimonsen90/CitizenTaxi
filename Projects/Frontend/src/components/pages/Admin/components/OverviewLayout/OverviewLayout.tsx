@@ -7,49 +7,44 @@ import { Booking, Citizen, Note } from "models/backend/common";
 import { CitizenCard } from "../CitizenCard";
 import { MutableRefObject, RefObject, useMemo, useRef, useState } from "react";
 import { ModalProps } from "components/shared/Modal/Modal";
+import OverviewLayoutModals from "./OverviewLayoutModals";
 
 export type ModifyCitizenModal<P = {}> = FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen; } & P>;
+export type EntityModalProps = {
+  createCitizenModalRef?: RefObject<HTMLDialogElement>;
+  CreateCitizenModal: FunctionComponent<Pick<ModalProps, 'modalRef'>>;
+  editCitizenModalRef?: RefObject<HTMLDialogElement>;
+  EditCitizenModal?: ModifyCitizenModal;
+  deleteCitizenModalRef?: RefObject<HTMLDialogElement>;
+  DeleteCitizenModal?: ModifyCitizenModal;
 
-type Props = {
+  createBookingModalRef?: RefObject<HTMLDialogElement>;
+  CreateBookingModal: ModifyCitizenModal;
+  editBookingModalRef?: RefObject<HTMLDialogElement>;
+  EditBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
+  deleteBookingModalRef?: RefObject<HTMLDialogElement>;
+  DeleteBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
+
+  createNoteModalRef?: RefObject<HTMLDialogElement>;
+  CreateNoteModal: ModifyCitizenModal;
+  editNoteModalRef?: RefObject<HTMLDialogElement>;
+  EditNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
+  deleteNoteModalRef?: RefObject<HTMLDialogElement>;
+  DeleteNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
+}
+
+type Props = EntityModalProps & {
   pageTitle: string;
   entity: string;
   citizens: Array<Citizen>;
 
   onViewAllBookings: (citizen: Citizen) => void;
-
-  CreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'>>;
-
-  editCitizenModalRef?: RefObject<HTMLDialogElement>;
-  EditCitizenModal?: ModifyCitizenModal;
-
-  deleteCitizenModalRef?: RefObject<HTMLDialogElement>;
-  DeleteCitizenModal?: ModifyCitizenModal;
-
-  editBookingModalRef?: RefObject<HTMLDialogElement>;
-  EditBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
-
-  deleteBookingModalRef?: RefObject<HTMLDialogElement>;
-  DeleteBookingModal?: ModifyCitizenModal<{ booking?: Booking; }>;
-
-  editNoteModalRef?: RefObject<HTMLDialogElement>;
-  EditNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
-
-  deleteNoteModalRef?: RefObject<HTMLDialogElement>;
-  DeleteNoteModal?: ModifyCitizenModal<{ note?: Note; }>;
 };
 
 export default function OverviewLayout({
   pageTitle, entity, citizens,
-  onViewAllBookings, CreateModal,
-
-  editCitizenModalRef, deleteCitizenModalRef,
-  EditCitizenModal, DeleteCitizenModal,
-  
-  editBookingModalRef, deleteBookingModalRef,
-  EditBookingModal, DeleteBookingModal,
-  
-  editNoteModalRef, deleteNoteModalRef,
-  EditNoteModal, DeleteNoteModal
+  onViewAllBookings,
+  ...modalProps
 }: Props) {
   const [selectedCitizen, setSelectedCitizen] = useState<Citizen>();
   const [selectedBooking, setSelectedBooking] = useState<Booking>();
@@ -65,48 +60,40 @@ export default function OverviewLayout({
         >Opret {entity}</Button>
       </header>
 
-      <CreateModal modalRef={createModalRef} />
-      {EditCitizenModal && editCitizenModalRef && (
-        <EditCitizenModal selectedCitizen={selectedCitizen} modalRef={editCitizenModalRef} />
-      )}
-      {DeleteCitizenModal && deleteCitizenModalRef && (
-        <DeleteCitizenModal selectedCitizen={selectedCitizen} modalRef={deleteCitizenModalRef} />
-      )}
-      {EditBookingModal && editBookingModalRef && (
-        <EditBookingModal selectedCitizen={selectedCitizen} booking={selectedBooking} modalRef={editBookingModalRef} />
-      )}
-      {DeleteBookingModal && deleteBookingModalRef && (
-        <DeleteBookingModal selectedCitizen={selectedCitizen} booking={selectedBooking} modalRef={deleteBookingModalRef} />
-      )}
-      {EditNoteModal && editNoteModalRef && (
-        <EditNoteModal selectedCitizen={selectedCitizen} modalRef={editNoteModalRef} />
-      )}
-      {DeleteNoteModal && deleteNoteModalRef && (
-        <DeleteNoteModal selectedCitizen={selectedCitizen} modalRef={deleteNoteModalRef} />
-      )}
+      <OverviewLayoutModals {...{ selectedBooking, selectedCitizen, ...modalProps }} />
 
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
             <CitizenCard citizen={citizen}
-              onChangeBooking={booking => {
+              onCreateBooking={() => {
+                setSelectedBooking(undefined);
+                modalProps.createBookingModalRef?.current?.showModal();
+              }}
+              onCreateNote={() => {
+                modalProps.createNoteModalRef?.current?.showModal();
+              }}
+
+              onEditBooking={booking => {
                 setSelectedCitizen(citizen);
                 setSelectedBooking(booking);
-                editBookingModalRef?.current?.showModal();
+                modalProps.editBookingModalRef?.current?.showModal();
               }}
-              onChangeNote={() => {
+              onEditNote={() => {
                 setSelectedCitizen(citizen);
-                editNoteModalRef?.current?.showModal();
+                modalProps.editNoteModalRef?.current?.showModal();
               }}
+
               onDeleteBooking={booking => {
                 setSelectedCitizen(citizen);
                 setSelectedBooking(booking);
-                deleteBookingModalRef?.current?.showModal();
+                modalProps.deleteBookingModalRef?.current?.showModal();
               }}
               onDeleteNote={() => {
                 setSelectedCitizen(citizen);
-                deleteNoteModalRef?.current?.showModal();
+                modalProps.deleteNoteModalRef?.current?.showModal();
               }}
+
               onViewAllBookings={() => onViewAllBookings(citizen)}
             />
           </CitizenProvider>

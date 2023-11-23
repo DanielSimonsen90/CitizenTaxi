@@ -55,6 +55,10 @@ button,
     @include createButton(colors.$brand-alt);
   }
 
+  &[data-crud=create] {
+    @include createButton(colors.$crud-create);
+  }
+
   &[data-crud=update] {
     @include createButton(colors.$crud-update);
   }
@@ -68,6 +72,12 @@ button,
       @include createButton(transparent,
         colors.$brand-alt,
         colors.$brand-alt);
+    }
+
+    &[data-crud=create] {
+      @include createButton(transparent,
+        colors.$crud-create,
+        colors.$crud-create);
     }
 
     &[data-crud=update] {

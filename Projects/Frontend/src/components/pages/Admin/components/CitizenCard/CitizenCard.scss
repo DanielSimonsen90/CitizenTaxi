@@ -22,30 +22,38 @@
     margin-bottom: 0;
   }
 
-  &__bookings ul {
-    display: flex;
-    flex-direction: column;
-    gap: 1ch;
-    padding: 0;
-    margin-top: 1ch;
+  &__bookings {
+    > header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-    li.booking-item {
-      background-color: var(--background-quaternary);
-      grid-template-areas: "header" "section" "footer";
-      grid-template-columns: 1fr;
+    ul {
+      display: flex;
+      flex-direction: column;
       gap: 1ch;
+      padding: 0;
+      margin-top: 1ch;
 
-      header {
-        justify-content: space-between;
-      }
+      li.booking-item {
+        background-color: var(--background-quaternary);
+        grid-template-areas: "header" "section" "footer";
+        grid-template-columns: 1fr;
+        gap: 1ch;
 
-      .button-container {
-        flex-direction: row-reverse;
-        justify-content: end;
-      }
+        header {
+          justify-content: space-between;
+        }
 
-      footer::before {
-        content: none;
+        .button-container {
+          flex-direction: row-reverse;
+          justify-content: end;
+        }
+
+        footer::before {
+          content: none;
+        }
       }
     }
   }

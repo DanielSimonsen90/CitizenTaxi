@@ -7,7 +7,7 @@ import { useNotification } from "providers/NotificationProvider";
 
 import OverviewLayout from "../../components/OverviewLayout";
 import { CitizenModal } from "../../components/EntityModifyModal";
-import { useCitizenModals } from "./AdminOverviewHooks";
+import { useBookingModals, useCitizenModals, useNoteModals } from "../AdminOverviewHooks";
 import { 
   onViewAllBookings, 
   onCreateCitizenSubmit, onEditCitizenSubmit, onDeleteCitizenSubmit 
@@ -17,7 +17,18 @@ export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
   const { setNotification } = useNotification();
 
-  const citizenModalProps = useCitizenModals({ onEditSubmit: (payload) => onEditCitizenSubmit(payload, setNotification) });
+  const citizenModalProps = useCitizenModals({ 
+    onEditSubmit: (payload) => onEditCitizenSubmit(payload, setNotification),
+    onCreateSubmit: (payload) => onCreateCitizenSubmit(payload, setNotification)
+  });
+  const bookingModalProps = useBookingModals({
+    onCreateSubmit: (payload) => { throw new Error("Not implemented") },
+    onEditSubmit: (payload) => { throw new Error("Not implemented") }
+  });
+  const noteModalProps = useNoteModals({
+    onCreateSubmit: (payload) => { throw new Error("Not implemented") },
+    onEditSubmit: (payload) => { throw new Error("Not implemented") }
+  });
 
   useAsyncEffectOnce(async () => {
     const response = await Request<Array<Citizen>, string>(`users?role=${Role.Citizen}`);
@@ -27,13 +38,9 @@ export default function AdminCitizenOverview() {
 
   return (
     <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens}
-      CreateModal={({ modalRef }) => (
-        <CitizenModal modalRef={modalRef} crud="create"
-          onSubmit={payload => onCreateCitizenSubmit(payload, setNotification)} />
-      )}
-
       {...citizenModalProps}
-
+      {...bookingModalProps}
+      {...noteModalProps}
       onViewAllBookings={onViewAllBookings}
     />
   );

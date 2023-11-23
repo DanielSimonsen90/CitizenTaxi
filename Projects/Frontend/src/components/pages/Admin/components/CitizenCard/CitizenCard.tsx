@@ -3,10 +3,17 @@ import { Button } from "danholibraryrjs";
 import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/components";
 import { Booking, Citizen } from "models/backend/common";
 import { useBookings } from "providers/CitizenProvider";
+import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 
-export type EntityModifyFunctions = 
-  Record<`on${'Change' | 'Delete'}Booking`, (booking: Booking) => void>
-  & Record<`on${'Change' | 'Delete'}Note`, () => void>
+type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
+  Record<`onCreate${TEntityName}`, () => void>
+  & Record<`onEdit${TEntityName}`, (entity: TEntity) => void>
+  & Record<`onDelete${TEntityName}`, (entity: TEntity) => void>
+)
+
+export type EntityModifyFunctions =
+& EntityOperations<'Booking', Booking>
+  & EntityOperations<'Note', any>
   & Record<'onViewAllBookings', () => void>;
 
 type Props = EntityModifyFunctions & {
@@ -14,11 +21,11 @@ type Props = EntityModifyFunctions & {
   showAllBookings?: boolean;
 };
 
-export default function CitizenCard({ 
-  citizen, 
+export default function CitizenCard({
+  citizen,
   showAllBookings,
-  onViewAllBookings, onChangeBooking, onDeleteBooking,
-  onChangeNote, onDeleteNote
+  onViewAllBookings, onCreateBooking, onEditBooking, onDeleteBooking,
+  onCreateNote, onEditNote, onDeleteNote
 }: Props) {
   const [latestBooking, bookings] = useBookings();
   const { name, email, note } = citizen;
@@ -31,42 +38,58 @@ export default function CitizenCard({
       </header>
 
       <section className="citizen-card__bookings">
-        <h2>Borgerens næste bestilling</h2>
+        <header>
+          <h2>Borgerens næste bestilling</h2>
+          <Button importance="secondary" crud="create" onClick={() => {
+            onCreateBooking()
+          }}>Book en taxa</Button>
+        </header>
         <ul>
           {latestBooking
             ? <BookingItem booking={latestBooking} isLatest
               onViewAllBookings={onViewAllBookings}
-              onChangeBooking={onChangeBooking ? () => onChangeBooking(latestBooking) : null}
+              onChangeBooking={onEditBooking ? () => onEditBooking(latestBooking) : null}
               onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(latestBooking) : null}
             />
             : <p className="muted">Borgeren har ingen bestillinger.</p>
           }
-          {showAllBookings 
-            && bookings 
-            && bookings.length > 0 
+          {showAllBookings
+            && bookings
+            && bookings.length > 0
             && bookings.map(bookings => (
-            <ul key={bookings[0].arrival.getDate()}>
-              {bookings.map(booking => (
-                <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
-                  onChangeBooking={onChangeBooking ? () => onChangeBooking(booking) : null}
-                  onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
-                />
-              ))}
-            </ul>
-          ))}
+              <ul key={bookings[0].arrival.getDate()}>
+                {bookings.map(booking => (
+                  <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
+                    onChangeBooking={onEditBooking ? () => onEditBooking(booking) : null}
+                    onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
+                  />
+                ))}
+              </ul>
+            ))}
         </ul>
       </section>
 
       <section className="citizen-card__note">
         <h2>Borgerens notat</h2>
         {note
-          ? <CitizenNoteInputs />
-          : <p className="muted">Borgeren har ingen note.</p>
+          ? (
+            <>
+              <CitizenNoteInputs />
+              <div className="button-container">
+                <Button type="button" importance="secondary" crud="delete" onClick={onDeleteNote}>Slet notat</Button>
+                <Button type="button" importance="secondary" crud="update" onClick={onEditNote}>Redigér notat</Button>
+              </div>
+            </>
+          )
+          : (
+            <>
+              <p className="muted">Borgeren har ingen note.</p>
+              <div className="button-container">
+                <Button type="button" crud="create" onClick={onCreateNote}>Tilføj note</Button>
+              </div>
+            </>
+          )
         }
-        <div className="button-container">
-          <Button type="button" importance="secondary" crud="delete" onClick={onDeleteNote}>Slet notat</Button>
-          <Button type="button" importance="secondary" crud="update" onClick={onChangeNote}>Redigér notat</Button>
-        </div>
       </section>
     </article>
   );
