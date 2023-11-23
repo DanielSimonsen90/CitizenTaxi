@@ -15,7 +15,7 @@ export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 
   // which means that they will be interpreted as non-nullable values.
   const [latest, allBookings] = useBookings(false);
-  const { citizen, setCitizen } = useCitizen(false);
+  const { citizen, setCitizen } = useCitizen(true);
 
   // We use a ref to the modal so we can call the showModal() and close() methods
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -50,14 +50,14 @@ export default function BookingDashboard() {
    */
   function onDeleteBooking(booking: Booking) {
     setModalContent(<DeleteBookingModalContent
-      booking={booking} citizen={citizen}
+      booking={booking} citizen={citizen ?? undefined}
       onCancel={() => modalRef.current?.close()}
       onConfirm={async () => {
         // When the citizen submits the form:
         // close the modal, delete the booking item and update the citizen
         modalRef.current?.close();
-        await RequestEntity(`bookings/${booking.id}`, citizen.id, { method: "DELETE" });
-        const updatedCitizen = await RequestCitizen(citizen.id);
+        await RequestEntity(`bookings/${booking.id}`, citizen?.id, { method: "DELETE" });
+        const updatedCitizen = await RequestCitizen(citizen?.id);
         if (updatedCitizen) setCitizen(updatedCitizen);
       }}
     />);
@@ -73,9 +73,15 @@ export default function BookingDashboard() {
       </Modal>
       <header>
         <h2>Dine bestillinger</h2>
-        <Button className="alt" onClick={() => navigate('bestil/1')}>Bestil en ny tid</Button>
+        <Button className="alt" 
+          disabled={!citizen?.note} title={!citizen?.note ? "Du skal have et notat for at kunne bestille en tid." : undefined}
+          onClick={() => citizen?.note && navigate('bestil/1')}>Bestil en ny tid</Button>
       </header>
       <main role="list">
+        {allBookings.length === 0 && <p className="muted" style={{
+          justifySelf: 'start'
+        }}>Du har ingen bestillinger endnu.</p>}
+
         {/* Map through all bookings, ordered by day */}
         {allBookings.map(bookings => (
           <ul key={bookings[0].arrival.getDate()}>

@@ -5,9 +5,12 @@ import { LoginPayload, UserModifyPayload } from "models/backend/business/models/
 import { Request } from "utils";
 import { useAuth } from "providers/AuthProvider";
 import { Guid } from "types";
+import { useNotification } from "providers/NotificationProvider";
 
 export default function Login() {
   const { login } = useAuth();
+  const { setNotification } = useNotification();
+
   // Toggle the create user form. This is stored in the URL 
   // so the doctor secretaries can share the link with the citizens 
   // without confusing them
@@ -24,7 +27,10 @@ export default function Login() {
 
     if (!userCreateResponse.success) {
       console.error(`Error for POST /users`, userCreateResponse.text, payload);
-      return alert(`Der skete en fejl med din oprettelse. - ${userCreateResponse.text}`);
+      return setNotification({
+        type: "error",
+        message: `Der skete en fejl med din oprettelse. - ${userCreateResponse.text}`
+      });
     }
 
     // If the user was created successfully, log them in immediately
@@ -32,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <main>
+    <main className="login">
       <header>
         <h1>Login</h1>
         <p className="muted">For at benytte {DOMAIN_NAME}, skal du logge ind.</p>

@@ -1,4 +1,8 @@
 .citizen-note-inputs {
+  &.loading {
+    text-align: center;
+  }
+
   label {
     font-size: 1.25rem;
     font-weight: 400;
@@ -7,5 +11,31 @@
   input {
     padding: .3rem;
     font-size: 1.2rem;
+  }
+}
+
+form .citizen-note-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, calc(50% - .5em));
+  grid-column-gap: 1em;
+  max-width: 100%;
+
+  .form-group {
+    margin: .5em 0;
+
+    &:last-child {
+      grid-column: 1 / -1;
+
+      input {
+        max-width: 100%;
+      }
+    }
+  }
+
+  input,
+  select {
+    background-color: var(--background-quaternary);
+    border: 1px solid var(--text-muted);
+    max-width: calc(100% - .6rem);
   }
 }

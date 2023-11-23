@@ -84,7 +84,7 @@
   @include createNotification(colors.$brand-alt);
 
   &--success {
-    @include createNotification(colors.$crud-success);
+    @include createNotification(colors.$crud-create);
   }
 
   &--error {

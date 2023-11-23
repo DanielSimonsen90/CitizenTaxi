@@ -55,8 +55,16 @@ button,
     @include createButton(colors.$brand-alt);
   }
 
+  &[data-crud=create] {
+    @include createButton(colors.$crud-create);
+  }
+
   &[data-crud=update] {
     @include createButton(colors.$crud-update);
+  }
+
+  &[data-crud=delete] {
+    @include createButton(colors.$crud-delete);
   }
 
   &.secondary {
@@ -68,6 +76,19 @@ button,
       @include createButton(transparent,
         colors.$brand-alt,
         colors.$brand-alt);
+    }
+
+    &[data-crud=create] {
+      @include createButton(transparent,
+        colors.$crud-create,
+        colors.$crud-create);
+    }
+
+    &[data-crud=update] {
+      @include createButton(transparent,
+        colors.$crud-update,
+        colors.$crud-update);
+    
     }
 
     &[data-crud=delete] {

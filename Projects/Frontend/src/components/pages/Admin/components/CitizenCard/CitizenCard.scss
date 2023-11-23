@@ -1,0 +1,129 @@
+.citizen-card {
+  display: grid;
+  grid-template-rows: 5em 12em 19em 2em;
+  gap: 1.25em;
+  padding: 1rem;
+  border-radius: 1em;
+  background-color: var(--background-tertiary);
+
+  > * {
+    margin-bottom: 1em;
+
+    &::before {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 100%;
+
+      position: absolute;
+      bottom: -1em;
+
+      background-color: var(--text-muted);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+
+      &::before {
+        content: none;
+      }
+    }
+  }
+
+  header {
+    display: block;
+    text-align: left;
+
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0;
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  &__bookings {
+    >header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 1ch;
+      padding: 0;
+      margin-top: 1ch;
+
+      &.bookings-list {
+        max-height: 10em;
+        overflow-y: auto;
+        border-radius: .5em;
+      }
+
+      li.booking-item {
+        background-color: var(--background-quaternary);
+        grid-template-areas: "header" "section" "footer";
+        grid-template-columns: 1fr;
+        gap: 1ch;
+
+        header {
+          justify-content: space-between;
+        }
+
+        .button-container {
+          flex-direction: row-reverse;
+          justify-content: end;
+        }
+
+        footer::before {
+          content: none;
+        }
+      }
+    }
+  }
+
+  &__note {
+    section.citizen-note-inputs {
+      display: grid;
+      grid-template-columns: repeat(2, calc(50% - .5em));
+      grid-column-gap: 1em;
+      max-width: 100%;
+    }
+
+    .form-group {
+      margin: .5em 0;
+
+      &:last-child {
+        grid-column: 1 / -1;
+
+        input {
+          max-width: 100%;
+        }
+      }
+    }
+
+    input,
+    select {
+      background-color: var(--background-quaternary);
+      border: 1px solid var(--text-muted);
+    }
+
+    .button-container {
+      margin-top: .25em;
+    }
+
+    &:has(p.muted) .button-container {
+      justify-content: center;
+      height: calc(100% - 2.5em);
+
+      button {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+dialog {
+  h1 {
+    color: var(--text-primary);
+    text-align: center;
+    font-size: 2.5rem;
+  }
+
+  :is(input, select) {
+    background-color: var(--background-quaternary);
+    font-size: 1.2rem;
+    padding-inline: .75ch;
+  }
+
+  label {
+    font-size: 1.2rem;
+  }
+
+  form .button-container {
+    margin-top: 2em;
+    // flex-direction: row-reverse;
+    // justify-content: flex-start;
+
+    button {
+      font-size: .85rem;
+    }
+  }
+}
+
+.password-container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+}

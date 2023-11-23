@@ -5,6 +5,8 @@ type Props = PropsWithChildren & BaseProps<HTMLDialogElement> & {
   modalRef: React.RefObject<HTMLDialogElement>;
 };
 
+export type { Props as ModalProps };
+
 export default function Modal({ children, modalRef: ref, ...props }: Props) {
   // useEffectOnce only runs once, when the component is mounted
   useEffectOnce(() => {

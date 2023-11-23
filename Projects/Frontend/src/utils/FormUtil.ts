@@ -7,22 +7,27 @@ export function serializeForm<T extends object>(form: HTMLFormElement) {
   const children = Array.from(form.children);
   children.pop(); // remove submit button
 
-  return children.reduce((acc, child) => {
-    // Find the next element after label; expected to be input or select
-    const element = child.querySelector('label + *') as HTMLInputElement | HTMLSelectElement;
-    if (!element) {
-      console.warn('serializeForm: element is null', {child});
-      return acc;
+  const formData = children.reduce((acc, child) => {
+    // Find inputs and selects
+    const elements = Array.from(child.querySelectorAll('input, select') as NodeListOf<HTMLInputElement | HTMLSelectElement>);
+    if (['INPUT', 'SELECT'].includes(child.tagName)) elements.push(child as HTMLInputElement | HTMLSelectElement);
+
+    for (const element of Array.from(elements)) {
+      const name = element.getAttribute('name');
+      if (!name) {
+        console.error('serializeForm: name attribute is required', { element });
+        throw new Error('name attribute is required');
+      }
+
+      const value = element.value;
+      if (value === null) console.warn(`${name}.value returned null`, { element });
+
+      console.log(`[FormUtil]`, { name, value });
+      acc[name] = /^\d$/.test(value) ? parseInt(value) : value;
     }
 
-    const name = element.getAttribute('name');
-    if (!name) throw new Error('name attribute is required');
+    return acc;
+  }, {} as Record<string, any>) as T;
 
-    const value = element.value;
-    if (value === null) console.warn(`${name}.value returned null`, {element});
-
-    // Using the JavaScript spread operator, 
-    // we can create a new object with the previous values and replace any value after
-    return { ...acc, [name]: value } as T;
-  }, {} as T);
+  return formData;
 }

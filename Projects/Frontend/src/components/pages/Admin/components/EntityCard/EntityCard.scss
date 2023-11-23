@@ -1,0 +1,38 @@
+ul:has(.entity-card) {
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  justify-content: center;
+  gap: 2em;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.entity-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-tertiary);
+  border-radius: .5rem;
+  padding: .5rem;
+  
+  &__title {
+    font-size: 2rem;
+    text-align: center;
+    margin: unset;
+  }
+
+  &__icon {
+    text-align: center;
+    font-size: 5rem;
+  }
+
+  &__description {
+    font-weight: 400;
+    max-width: 30ch;
+  }
+
+  &__open-btn {
+    margin-top: 1rem;
+  }
+}

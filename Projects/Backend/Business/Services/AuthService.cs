@@ -15,7 +15,7 @@ public class AuthService
     /// Configurable expiration times for access tokens
     /// </summary>
 #if DEBUG
-    public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.MaxValue;
+    public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromDays(1);
 #else
     public static readonly TimeSpan ACCESS_TOKEN_EXPIRATION = TimeSpan.FromMinutes(15);
 #endif

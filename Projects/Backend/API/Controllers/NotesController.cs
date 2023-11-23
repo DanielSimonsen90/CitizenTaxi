@@ -78,5 +78,6 @@ public class NotesController : BaseController
     /// <param name="noteId">Id of the <see cref="Note"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
     [HttpDelete("{noteId:Guid}")] public async Task<IActionResult> DeleteNote([FromRoute] Guid noteId) =>
+        // TODO: Delete all bookings from the citizen associated with the note
         await DeleteEntity<Note, NoteRepository>(noteId, unitOfWork.Notes);
 }

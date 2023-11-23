@@ -14,14 +14,15 @@
     width: 50%;
     min-width: 18em;
     height: fit-content;
-    max-height: 80%;
+    max-height: minmax(80%, 30em);
     padding: 0;
 
-    overflow: auto;
+    overflow: hidden auto;
     z-index: 10;
 
     .modal-content {
       padding: 1em;
+      overflow: auto;
 
       .button-container {
         margin-top: auto;

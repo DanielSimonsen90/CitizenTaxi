@@ -1,0 +1,23 @@
+.citizen-list {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(35em, 1fr));
+  gap: 1em;
+}
+
+.admin-overview {
+  margin-inline: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  >header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: unset;
+    }
+  }
+}
