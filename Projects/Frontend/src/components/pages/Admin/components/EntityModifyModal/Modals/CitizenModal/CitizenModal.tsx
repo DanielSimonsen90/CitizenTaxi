@@ -43,7 +43,7 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
       <form id={`${crud}-borger-form`} onSubmit={onCitizenSubmit}>
         <input type="hidden" name="id" value={defaultModel?.id} />
 
-        <CreateCitizenSection crud={crud} hidePassword={hidePassword}
+        <CreateCitizenSection crud={crud} hidePassword={hidePassword} defaultModel={defaultModel}
           setHidePassword={setHidePassword} />
 
         {!showNoteSection && (
