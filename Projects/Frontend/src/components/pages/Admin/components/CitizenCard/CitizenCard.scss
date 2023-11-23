@@ -5,6 +5,7 @@
   padding: 1rem;
   border-radius: 1em;
   background-color: var(--background-tertiary);
+  max-width: 33vw;
 
   header {
     display: block;
@@ -32,6 +33,7 @@
       background-color: var(--background-quaternary);
       grid-template-areas: "header" "section" "footer";
       grid-template-columns: 1fr;
+      gap: 1ch;
 
       header {
         justify-content: space-between;
@@ -51,8 +53,9 @@
   &__note {
     form.citizen-note-inputs {
       display: grid;
-      grid-template-columns: repeat(2, 13em);
+      grid-template-columns: repeat(2, 1fr);
       grid-column-gap: 1em;
+      max-width: 100%;
     }
 
     .form-group {
@@ -60,6 +63,10 @@
 
       &:last-child {
         grid-column: 1 / -1;
+
+        input {
+          max-width: 100%;
+        }
       }
     }
 
@@ -67,6 +74,7 @@
     select {
       background-color: var(--background-quaternary);
       border: 1px solid var(--text-muted);
+      max-width: 15vw;
     }
 
     .button-container {

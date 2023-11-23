@@ -24,7 +24,7 @@ export default function CitizenCard({
   const { name, email, note } = citizen;
 
   return (
-    <article className="citizen-card" role="listitem">
+    <article className="citizen-card" role="listitem" data-citizen-id={citizen.id}>
       <header>
         <h1>{name}</h1>
         {email ? <a href={`mailto:${email}`}>{email}</a> : <p className="muted">Borgeren har ingen email.</p>}

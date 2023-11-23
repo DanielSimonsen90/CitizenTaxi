@@ -35,7 +35,7 @@ export default function EntityModifyModal<
   }
   
   return (
-    <Modal modalRef={modalRef}>
+    <Modal modalRef={modalRef} className={`${entityName}-${crud}`}>
       <h1>{crud === 'create' ? 'Opret' 
         : crud === 'update' ? 'Opdater' 
         : 'Slet'} {entityName}</h1>

@@ -6,12 +6,12 @@
 }
 
 .admin-overview {
-  > header {
+  margin-inline: 1em;
+
+  >header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    margin-inline: 1em;
     width: calc(100% - 2em);
 
     h1 {

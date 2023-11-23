@@ -2,7 +2,7 @@ import { EntityCard, EntityCardProps } from "./components";
 
 export default function AdminDashboard() {  
   return (
-    <main>
+    <main className="admin-dashboard">
       <h1>Vælg hvilken information du vil se</h1>
       <ul>
         {entityProps.map(props => (

@@ -16,4 +16,6 @@ public class CitizenDTO : UserDTO
     /// List of Notes for the Citizen as a DTO to prevent circular references.
     /// </summary>
     public NoteDTO Note { get; set; }
+
+    public string Email { get; set; }
 }
