@@ -23,17 +23,14 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     const response = await Request<Guid>('users/authenticate', {
       method: 'POST',
       body: payload
-    }).catch(error => {
-      setNotification({ type: 'error', message: error.message });
-      return { success: false, text: error.message, data: null };
-    })
+    });
 
     setLogginIn(false);
-    if (!response.success) return alert(response.text);
+    if (!response.success) return setNotification({ type: 'error', message: response.text });
 
     const userId = response.data;
     const userResponse = await Request<User, Guid>(`users/${userId}`);
-    if (!userResponse.success) return alert(userResponse.text);
+    if (!userResponse.success) return setNotification({ type: 'error', message: userResponse.text });
 
     setUser(userResponse.data);
   });

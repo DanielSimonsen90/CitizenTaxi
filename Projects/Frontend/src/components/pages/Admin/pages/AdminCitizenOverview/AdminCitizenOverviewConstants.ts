@@ -1,10 +1,11 @@
-import { BaseModifyPayload, UserModifyPayload } from "models/backend/business/models/payloads";
+import { BaseModifyPayload, BookingModifyPayload, NoteModifyPayload, UserModifyPayload } from "models/backend/business/models/payloads";
 import { Citizen } from "models/backend/common";
 import { NotificationContextType } from "providers/NotificationProvider/NotificationProviderTypes";
 import { Guid } from "types";
 import { ApiEndpoints, Request } from "utils";
 
 export function onViewAllBookings(citizen: Citizen) {
+  // TODO: Implement redirect to list of all bookings for citizen
   throw new Error("Not implemented");
 }
 
@@ -35,6 +36,8 @@ async function onEntityCreateOrUpdate<
       ? `${modelName} blev ${type === 'create' ? 'oprettet' : 'opdateret'}.`
       : `Der skete en fejl under ${type === 'create' ? 'oprettelse' : 'opdatering'} af ${modelName}.`
   });
+
+  return response.success;
 }
 
 export const getCitizenSubmits = (
@@ -47,13 +50,13 @@ export const getCitizenSubmits = (
 export const getBookingSubmits = (
   setNotification: NotificationContextType['setNotification']
 ) => ({
-  onCreateBookingSubmit: (payload: any) => onEntityCreateOrUpdate(payload, 'bookings', "create", setNotification, "bestillingen"),
-  onEditBookingSubmit: (payload: any) => onEntityCreateOrUpdate(payload, 'bookings', "update", setNotification, "bestillingen")
+  onCreateBookingSubmit: (payload: BookingModifyPayload<false>) => onEntityCreateOrUpdate(payload, 'bookings', "create", setNotification, "bestillingen"),
+  onEditBookingSubmit: (payload: BookingModifyPayload<true>) => onEntityCreateOrUpdate(payload, 'bookings', "update", setNotification, "bestillingen")
 });
 
 export const getNoteSubmits = (
   setNotification: NotificationContextType['setNotification']
 ) => ({
-  onCreateNoteSubmit: (payload: any) => onEntityCreateOrUpdate(payload, 'notes', "create", setNotification, "notatet"),
-  onEditNoteSubmit: (payload: any) => onEntityCreateOrUpdate(payload, 'notes', "update", setNotification, "notatet")
+  onCreateNoteSubmit: (payload: NoteModifyPayload<false>) => onEntityCreateOrUpdate(payload, 'notes', "create", setNotification, "notatet"),
+  onEditNoteSubmit: (payload: NoteModifyPayload<true>) => onEntityCreateOrUpdate(payload, 'notes', "update", setNotification, "notatet")
 });

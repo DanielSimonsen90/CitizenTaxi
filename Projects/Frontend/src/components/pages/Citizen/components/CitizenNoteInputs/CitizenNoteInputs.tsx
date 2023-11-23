@@ -1,4 +1,5 @@
 import FormGroup from "components/shared/FormGroup";
+import { CarHeight, Companion, Follow, HelpingUtil } from "models/backend/common";
 import { useCitizen } from "providers/CitizenProvider";
 import { translateEnum } from "utils";
 
@@ -11,26 +12,26 @@ export default function CitizenNoteInputs() {
     ? <p className="citizen-note-inputs loading">Ingen note endnu.</p>
     // Render read-only inputs with the note data
     : (
-      <form className="citizen-note-inputs">
+      <section className="citizen-note-inputs">
         <FormGroup label="Bilhøjde" htmlFor="car-height">
-          <input type="text" id="car-height" tabIndex={-1} readOnly defaultValue={translateEnum(note.carHeight)} />
+          <input type="text" tabIndex={-1} readOnly defaultValue={translateEnum(note.carHeight, CarHeight)} />
         </FormGroup>
 
         <FormGroup label="Hjælpemidler" htmlFor="helping-util">
-          <input type="text" id="helping-util" tabIndex={-1} readOnly defaultValue={translateEnum(note.helpingUtil)} />
+          <input type="text" tabIndex={-1} readOnly defaultValue={translateEnum(note.helpingUtil, HelpingUtil)} />
         </FormGroup>
 
         <FormGroup label="Ledsager" htmlFor="companion">
-          <input type="text" id="companion" tabIndex={-1} readOnly defaultValue={translateEnum(note.companion)} />
+          <input type="text" tabIndex={-1} readOnly defaultValue={translateEnum(note.companion, Companion)} />
         </FormGroup>
 
         <FormGroup label="Følges" htmlFor="follow">
-          <input type="text" id="follow" tabIndex={-1} readOnly defaultValue={translateEnum(note.follow)} />
+          <input type="text" tabIndex={-1} readOnly defaultValue={translateEnum(note.follow, Follow)} />
         </FormGroup>
 
         <FormGroup label="Bopæl" htmlFor="residence">
-          <input type="text" id="residence" tabIndex={-1} readOnly defaultValue={note.residence} />
+          <input type="text" tabIndex={-1} readOnly defaultValue={note.residence} />
         </FormGroup>
-      </form>
+      </section>
     );
 }

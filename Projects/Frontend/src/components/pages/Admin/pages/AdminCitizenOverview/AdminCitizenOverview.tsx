@@ -13,7 +13,7 @@ export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
   const { setNotification } = useNotification();
 
-  const citizenModalProps = useCitizenModals();
+  const { CreateCitizenModal, ...citizenModalProps } = useCitizenModals();
   const bookingModalProps = useBookingModals();
   const noteModalProps = useNoteModals();
 
@@ -25,6 +25,7 @@ export default function AdminCitizenOverview() {
 
   return (
     <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens}
+      mainCreateModal={CreateCitizenModal}
       {...citizenModalProps}
       {...bookingModalProps}
       {...noteModalProps}

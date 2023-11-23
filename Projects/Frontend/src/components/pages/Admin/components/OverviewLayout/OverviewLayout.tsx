@@ -10,24 +10,31 @@ import { CitizenProvider } from "providers/CitizenProvider";
 import { CitizenCard } from "../CitizenCard";
 import OverviewLayoutModals from "./OverviewLayoutModals";
 
-export type ModifyCitizenModal<P = {}> = FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen; } & P>;
-type ModifyEntityModalProps<TEntityName extends string, TEntity extends BaseEntity> = (
+export type ModifyEntityModal<
+  TEntity extends BaseEntity, P = {}
+> = FunctionComponent<Pick<ModalProps, 'modalRef'> & { selected?: TEntity; } & P>;
+
+type ModifyEntityModalProps<
+  TEntityName extends string, 
+  TEntity extends BaseEntity,
+  AdditionalProps = {}
+> = (
   & Record<
     `${'create' | 'edit' | 'delete'}${TEntityName}ModalRef`, 
     RefObject<HTMLDialogElement>>
   & Record<
     `Create${TEntityName}Modal`, 
-    FunctionComponent<Pick<ModalProps, 'modalRef'>>>
+    FunctionComponent<Pick<ModalProps, 'modalRef'> & AdditionalProps>>
   & Record<
-    `${'Create' | 'Edit' | 'Delete'}${TEntityName}Modal`, 
-    ModifyCitizenModal<Partial<Record<Lowercase<TEntityName>, TEntity>>>
+    `${'Edit' | 'Delete'}${TEntityName}Modal`, 
+    ModifyEntityModal<TEntity, AdditionalProps>
   >
 )
 export type EntityModalProps = Partial<(
   & ModifyEntityModalProps<'Citizen', Citizen>
-  & ModifyEntityModalProps<'Booking', Booking>
-  & ModifyEntityModalProps<'Note', Note>
-)>
+  & ModifyEntityModalProps<'Booking', Booking, { selectedCitizen?: Citizen }>
+  & ModifyEntityModalProps<'Note', Note, { selectedCitizen?: Citizen }>
+)> & Record<'mainCreateModal', FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>>
 
 type Props = EntityModalProps & {
   pageTitle: string;
@@ -44,19 +51,19 @@ export default function OverviewLayout({
 }: Props) {
   const [selectedCitizen, setSelectedCitizen] = useState<Citizen>();
   const [selectedBooking, setSelectedBooking] = useState<Booking>();
-  const createModalRef = useRef<HTMLDialogElement>(null);
+  const mainCreateModalRef = useRef<HTMLDialogElement>(null);
   
   return (
     <main className="admin-overview">
       <header>
         <Link to='/' className="button secondary alt">Tilbage til oversigt</Link>
         <h1>{pageTitle}</h1>
-        <Button type="button" importance="primary" className="alt"
-          onClick={() => createModalRef.current?.showModal()}
+        <Button type="button" importance="primary" crud="create"
+          onClick={() => mainCreateModalRef.current?.showModal()}
         >Opret {entity}</Button>
       </header>
 
-      <OverviewLayoutModals {...{ selectedBooking, selectedCitizen, ...modalProps }} />
+      <OverviewLayoutModals {...{ selectedBooking, selectedCitizen, ...modalProps, mainCreateModalRef }} />
 
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (

@@ -18,7 +18,7 @@ export default function SignUpContainer({ onSubmit }: Props) {
     username: "",
     password: "",
     email: "",
-    role: translateEnum(Role.Citizen)
+    role: translateEnum(Role.Citizen, Role)
   });
 
   return (
@@ -61,9 +61,9 @@ export default function SignUpContainer({ onSubmit }: Props) {
           <select id="create-role" required name="role">
             {/* Map over all Role enum values and create an option for each */}
             {getListFromEnum(Role).map(role => (
-              <option key={Role[role]} value={translateEnum(role)} 
+              <option key={Role[role]} value={translateEnum(role, Role)} 
                 onChange={e => setParams(prev => ({ ...prev, role: e.currentTarget.value }))}>
-                {translateEnum(role)}
+                {translateEnum(role, Role)}
               </option>
             ))}
           </select>

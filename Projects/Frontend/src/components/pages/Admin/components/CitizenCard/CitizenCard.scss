@@ -83,7 +83,7 @@
   }
 
   &__note {
-    form.citizen-note-inputs {
+    section.citizen-note-inputs {
       display: grid;
       grid-template-columns: repeat(2, calc(50% - .5em));
       grid-column-gap: 1em;

@@ -9,7 +9,7 @@ type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = 
   Record<`onCreate${TEntityName}`, () => void>
   & Record<`onEdit${TEntityName}`, (entity: TEntity) => void>
   & Record<`onDelete${TEntityName}`, (entity: TEntity) => void>
-)
+);
 
 export type EntityModifyFunctions =
   & Omit<EntityOperations<'Citizen', Citizen>, 'onCreateCitizen'>
@@ -43,32 +43,33 @@ export default function CitizenCard({
         <header>
           <h2>Borgerens næste bestilling</h2>
           <Button importance="secondary" crud="create" onClick={() => {
-            onCreateBooking()
+            onCreateBooking();
           }}>Book en taxa</Button>
         </header>
-        <ul>
-          {latestBooking
-            ? <BookingItem booking={latestBooking} isLatest
+        {latestBooking ?
+          <ul>
+            <BookingItem booking={latestBooking} isLatest
               onViewAllBookings={onViewAllBookings}
               onChangeBooking={onEditBooking ? () => onEditBooking(latestBooking) : null}
               onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(latestBooking) : null}
             />
-            : <p className="muted">Borgeren har ingen bestillinger.</p>
-          }
-          {showAllBookings
-            && bookings
-            && bookings.length > 0
-            && bookings.map(bookings => (
-              <ul key={bookings[0].arrival.getDate()}>
-                {bookings.map(booking => (
-                  <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
-                    onChangeBooking={onEditBooking ? () => onEditBooking(booking) : null}
-                    onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
-                  />
-                ))}
-              </ul>
-            ))}
-        </ul>
+            {showAllBookings
+              && bookings
+              && bookings.length > 0
+              && bookings.map(bookings => (
+                <ul key={bookings[0].arrival.getDate()}>
+                  {bookings.map(booking => (
+                    <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
+                      onChangeBooking={onEditBooking ? () => onEditBooking(booking) : null}
+                      onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
+                    />
+                  ))}
+                </ul>
+              ))
+            }
+          </ul>
+          : <p className="muted">Borgeren har ingen bestillinger.</p>
+        }
       </section>
 
       <section className="citizen-card__note">

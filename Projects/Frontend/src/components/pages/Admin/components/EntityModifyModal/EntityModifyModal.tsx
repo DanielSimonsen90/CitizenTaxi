@@ -1,6 +1,7 @@
 import Modal from "components/shared/Modal";
 import { ButtonProps } from "danholibraryrjs";
 import { BaseModifyPayload } from "models/backend/business/models/payloads/BaseModifyPayload";
+import { Citizen } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { serializeForm } from "utils";
 
@@ -14,10 +15,15 @@ type Props<TEntity, TPayload> = {
 
   defaultModel?: TEntity;
   payload: TPayload;
-  onSubmit(model: TPayload): void;
+  onSubmit(model: TPayload): Promise<boolean>;
+
+  selectedCitizen?: Citizen;
 }
 
-export type { Props as EntityModifyModalProps };
+export type EntityModifyExtendProps<TEntity, TPayload> = Pick<
+  Props<TEntity, TPayload>,
+  'defaultModel' | 'crud' | 'modalRef' | 'onSubmit' | 'selectedCitizen'
+>;
 
 export default function EntityModifyModal<
   TPayload extends BaseModifyPayload<any>,
@@ -25,7 +31,7 @@ export default function EntityModifyModal<
 >({ 
   modalRef, 
   crud, entityName,
-  children,
+  children, selectedCitizen,
   ...props
 }: Props<TEntity, TPayload>) {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,8 +46,11 @@ export default function EntityModifyModal<
         : crud === 'update' ? 'Opdater' 
         : 'Slet'} {entityName}</h1>
       <form onSubmit={onSubmit}>
+        {crud !== 'create' && <input type="hidden" name="id" value={props.defaultModel?.id} />}
+        <input type="hidden" name="citizenId" value={selectedCitizen?.id} />
+
         {children}
-      </form>
+      </form> 
     </Modal>
   );
 }

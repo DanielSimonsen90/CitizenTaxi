@@ -33,14 +33,12 @@ export default function EntityDeleteModal({
   }
 
   return (
-    <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId}>
+    <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId || undefined}>
       <form onSubmit={onSubmit}>
         <header>
           <h1>Du er ved at slette {title}</h1>
           <p>Er du sikker på denne handling?</p>
-          <p className="muted">
-            <strong>Bemærk:</strong> Denne handling kan ikke fortrydes.
-          </p>
+          <p><strong>Bemærk:</strong> Denne handling kan ikke fortrydes.</p>
         </header>
 
         <section className="delete-preview">
