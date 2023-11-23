@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useAsyncEffect } from 'danholibraryrjs';
 
 import { Nullable } from 'types';
-import { Booking, Citizen, Note } from 'models/backend/common';
+import { Booking, Citizen, Note, Role } from 'models/backend/common';
 
 import { CitizenProviderContext, RequestBookings, RequestCitizen, RequestNote } from './CitizenProviderConstants';
 import { useAuth } from 'providers/AuthProvider';
@@ -23,7 +23,8 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
 
   // Update citizen entities when citizen changes
   useAsyncEffect(async () => {
-    if (!citizen?.id) return;
+    if (!citizen?.id 
+      || citizen.role !== Role.Citizen) return;
 
     const note = await RequestNote(citizen.id);
     const bookings = await RequestBookings(citizen.id);
