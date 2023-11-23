@@ -1,10 +1,12 @@
-import { Button } from "danholibraryrjs";
+import { RefObject, useState } from "react";
+import { Button, FunctionComponent } from "danholibraryrjs";
 
 import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/components";
 import { Booking, Citizen } from "models/backend/common";
-import { useBookings } from "providers/CitizenProvider";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
-import { useState } from "react";
+import { useBookings } from "providers/CitizenProvider";
+
+import { useBookingModals, useCitizenModals, useNoteModals } from "../../pages/AdminOverviewHooks";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -15,20 +17,38 @@ type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = 
 export type EntityModifyFunctions =
   & Omit<EntityOperations<'Citizen', Citizen>, 'onCreateCitizen'>
   & EntityOperations<'Booking', Booking>
-  & EntityOperations<'Note', any>
+  & EntityOperations<'Note', any>;
 
-type Props = EntityModifyFunctions & {
-  citizen: Citizen;
+type ModalOpenProps = {
+  modal: FunctionComponent;
+  modalRef: RefObject<HTMLDialogElement>;
 };
 
-export default function CitizenCard({
-  citizen,
-  onEditCitizen, onDeleteCitizen,
-  onCreateBooking, onEditBooking, onDeleteBooking,
-  onCreateNote, onEditNote, onDeleteNote
-}: Props) {
+type Props = {
+  citizen: Citizen;
+  onModalOpen: (props: ModalOpenProps) => void;
+};
+
+export default function CitizenCard({ citizen, onModalOpen }: Props) {
   const [latestBooking, bookings] = useBookings();
   const [showAllBookings, setShowAllBookings] = useState(false);
+
+  const {
+    createBookingModalRef, CreateBookingModal,
+    editBookingModalRef, EditBookingModal,
+    deleteBookingModalRef, DeleteBookingModal
+  } = useBookingModals();
+  const {
+    createNoteModalRef, CreateNoteModal,
+    editNoteModalRef, EditNoteModal,
+    deleteNoteModalRef, DeleteNoteModal
+  } = useNoteModals();
+
+  const {
+    editCitizenModalRef, EditCitizenModal,
+    deleteCitizenModalRef, DeleteCitizenModal
+  } = useCitizenModals();
+
   const { name, email, note } = citizen;
 
   return (
@@ -41,16 +61,17 @@ export default function CitizenCard({
       <section className="citizen-card__bookings">
         <header>
           <h2>Borgerens næste bestilling</h2>
-          <Button importance="secondary" crud="create" onClick={() => {
-            onCreateBooking();
-          }}>Book en taxa</Button>
+          <Button importance="secondary" crud="create" onClick={() => onModalOpen({
+            modal: CreateBookingModal,
+            modalRef: createBookingModalRef
+          })}>Book en taxa</Button>
         </header>
         {latestBooking ?
           <ul className="bookings-list">
             <BookingItem booking={latestBooking} isLatest
               onViewAllBookings={() => setShowAllBookings(v => !v)}
-              onChangeBooking={onEditBooking ? () => onEditBooking(latestBooking) : null}
-              onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(latestBooking) : null}
+              onChangeBooking={() => onModalOpen({ modal: EditBookingModal, modalRef: editBookingModalRef })}
+              onDeleteBooking={() => onModalOpen({ modal: DeleteBookingModal, modalRef: deleteBookingModalRef })}
             />
             {showAllBookings
               && bookings
@@ -59,8 +80,8 @@ export default function CitizenCard({
                 <ul key={bookings[0].arrival.getDate()}>
                   {bookings.map(booking => (
                     <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
-                      onChangeBooking={onEditBooking ? () => onEditBooking(booking) : null}
-                      onDeleteBooking={onDeleteBooking ? () => onDeleteBooking(booking) : null}
+                      onChangeBooking={() => onModalOpen({ modal: EditBookingModal, modalRef: editBookingModalRef })}
+                      onDeleteBooking={() => onModalOpen({ modal: DeleteBookingModal, modalRef: deleteBookingModalRef })}
                       onViewAllBookings={() => setShowAllBookings(v => !v)}
                     />
                   ))}
@@ -79,8 +100,16 @@ export default function CitizenCard({
             <>
               <CitizenNoteInputs />
               <div className="button-container">
-                <Button type="button" importance="secondary" crud="delete" onClick={onDeleteNote}>Slet notat</Button>
-                <Button type="button" importance="secondary" crud="update" onClick={onEditNote}>Redigér notat</Button>
+                <Button type="button" importance="secondary" crud="delete"
+                  onClick={() => onModalOpen({
+                    modal: () => <DeleteNoteModal modalRef={deleteNoteModalRef} selected={note} selectedCitizen={citizen} />,
+                    modalRef: deleteNoteModalRef
+                  })}
+                >Slet notat</Button>
+                <Button type="button" importance="secondary" crud="update" onClick={() => onModalOpen({
+                  modal: () => <EditNoteModal modalRef={editNoteModalRef} selected={note} selectedCitizen={citizen} />,
+                  modalRef: editNoteModalRef
+                })}>Redigér notat</Button>
               </div>
             </>
           )
@@ -88,7 +117,10 @@ export default function CitizenCard({
             <>
               <p className="muted">Borgeren har ingen note.</p>
               <div className="button-container">
-                <Button type="button" crud="create" onClick={onCreateNote}>Tilføj notat</Button>
+                <Button type="button" crud="create" onClick={() => onModalOpen({
+                  modal: () => <CreateNoteModal modalRef={createNoteModalRef} selectedCitizen={citizen} />,
+                  modalRef: createNoteModalRef
+                })}>Tilføj notat</Button>
               </div>
             </>
           )
@@ -97,10 +129,16 @@ export default function CitizenCard({
 
       <footer className="button-container">
         <Button type="button" importance="secondary" crud="delete"
-          onClick={() => onDeleteCitizen(citizen)}
+          onClick={() => onModalOpen({
+            modal: () => <DeleteCitizenModal modalRef={deleteCitizenModalRef} selected={citizen} />,
+            modalRef: deleteCitizenModalRef
+          })}
         >Slet borger</Button>
         <Button type="button" importance="secondary" crud="update"
-          onClick={() => onEditCitizen(citizen)}
+          onClick={() => onModalOpen({
+            modal: () => <EditCitizenModal modalRef={editCitizenModalRef} selected={citizen} />,
+            modalRef: editCitizenModalRef
+          })}
         >Redigér borger</Button>
       </footer>
     </article>

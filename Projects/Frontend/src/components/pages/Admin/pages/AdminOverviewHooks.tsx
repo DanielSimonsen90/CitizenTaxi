@@ -68,17 +68,18 @@ export function useNoteModals() {
   const editNoteModalRef = useRef<HTMLDialogElement>(null);
   const deleteNoteModalRef = useRef<HTMLDialogElement>(null);
 
-  const CreateNoteModal: EntityModalProps['CreateNoteModal'] = (props) => 
+  const CreateNoteModal: EntityModalProps['CreateNoteModal'] = (props) =>
     <NoteModal crud="create" onSubmit={onCreateNoteSubmit} {...props} />;
-  const EditNoteModal: EntityModalProps['EditNoteModal'] = ({ selected, ...props }) => 
+  const EditNoteModal: EntityModalProps['EditNoteModal'] = ({ selected, ...props }) =>
     <NoteModal crud="update" onSubmit={onEditNoteSubmit} defaultModel={selected} {...props} />;
-  const DeleteNoteModal: EntityModalProps['DeleteNoteModal'] = ({ selected, ...props }) => 
+  const DeleteNoteModal: EntityModalProps['DeleteNoteModal'] = ({ selected, ...props }) =>
     <DeleteEntityModal title="Notat" endpoint="notes" entityId={selected?.id || ""} {...props}
-    preview={() => (
-      <CitizenProvider citizen={props.selectedCitizen}>
-        <CitizenNoteInputs />
-      </CitizenProvider>
-    )} />;
+      preview={() => (
+        <CitizenProvider citizen={props.selectedCitizen}>
+          <CitizenNoteInputs />
+        </CitizenProvider>
+      )}
+    />;
 
   return {
     createNoteModalRef, editNoteModalRef, deleteNoteModalRef,

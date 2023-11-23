@@ -1,6 +1,6 @@
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, FunctionComponent } from "danholibraryrjs";
+import { Button, FunctionComponent, useUpdateEffect } from "danholibraryrjs";
 
 import { ModalProps } from "components/shared/Modal/Modal";
 import { Booking, Citizen, Note } from "models/backend/common";
@@ -8,7 +8,7 @@ import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { CitizenProvider } from "providers/CitizenProvider";
 
 import { CitizenCard } from "../CitizenCard";
-import OverviewLayoutModals from "./OverviewLayoutModals";
+import { useModalContentState } from "components/shared/Modal/ModalHooks";
 
 export type ModifyEntityModal<
   TEntity extends BaseEntity, P = {}
@@ -34,72 +34,46 @@ export type EntityModalProps = Partial<(
   & ModifyEntityModalProps<'Citizen', Citizen>
   & ModifyEntityModalProps<'Booking', Booking, { selectedCitizen?: Citizen }>
   & ModifyEntityModalProps<'Note', Note, { selectedCitizen?: Citizen }>
-)> & Record<'mainCreateModal', FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>>
+)>
 
-type Props = EntityModalProps & {
+type Props = {
   pageTitle: string;
   entity: string;
   citizens: Array<Citizen>;
+  mainCreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>;
 };
 
-export default function OverviewLayout({
-  pageTitle, entity, citizens,
-  ...modalProps
-}: Props) {
-  const [selectedCitizen, setSelectedCitizen] = useState<Citizen>();
-  const [selectedBooking, setSelectedBooking] = useState<Booking>();
+export default function OverviewLayout({ pageTitle, entity, citizens, mainCreateModal }: Props) {
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
+  const [modalRef, setModalRef] = useState<RefObject<HTMLDialogElement> | undefined>(undefined);
+  const [Modal, setModal] = useModalContentState();
   
+  useUpdateEffect(() => {
+    modalRef?.current?.showModal();
+  }, [Modal, modalRef]);
+
   return (
     <main className="admin-overview">
       <header>
         <Link to='/' className="button secondary alt">Tilbage til oversigt</Link>
         <h1>{pageTitle}</h1>
         <Button type="button" importance="primary" crud="create"
-          onClick={() => mainCreateModalRef.current?.showModal()}
+          onClick={() => {
+            setModalRef(mainCreateModalRef);
+            setModal(mainCreateModal({ modalRef: mainCreateModalRef }));
+          }}
         >Opret {entity}</Button>
       </header>
 
-      <OverviewLayoutModals {...{ selectedBooking, selectedCitizen, ...modalProps, mainCreateModalRef }} />
+      <Modal />
 
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
             <CitizenCard citizen={citizen}
-              onCreateBooking={() => {
-                setSelectedBooking(undefined);
-                modalProps.createBookingModalRef?.current?.showModal();
-              }}
-              onCreateNote={() => {
-                modalProps.createNoteModalRef?.current?.showModal();
-              }}
-
-              onEditCitizen={citizen => {
-                setSelectedCitizen(citizen);
-                modalProps.editCitizenModalRef?.current?.showModal();
-              }}
-              onEditBooking={booking => {
-                setSelectedCitizen(citizen);
-                setSelectedBooking(booking);
-                modalProps.editBookingModalRef?.current?.showModal();
-              }}
-              onEditNote={() => {
-                setSelectedCitizen(citizen);
-                modalProps.editNoteModalRef?.current?.showModal();
-              }}  
-
-              onDeleteCitizen={citizen => {
-                setSelectedCitizen(citizen);
-                modalProps.deleteCitizenModalRef?.current?.showModal();
-              }}
-              onDeleteBooking={booking => {
-                setSelectedCitizen(citizen);
-                setSelectedBooking(booking);
-                modalProps.deleteBookingModalRef?.current?.showModal();
-              }}
-              onDeleteNote={() => {
-                setSelectedCitizen(citizen);
-                modalProps.deleteNoteModalRef?.current?.showModal();
+              onModalOpen={({ modal: Modal, modalRef }) => {
+                setModalRef(modalRef);
+                setModal(<Modal />);
               }}
             />
           </CitizenProvider>
