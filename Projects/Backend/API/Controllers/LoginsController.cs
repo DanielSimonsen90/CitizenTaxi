@@ -13,10 +13,11 @@ public class LoginsController : BaseController
     public LoginsController(UnitOfWork uow) : base(uow) {}
 
     [HttpGet] public IActionResult GetLogins() => Ok(unitOfWork.Logins.GetAll());
-    [HttpDelete("{loginId:Guid}")] public IActionResult DeleteLogin(Guid loginId)
+    [HttpDelete("{loginId:Guid}")] public async Task<IActionResult> DeleteLogin(Guid loginId)
     {
         if (!unitOfWork.Logins.Exists(loginId)) return NotFound();
         unitOfWork.Logins.Delete(loginId);
+        await unitOfWork.SaveChangesAsync();
         return NoContent();
     }
 }

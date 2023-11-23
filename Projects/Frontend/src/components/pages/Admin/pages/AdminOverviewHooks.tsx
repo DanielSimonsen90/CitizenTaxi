@@ -5,7 +5,7 @@ import { useNotification } from "providers/NotificationProvider";
 import { EntityModalProps, ModifyEntityModal } from "../components/OverviewLayout/OverviewLayout";
 import { CitizenModal, NoteModal, DeleteEntityModal } from "../components/EntityModifyModal";
 import { getBookingSubmits, getCitizenSubmits, getNoteSubmits } from "./AdminCitizenOverview/AdminCitizenOverviewConstants";
-import { Citizen, Note } from "models/backend/common";
+import { Citizen } from "models/backend/common";
 import { CitizenNoteInputs } from "components/pages/Citizen/components";
 import { CitizenProvider } from "providers/CitizenProvider";
 

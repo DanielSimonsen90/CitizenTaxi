@@ -8,7 +8,7 @@ import { serializeForm, translateEnum, getListFromEnum, revertTranslationForEnum
 
 type Props = {
   onSubmit: (payload: UserModifyPayload<false>) => void;
-}
+};
 
 export default function SignUpContainer({ onSubmit }: Props) {
   // Save the form state in the URL so the user can refresh the page without losing their data
@@ -27,7 +27,7 @@ export default function SignUpContainer({ onSubmit }: Props) {
         <h2>Har du ikke en konto?</h2>
         <p className="secondary">Du kan oprette en konto her</p>
         <p className="muted disclaimer">
-          I produktion ville borgerne skulle ringe til lægesekretærene, 
+          I produktion ville borgerne skulle ringe til lægesekretærene,
           så de kan blive oprettet i systemet med deres notat.
         </p>
       </header>
@@ -39,18 +39,8 @@ export default function SignUpContainer({ onSubmit }: Props) {
         onSubmit({
           ...data,
           role: revertTranslationForEnum(data.role, Role)
-        })
+        });
       }}>
-        <FormGroup label="Brugernavn" htmlFor="create-username">
-          <input id="create-username" name="username" required type="text" value={params.username} 
-            onChange={e => setParams(prev => ({ ...prev, username: e.currentTarget.value }))} 
-          />
-        </FormGroup>
-
-        <FormGroup label="Kodeord" htmlFor="create-password">
-          <input id="create-password" name="password" required type="password" />
-        </FormGroup>
-
         <FormGroup label="Navn" htmlFor="create-name">
           <input id="create-name" name="name" required type="text" value={params.name}
             onChange={e => setParams(prev => ({ ...prev, name: e.currentTarget.value }))}
@@ -61,7 +51,7 @@ export default function SignUpContainer({ onSubmit }: Props) {
           <select id="create-role" required name="role">
             {/* Map over all Role enum values and create an option for each */}
             {getListFromEnum(Role).map(role => (
-              <option key={Role[role]} value={translateEnum(role, Role)} 
+              <option key={Role[role]} value={translateEnum(role, Role)}
                 onChange={e => setParams(prev => ({ ...prev, role: e.currentTarget.value }))}>
                 {translateEnum(role, Role)}
               </option>
@@ -75,7 +65,19 @@ export default function SignUpContainer({ onSubmit }: Props) {
           />
         </FormGroup>
 
-        <Button type="submit">Opret konto</Button>
+        <FormGroup label="Brugernavn" htmlFor="create-username">
+          <input id="create-username" name="username" required type="text" value={params.username}
+            onChange={e => setParams(prev => ({ ...prev, username: e.currentTarget.value }))}
+          />
+        </FormGroup>
+
+        <FormGroup label="Kodeord" htmlFor="create-password">
+          <input id="create-password" name="password" required type="password" />
+        </FormGroup>
+
+        <div className="button-container">
+          <Button type="submit">Opret konto</Button>
+        </div>
       </form>
     </section>
   );

@@ -151,7 +151,7 @@ public class UsersController : BaseController
         // Role of the payload determines which entity to delete and which repository to use.
         IsAdmin(userId)
             ? await DeleteEntity<Admin, AdminRepository>(userId, unitOfWork.Admins)
-            // TODO: Delete note and all bookings from the citizen
+            // TODO: Delete note, login and all bookings from the citizen
             : await DeleteEntity<Citizen, CitizenRepository>(userId, unitOfWork.Citizens);
     #endregion
 

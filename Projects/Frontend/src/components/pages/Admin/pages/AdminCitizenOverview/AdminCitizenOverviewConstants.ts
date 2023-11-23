@@ -1,5 +1,4 @@
 import { BaseModifyPayload, BookingModifyPayload, NoteModifyPayload, UserModifyPayload } from "models/backend/business/models/payloads";
-import { Citizen } from "models/backend/common";
 import { NotificationContextType } from "providers/NotificationProvider/NotificationProviderTypes";
 import { Guid } from "types";
 import { ApiEndpoints, Request } from "utils";

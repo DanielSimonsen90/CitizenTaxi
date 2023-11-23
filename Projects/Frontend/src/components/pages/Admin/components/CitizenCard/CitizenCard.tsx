@@ -56,18 +56,23 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
     <article className="citizen-card" role="listitem" data-citizen-id={citizen.id}>
       <header>
         <h1>{name}</h1>
-        {email ? <a href={`mailto:${email}`}>{email}</a> : <p className="muted">Borgeren har ingen email.</p>}
+        {email
+          ? <a href={`mailto:${email}`} onClick={e => {
+              e.preventDefault();
+              alert('Du kunne have sendt en email til borgeren via din mailapplikation. Da dette er en demo, er det ikke muligt.');
+            }}>{email}</a>
+          : <p className="muted">Borgeren har ingen email.</p>}
       </header>
 
       <section className="citizen-card__bookings">
         <header>
           <h2>Borgerens næste bestilling</h2>
-          <Button importance="secondary" crud="create" 
-            disabled={!note} title={!note ? `Du skal oprette et notat til ${firstName}, før du må bestille en taxa.` : undefined} 
+          <Button importance="secondary" crud="create"
+            disabled={!note} title={!note ? `Du skal oprette et notat til ${firstName}, før du må bestille en taxa.` : undefined}
             onClick={() => onModalOpen({
-            modal: CreateBookingModal,
-            modalRef: createBookingModalRef
-          })}>Bestil en taxa til {firstName}</Button>
+              modal: CreateBookingModal,
+              modalRef: createBookingModalRef
+            })}>Bestil en taxa til {firstName}</Button>
         </header>
         {latestBooking ?
           <ul className="bookings-list">
