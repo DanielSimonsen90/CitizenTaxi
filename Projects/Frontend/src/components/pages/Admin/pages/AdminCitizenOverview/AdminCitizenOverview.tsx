@@ -6,15 +6,12 @@ import { Citizen, Role } from "models/backend/common";
 import { useNotification } from "providers/NotificationProvider";
 
 import OverviewLayout from "../../components/OverviewLayout";
-import { useBookingModals, useCitizenModals, useNoteModals } from "../AdminOverviewModalHooks";
+import { useCitizenModals } from "../AdminOverviewModalHooks";
 
 export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
   const { setNotification } = useNotification();
-
-  const { CreateCitizenModal, ...citizenModalProps } = useCitizenModals();
-  const bookingModalProps = useBookingModals();
-  const noteModalProps = useNoteModals();
+  const { CreateCitizenModal } = useCitizenModals();
 
   useAsyncEffectOnce(async () => {
     const response = await Request<Array<Citizen>, string>(`users?role=${Role.Citizen}`);
@@ -25,9 +22,6 @@ export default function AdminCitizenOverview() {
   return (
     <OverviewLayout pageTitle="Borgerside" entity="borger" citizens={citizens}
       mainCreateModal={CreateCitizenModal}
-      {...citizenModalProps}
-      {...bookingModalProps}
-      {...noteModalProps}
     />
   );
 }

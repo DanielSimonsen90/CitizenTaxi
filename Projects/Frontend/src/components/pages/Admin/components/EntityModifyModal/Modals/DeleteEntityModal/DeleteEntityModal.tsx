@@ -1,51 +1,39 @@
-import { RefObject } from "react";
+import { FormEvent, RefObject } from "react";
 import { Button, FunctionComponent } from "danholibraryrjs";
 
 import Modal from "components/shared/Modal";
-import { useNotification } from "providers/NotificationProvider";
 import { Guid } from "types";
-import { ApiEndpoints, Request } from "utils";
+import { useCitizen } from "providers/CitizenProvider";
+import { useApiActions } from "hooks/useApiActions";
+import { ActionNames } from "utils";
 
-type Props = {
+type DeleteActions = Extract<ActionNames, 'deleteBooking' | 'deleteCitizen' | 'deleteNote'>;
+
+type Props<Action extends DeleteActions> = {
   modalRef: RefObject<HTMLDialogElement>;
   title: string;
-  endpoint: ApiEndpoints;
   entityId: Guid;
+  action: Action;
   preview: FunctionComponent;
 };
 
-type onDeleteEntitySubmitProps = Pick<Props, 'modalRef' | 'endpoint' | 'entityId' | 'title'> & {
-  setNotification: ReturnType<typeof useNotification>['setNotification'];
-};
-
-export const onDeleteEntitySubmit = ({
-  modalRef, endpoint, entityId,
-  title, setNotification
-}: onDeleteEntitySubmitProps) => async (e: Pick<React.FormEvent<HTMLFormElement>, 'preventDefault'>) => {
-  e.preventDefault();
-  try {
-    const response = await Request(`${endpoint}/${entityId}`, {
-      method: 'DELETE'
-    });
-  
-    modalRef.current?.close();
-    if (response.success) setNotification({ type: "success", message: `${title.toPascalCase()} slettet.` });
-    else setNotification({ type: "error", message: response.text });
-  } catch (error) {
-    setNotification({ type: "error", message: (error as Error).message });
-  }
-};
-
-export default function EntityDeleteModal({
+export default function EntityDeleteModal<Action extends DeleteActions>({
   modalRef,
   title, preview: Preview,
-  endpoint, entityId
-}: Props) {
-  const { setNotification } = useNotification();
+  action, entityId
+}: Props<Action>) {
+  const citizenProps = useCitizen(false);
+  const dispatch = useApiActions(citizenProps);
+ 
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const closeModal = await dispatch(action, entityId);
+    closeModal();
+  };
 
   return (
     <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId || undefined}>
-      <form onSubmit={onDeleteEntitySubmit({ endpoint, entityId, modalRef, setNotification, title })}>
+      <form onSubmit={onSubmit}>
         <header>
           <h1>Du er ved at slette {title}</h1>
           <p>Er du sikker på denne handling?</p>

@@ -2,20 +2,22 @@ import { useRef } from "react";
 import { Button } from "danholibraryrjs";
 import { useNavigate } from "react-router-dom";
 
-import { RequestEntity } from "utils";
-import { RequestCitizen, useBookings, useCitizen } from "providers/CitizenProvider";
+import { useBookings, useCitizen } from "providers/CitizenProvider";
 import { Booking } from "models/backend/common";
 import Modal from "components/shared/Modal";
 import { DeleteBookingModalContent } from "components/shared/Modal/components";
 
 import BookingItem from "../BookingItem";
 import { useModalContentState } from "components/shared/Modal/ModalHooks";
+import { useApiActions } from "hooks/useApiActions";
 
 export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 
   // which means that they will be interpreted as non-nullable values.
   const [latest, allBookings] = useBookings(false);
-  const { citizen, setCitizen } = useCitizen(true);
+  const { citizen, ...citizenProps } = useCitizen(true);
+  // @ts-expect-error
+  const dispatch = useApiActions(citizenProps);
 
   // We use a ref to the modal so we can call the showModal() and close() methods
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -56,9 +58,7 @@ export default function BookingDashboard() {
         // When the citizen submits the form:
         // close the modal, delete the booking item and update the citizen
         modalRef.current?.close();
-        await RequestEntity(`bookings/${booking.id}`, citizen?.id, { method: "DELETE" });
-        const updatedCitizen = await RequestCitizen(citizen?.id);
-        if (updatedCitizen) setCitizen(updatedCitizen);
+        await dispatch('deleteBooking', booking.id);
       }}
     />);
 

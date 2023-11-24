@@ -15,7 +15,7 @@ type Props<TEntity, TPayload> = {
 
   defaultModel?: TEntity;
   payload: TPayload;
-  onSubmit(model: TPayload): Promise<boolean>;
+  onSubmit(model: TPayload): Promise<() => void>;
 
   selectedCitizen?: Citizen;
 }
