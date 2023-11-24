@@ -13,7 +13,7 @@ import { useApiActions } from "hooks/useApiActions";
 
 export function useCitizenModals() {
   const citizenProps = useCitizen(false);
-  const dispatch = useApiActions(citizenProps)
+  const dispatch = useApiActions({ ...citizenProps, closeModalAutomatically: false })
   const createCitizenModalRef = useRef<HTMLDialogElement>(null);
   const editCitizenModalRef = useRef<HTMLDialogElement>(null);
   const deleteCitizenModalRef = useRef<HTMLDialogElement>(null);

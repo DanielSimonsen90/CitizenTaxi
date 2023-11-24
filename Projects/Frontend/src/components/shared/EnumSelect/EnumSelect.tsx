@@ -6,9 +6,10 @@ type Props = {
   name: string;
   enumType: EnumTypes;
   defaultValue?: number;
+  required?: boolean;
 };
 
-export default function EnumSelect({ id, name, enumType, defaultValue }: Props) {
+export default function EnumSelect({ enumType, defaultValue, ...props }: Props) {
   let enumList = getListFromEnum(enumType)
 
   if (defaultValue !== undefined) {
@@ -17,7 +18,7 @@ export default function EnumSelect({ id, name, enumType, defaultValue }: Props) 
   }
 
   return (
-    <select id={id} name={name}>
+    <select {...props}>
       {enumList.map((enumVal, i) => (
         <option key={i} value={enumVal}
         >{translateEnum(enumVal, enumType)}</option>

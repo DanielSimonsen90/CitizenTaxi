@@ -43,14 +43,16 @@ type Props = {
   mainCreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>;
 };
 
-export default function OverviewLayout({ pageTitle, entity, citizens, mainCreateModal }: Props) {
+export default function OverviewLayout({ pageTitle, entity, citizens, mainCreateModal: MainCreateModal }: Props) {
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
   const [modalRef, setModalRef] = useState<RefObject<HTMLDialogElement> | undefined>(undefined);
   const [Modal, setModal] = useModalContentState();
-  
+  const [showModal, setShowModal] = useState(false);
+
   useUpdateEffect(() => {
-    modalRef?.current?.showModal();
-  }, [Modal, modalRef]);
+    if (showModal) modalRef?.current?.showModal();
+    else modalRef?.current?.close();
+  }, [showModal]);
 
   return (
     <main className="admin-overview">
@@ -60,7 +62,8 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
         <Button type="button" importance="primary" crud="create"
           onClick={() => {
             setModalRef(mainCreateModalRef);
-            setModal(mainCreateModal({ modalRef: mainCreateModalRef }));
+            setModal(<MainCreateModal modalRef={mainCreateModalRef} />);
+            setShowModal(true);
           }}
         >Opret {entity}</Button>
       </header>
@@ -70,10 +73,10 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
-            <CitizenCard citizen={citizen}
-              onModalOpen={({ modal: Modal, modalRef }) => {
+            <CitizenCard onModalOpen={({ modal: Modal, modalRef }) => {
                 setModalRef(modalRef);
                 setModal(<Modal />);
+                setShowModal(true);
               }}
             />
           </CitizenProvider>

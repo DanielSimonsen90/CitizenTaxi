@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import { Booking, Citizen, Note } from "models/backend/common";
 import { Nullable } from "types";
 
@@ -9,9 +9,9 @@ export type CitizenProviderContextType = {
   latestBooking: Booking;
   allBookings: Array<Booking>;
 
-  setCitizen: (citizen: Nullable<Citizen>) => void;
-  setNote: (note: Nullable<Note>) => void;
-  setBookings: (bookings: Array<Booking>) => void;
+  setCitizen: Dispatch<SetStateAction<Nullable<Citizen>>>;
+  setNote: Dispatch<SetStateAction<Nullable<Note>>>;
+  setBookings: Dispatch<SetStateAction<Array<Booking>>>;
 };
 
 export type CitizenProviderProps = PropsWithChildren & {

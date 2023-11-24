@@ -8,10 +8,12 @@ type Props = {
   setNote?: CitizenProviderContextType['setNote'];
   setBookings?: CitizenProviderContextType['setBookings'];
   allBookings?: CitizenProviderContextType['allBookings'];
+  closeModalAutomatically?: boolean;
 };
 
 export const useApiActions = ({
-  allBookings, setBookings, setCitizen, setNote
+  setBookings, setCitizen, setNote,
+  closeModalAutomatically: shouldCloseModal = true
 }: Props) => {
   const { setNotification } = useNotification();
 
@@ -26,13 +28,13 @@ export const useApiActions = ({
 
     const baseEndpoint = action.includes('Citizen') ? `users`
       : action.includes('Note') ? `notes`
-      : `bookings`;
+        : `bookings`;
     const setter = action.includes('Citizen') ? setCitizen
       : action.includes('Note') ? setNote
-      : setBookings;
+        : setBookings;
     const entityName = action.includes('Citizen') ? 'Borger'
       : action.includes('Note') ? 'Notat'
-      : 'Bestilling';
+        : 'Bestilling';
 
     switch (action) {
       case 'createCitizen':
@@ -52,9 +54,11 @@ export const useApiActions = ({
         });
 
         if (response.success) {
-          closeModal();
-
-          if (setter) setter(response.data);
+          if (!shouldCloseModal) closeModal();
+          if (setter) setter === setBookings ? setter(bookings => [...bookings, {
+            ...response.data,
+            arrival: new Date(response.data.arrival),
+          }]) : setter(response.data);
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
@@ -73,10 +77,11 @@ export const useApiActions = ({
         const response = await Request(`${baseEndpoint}/${entityId}`, { method: 'DELETE' });
 
         if (response.success) {
-          if (setter) {
-            // @ts-ignore -- If the entity is a booking, remove it from the allBookings array as allBookings should always be an array.
-            action === 'deleteBooking' ? setter(allBookings.filter(b => b.id !== entityId)) : setter(null);
-          } else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
+          if (!shouldCloseModal) closeModal();
+          if (setter) setter === setBookings
+            ? setter(bookings => bookings.filter(b => b.id !== entityId))
+            : setter(null as any);
+          else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
         setNotification({

@@ -25,7 +25,6 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
   };
   const onCitizenWithNoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    modalRef.current?.close();
 
     // Create citizen
     const form = document.getElementById(`${crud}-borger-form`) as HTMLFormElement;

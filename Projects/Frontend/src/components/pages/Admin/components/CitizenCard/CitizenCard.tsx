@@ -4,7 +4,7 @@ import { Button, FunctionComponent } from "danholibraryrjs";
 import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/components";
 import { Booking, Citizen } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
-import { useBookings } from "providers/CitizenProvider";
+import { useBookings, useCitizen } from "providers/CitizenProvider";
 
 import { useBookingModals, useCitizenModals, useNoteModals } from "../../pages/AdminOverviewModalHooks";
 
@@ -25,11 +25,11 @@ type ModalOpenProps = {
 };
 
 type Props = {
-  citizen: Citizen;
   onModalOpen: (props: ModalOpenProps) => void;
 };
 
-export default function CitizenCard({ citizen, onModalOpen }: Props) {
+export default function CitizenCard({ onModalOpen }: Props) {
+  const { citizen, note } = useCitizen(false);
   const [latestBooking, bookings] = useBookings();
   const [showAllBookings, setShowAllBookings] = useState(false);
 
@@ -49,7 +49,7 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
     deleteCitizenModalRef, DeleteCitizenModal
   } = useCitizenModals();
 
-  const { name, email, note } = citizen;
+  const { name, email } = citizen;
   const [firstName] = name.split(' ');
 
   return (

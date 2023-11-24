@@ -14,7 +14,8 @@ export default function BookingModal({
   defaultModel, selectedCitizen,
   ...props
 }: EntityModifyExtendProps<Booking, BookingModifyPayload<any>>) {
-  const [defaultDate, defaultTimeString] = defaultModel?.arrival.toISOString().split(/[T.]/) ?? [];
+  const [defaultDate, defaultTimeString] = defaultModel?.arrival.toISOString().split(/[T.]/) 
+    ?? new Date().toISOString().split('T');
 
   function convertTime(defaultTimeString: string) {
     // If there is no default time, return the current time
@@ -37,9 +38,7 @@ export default function BookingModal({
     const correctModel = model as any as BookingFormBody;
     const arrivalDateTimeString = `${correctModel.arrivalDate}T${convertTime(correctModel.arrivalTime)}:00`;
     model.arrival = new Date(arrivalDateTimeString);
-
-    modalRef.current?.close();
-    return await props.onSubmit(model);
+    return props.onSubmit(model);
   }
 
   return (
