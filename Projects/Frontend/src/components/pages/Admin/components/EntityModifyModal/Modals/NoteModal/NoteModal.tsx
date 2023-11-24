@@ -15,9 +15,8 @@ export default function NoteModal({
 }: EntityModifyExtendProps<Note, NoteModifyPayload<any>>) {
 
   async function onSubmit(model: NoteModifyPayload<any>) {
-    const canClose = await props.onSubmit(model);
-    if (canClose) modalRef.current?.close();
-    return canClose;
+    modalRef.current?.close();
+    return await props.onSubmit(model);
   }
 
   return (

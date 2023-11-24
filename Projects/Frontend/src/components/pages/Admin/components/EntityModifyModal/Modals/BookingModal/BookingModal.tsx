@@ -37,10 +37,9 @@ export default function BookingModal({
     const correctModel = model as any as BookingFormBody;
     const arrivalDateTimeString = `${correctModel.arrivalDate}T${convertTime(correctModel.arrivalTime)}:00`;
     model.arrival = new Date(arrivalDateTimeString);
-    
-    const canClose = await props.onSubmit(model);
-    if (canClose) modalRef.current?.close();
-    return canClose;
+
+    modalRef.current?.close();
+    return await props.onSubmit(model);
   }
 
   return (

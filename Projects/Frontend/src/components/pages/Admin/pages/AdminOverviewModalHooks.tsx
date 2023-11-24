@@ -65,13 +65,13 @@ export function useBookingModals() {
       <DeleteBookingModalContent booking={selected!} citizen={selectedCitizen} 
         onCancel={() => modalRef.current?.close()}
         onConfirm={() => {
+          modalRef.current?.close();
           onDeleteEntitySubmit({ 
             modalRef, endpoint: "bookings", 
             entityId: selected?.id || "", 
             setNotification, 
             title: "Taxabestilling"  
           })({ preventDefault() {} });
-          modalRef.current?.close();
         }}
       />
     </Modal>
