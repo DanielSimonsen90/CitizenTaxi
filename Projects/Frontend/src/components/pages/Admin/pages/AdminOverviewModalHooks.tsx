@@ -1,13 +1,19 @@
 import { useRef } from "react";
 
 import { useNotification } from "providers/NotificationProvider";
+import { CitizenProvider } from "providers/CitizenProvider";
+
+import { Citizen } from "models/backend/common";
+
+import Modal from "components/shared/Modal";
+import { DeleteBookingModalContent } from "components/shared/Modal/components";
+import { CitizenNoteInputs } from "components/pages/Citizen/components";
 
 import { EntityModalProps, ModifyEntityModal } from "../components/OverviewLayout/OverviewLayout";
-import { CitizenModal, NoteModal, DeleteEntityModal } from "../components/EntityModifyModal";
-import { getBookingSubmits, getCitizenSubmits, getNoteSubmits } from "./AdminCitizenOverview/AdminCitizenOverviewConstants";
-import { Citizen } from "models/backend/common";
-import { CitizenNoteInputs } from "components/pages/Citizen/components";
-import { CitizenProvider } from "providers/CitizenProvider";
+import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from "../components/EntityModifyModal";
+
+import { getBookingSubmits, getCitizenSubmits, getNoteSubmits } from "./AdminCitizenOverviewConstants";
+import { onDeleteEntitySubmit } from "../components/EntityModifyModal/Modals/DeleteEntityModal/DeleteEntityModal";
 
 export function useCitizenModals() {
   const { setNotification } = useNotification();
@@ -50,9 +56,25 @@ export function useBookingModals() {
   const editBookingModalRef = useRef<HTMLDialogElement>(null);
   const deleteBookingModalRef = useRef<HTMLDialogElement>(null);
 
-  const CreateBookingModal = () => <></>;
-  const EditBookingModal = () => <></>;
-  const DeleteBookingModal = () => <></>;
+  const CreateBookingModal: EntityModalProps['CreateBookingModal'] = (props) =>
+    <BookingModal crud="create" onSubmit={onCreateBookingSubmit} {...props} />;
+  const EditBookingModal: EntityModalProps['EditBookingModal'] = ({ selected, ...props }) =>
+    <BookingModal crud="update" onSubmit={onEditBookingSubmit} defaultModel={selected} {...props} />;
+  const DeleteBookingModal: EntityModalProps['DeleteBookingModal'] = ({ selected, selectedCitizen, modalRef }) =>
+    <Modal modalRef={modalRef}>
+      <DeleteBookingModalContent booking={selected!} citizen={selectedCitizen} 
+        onCancel={() => modalRef.current?.close()}
+        onConfirm={() => {
+          onDeleteEntitySubmit({ 
+            modalRef, endpoint: "bookings", 
+            entityId: selected?.id || "", 
+            setNotification, 
+            title: "Taxabestilling"  
+          })({ preventDefault() {} });
+          modalRef.current?.close();
+        }}
+      />
+    </Modal>
 
   return {
     createBookingModalRef, editBookingModalRef, deleteBookingModalRef,

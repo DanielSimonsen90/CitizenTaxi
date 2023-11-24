@@ -6,7 +6,7 @@ import { Citizen, Role } from "models/backend/common";
 import { useNotification } from "providers/NotificationProvider";
 
 import OverviewLayout from "../../components/OverviewLayout";
-import { useBookingModals, useCitizenModals, useNoteModals } from "../AdminOverviewHooks";
+import { useBookingModals, useCitizenModals, useNoteModals } from "../AdminOverviewModalHooks";
 
 export default function AdminCitizenOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);

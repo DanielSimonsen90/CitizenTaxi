@@ -11,16 +11,22 @@ import { CitizenProviderProps } from './CitizenProviderTypes';
 export default function CitizenProviderProvider({ children, citizen: defaultValue }: CitizenProviderProps) {
   const { user } = useAuth(false);
   const [citizen, setCitizen] = useState<Nullable<Citizen>>(defaultValue ?? null);
-  const [bookings, setBookings] = useState<Array<Booking>>([]);
+  const [allBookings, setBookings] = useState<Array<Booking>>([]);
   const [note, setNote] = useState<Nullable<Note>>(null);
 
-  const latestBooking = useMemo(() => bookings.sort((a, b) => 
-    // Order by today, future and past
-    a.arrival.getTime() < Date.now() ? 1 :
-    b.arrival.getTime() < Date.now() ? -1 :
-    0
-  )[0], [bookings]);
+  const [latestBooking, bookings] = useMemo(() => {
+    if (!allBookings.length) return [null, []];
 
+    const [latest, ...rest] = allBookings.sort((a, b) => 
+      // Order by today, future and past
+      a.arrival.getTime() < Date.now() ? 1 :
+      b.arrival.getTime() < Date.now() ? -1 :
+      0
+    );
+
+    return [latest, rest];
+  }, [allBookings]);
+    
   // Update citizen entities when citizen changes
   useAsyncEffect(async () => {
     if (!citizen?.id 
@@ -44,8 +50,8 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
 
   return (
     <CitizenProviderContext.Provider value={{
-      citizen, bookings, note, 
-      setCitizen, latestBooking
+      citizen, setCitizen, note,
+      bookings, latestBooking, allBookings,
     }}>
       {children}
     </CitizenProviderContext.Provider>

@@ -8,7 +8,18 @@ import { Note, CarHeight, HelpingUtil, Companion, Follow } from "models/backend/
 
 import EntityModifyModal, { EntityModifyExtendProps } from "../../EntityModifyModal";
 
-export default function NoteModal({ modalRef, crud, onSubmit, defaultModel, selectedCitizen }: EntityModifyExtendProps<Note, NoteModifyPayload<any>>) {
+export default function NoteModal({ 
+  modalRef, crud,
+  defaultModel, selectedCitizen,
+  ...props 
+}: EntityModifyExtendProps<Note, NoteModifyPayload<any>>) {
+
+  async function onSubmit(model: NoteModifyPayload<any>) {
+    const canClose = await props.onSubmit(model);
+    if (canClose) modalRef.current?.close();
+    return canClose;
+  }
+
   return (
     <EntityModifyModal modalRef={modalRef} entityName="notat"
       crud={crud} onSubmit={onSubmit} 

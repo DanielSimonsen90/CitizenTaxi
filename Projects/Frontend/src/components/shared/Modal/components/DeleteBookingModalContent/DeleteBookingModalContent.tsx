@@ -23,9 +23,7 @@ export default function DeleteBookingModalContent({ booking, citizen, onCancel, 
       <h1>Du er ved at afbestille {isCitizen ? 'din' : `${citizen.name}s`} taxa.</h1>
       <p className="secondary">Er du sikker på at du vil afbestille?</p>
 
-      <BookingItem booking={booking} isLatest={false} 
-        onChangeBooking={null} onDeleteBooking={null} 
-      />
+      <BookingItem booking={booking} isLatest={false} />
 
       <p className="muted">Denne handling kan ikke fortrydes.</p>
       <footer className="button-container">

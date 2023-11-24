@@ -10,6 +10,7 @@ import { Booking, Citizen, Note } from "models/backend/common";
  */
 export const CitizenProviderContext = createContext<NullableCitizenProviderContextType>({
   citizen: null,
+  allBookings: null,
   bookings: null,
   latestBooking: null,
   note: null,

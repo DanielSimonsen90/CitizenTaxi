@@ -58,7 +58,7 @@ public class AuthService
             userId: userId);
 
         // If existing tokens exists for this user, replace them
-        AuthTokens? existing = _cacheService.AuthTokens.Values.FirstOrDefault(a => a.UserId == userId);
+        AuthTokens? existing = _cacheService.AuthTokens.Values.FirstOrDefault(a => a?.UserId == userId);
         if (existing is not null) _cacheService.AuthTokens.Remove(existing.AccessToken.ToString());
 
         AddCookie(response, auth);

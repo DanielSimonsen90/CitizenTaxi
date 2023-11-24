@@ -14,27 +14,38 @@ type Props = {
   preview: FunctionComponent;
 };
 
-export default function EntityDeleteModal({ 
-  modalRef,
-  title, preview: Preview, 
-  endpoint, entityId 
-}: Props) {
-  const { setNotification } = useNotification();
+type onDeleteEntitySubmitProps = Pick<Props, 'modalRef' | 'endpoint' | 'entityId' | 'title'> & {
+  setNotification: ReturnType<typeof useNotification>['setNotification'];
+};
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+export const onDeleteEntitySubmit = ({
+  modalRef, endpoint, entityId,
+  title, setNotification
+}: onDeleteEntitySubmitProps) => async (e: Pick<React.FormEvent<HTMLFormElement>, 'preventDefault'>) => {
+  e.preventDefault();
+  try {
     const response = await Request(`${endpoint}/${entityId}`, {
       method: 'DELETE'
     });
-
+  
     modalRef.current?.close();
-    if (response.data) setNotification({ type: "success", message: `${title.toPascalCase()} slettet.` });
+    if (response.success) setNotification({ type: "success", message: `${title.toPascalCase()} slettet.` });
     else setNotification({ type: "error", message: response.text });
+  } catch (error) {
+    setNotification({ type: "error", message: (error as Error).message });
   }
+};
+
+export default function EntityDeleteModal({
+  modalRef,
+  title, preview: Preview,
+  endpoint, entityId
+}: Props) {
+  const { setNotification } = useNotification();
 
   return (
     <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId || undefined}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onDeleteEntitySubmit({ endpoint, entityId, modalRef, setNotification, title })}>
         <header>
           <h1>Du er ved at slette {title}</h1>
           <p>Er du sikker på denne handling?</p>
@@ -46,12 +57,12 @@ export default function EntityDeleteModal({
         </section>
 
         <footer className="button-container">
-          <Button type="button" importance="secondary" className="alt" 
+          <Button type="button" importance="tertiary" className="alt"
             onClick={() => modalRef.current?.close()}>
             Fortryd
           </Button>
 
-          <Button type="submit" importance="primary" crud="delete">
+          <Button type="submit" importance="secondary" crud="delete">
             Slet {title}
           </Button>
         </footer>

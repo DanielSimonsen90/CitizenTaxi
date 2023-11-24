@@ -7,6 +7,7 @@ export type CitizenProviderContextType = {
   note: Note;
   bookings: Array<Booking>;
   latestBooking: Booking;
+  allBookings: Array<Booking>;
 
   setCitizen: (citizen: Citizen) => void;
 };
