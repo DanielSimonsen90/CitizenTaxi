@@ -123,7 +123,7 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
           )
           : (
             <>
-              <p className="muted">Borgeren har ingen note.</p>
+              <p className="muted">Borgeren har intet notat.</p>
               <div className="button-container">
                 <Button type="button" crud="create" onClick={() => onModalOpen({
                   modal: () => <CreateNoteModal modalRef={createNoteModalRef} selectedCitizen={citizen} />,

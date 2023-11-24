@@ -1,4 +1,5 @@
 ﻿using Business.Models;
+using DanhoLibrary.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
@@ -85,8 +86,16 @@ public class AuthService
                 Secure = true, // Only allow https access
             });
 
-        // Add the auth to the cache
-        _cacheService.AuthTokens.Add(auth.AccessToken.ToString(), auth);
+        try
+        {
+            // Add the auth to the cache
+            _cacheService.AuthTokens.Add(auth.AccessToken.ToString(), auth);
+        } 
+        catch (InvalidOperationException)
+        {
+            // If the key already exists, replace it
+            _cacheService.AuthTokens.Set(auth.AccessToken.ToString(), auth);
+        }
     }
 
     /// <summary>
