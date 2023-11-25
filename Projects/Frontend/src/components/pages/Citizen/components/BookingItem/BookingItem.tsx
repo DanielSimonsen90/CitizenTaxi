@@ -12,23 +12,19 @@ type Props = {
   onChangeBooking?: () => void;
   /** Callback for when the user clicks on the "Afbestil" button */
   onDeleteBooking?: () => void;
-}
+};
 
-export default function BookingItem({ 
+export default function BookingItem({
   // Destructure the booking object for easier access to the properties
-  booking: { id, pickup, destination, arrival }, 
-  isLatest, 
+  booking: { id, pickup, destination, arrival },
+  isLatest,
   onChangeBooking, onDeleteBooking
 }: Props) {
   return (
     <li id={id} className="booking-item" data-is-latest={isLatest}>
-      <header>
-        <label>Til {destination}</label>
-        <time dateTime={arrival.toISOString()}>{dateToString(arrival)}</time>
-      </header>
-      <section>
-        <label>Fra {pickup}</label>
-      </section>
+      <label className="booking-to-destination">Til {destination}</label>
+      <time className="booking-arrival" dateTime={arrival.toISOString()}>{dateToString(arrival)}</time>
+      <label className="booking-from-pickup">Fra {pickup}</label>
       {/* 
         If onChangeBooking and onDeleteBooking are null, don't render the footer 
         This is used in shared/Modal/components/DeleteBookingModalContent to hide the buttons

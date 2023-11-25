@@ -26,13 +26,3 @@ export default function Step2() {
     </>
   );
 }
-
-/*
-
-http://localhost:3000/bestil/3?booking={%22destination%22:%22Frederikshavn%20sygehus%22,%22date%22:%222023-11-19%22}
-as json would be:
-{
-  "destination": "Frederikshavn sygehus",
-  "date": "2023-11-19"
-}
-*/

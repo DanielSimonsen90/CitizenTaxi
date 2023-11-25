@@ -14,9 +14,10 @@ import BookingItem from "../BookingItem";
 export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 
   // which means that they will be interpreted as non-nullable values.
-  const [latest, allBookings] = useBookings(false);
-  const { citizen, ...citizenProps } = useCitizen(true);
-  const dispatch = useApiActions(citizenProps);
+  const [latestBooking, allBookings] = useBookings(false);
+  
+  const { citizen, setCitizen } = useCitizen(true);
+  const dispatch = useApiActions({ setCitizen });
 
   // We use a ref to the modal so we can call the showModal() and close() methods
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -36,7 +37,7 @@ export default function BookingDashboard() {
     const [date, timeString] = arrival.toISOString().split('T');
     const [hour, minute] = timeString.split(':').map(Number);
     const format = (num: number) => `${num}`.padStart(2, '0');
-    const time = `${format(hour + 1)}:${format(minute)}`;
+    const time = `${format(hour)}:${format(minute)}`;
 
     navigate(`/bestil/1?bookingId=${booking.id}&booking=${JSON.stringify({ 
       ...booking, date, time 
@@ -70,12 +71,14 @@ export default function BookingDashboard() {
       <Modal modalRef={modalRef}>
         <ModalContent />
       </Modal>
+
       <header>
         <h2>Dine bestillinger</h2>
         <Button className="alt" 
           disabled={!citizen?.note} title={!citizen?.note ? "Du skal have et notat for at kunne bestille en tid." : undefined}
           onClick={() => citizen?.note && navigate('bestil/1')}>Bestil en ny tid</Button>
       </header>
+
       <main role="list">
         {allBookings.length === 0 && <p className="muted" style={{
           justifySelf: 'start'
@@ -83,9 +86,9 @@ export default function BookingDashboard() {
 
         {/* Map through all bookings, ordered by day */}
         {allBookings.map(bookings => (
-          <ul key={bookings[0].arrival.getDate()}>
+          <ul key={bookings[0].arrival.getDate()} data-date={bookings[0].arrival.getDate()}>
             {bookings.map(booking => (
-              <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latest.id}
+              <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking.id}
                 onChangeBooking={() => onChangeBooking(booking)}
                 onDeleteBooking={() => onDeleteBooking(booking)}
               />

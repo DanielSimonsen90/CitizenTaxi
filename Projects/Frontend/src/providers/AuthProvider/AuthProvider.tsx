@@ -42,7 +42,8 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
 
   // TODO: Remove this - it's only for development purposes
   useEffectOnce(() => {
-    login('admin', 'admin123');
+    // login('admin', 'admin123');
+    login('carl', 'carl123');
   })
 
   return (

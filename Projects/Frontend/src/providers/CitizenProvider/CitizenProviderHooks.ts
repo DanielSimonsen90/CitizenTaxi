@@ -31,9 +31,9 @@ export function useCitizen<AllowNullable extends boolean>(
 export function useBookings<AllowNullable extends boolean = true>(
   allowNullable: AllowNullable = true as AllowNullable
 ): UseBookingsReturnType<AllowNullable> {
-  const { bookings, latestBooking } = useCitizen(allowNullable);
+  const { allBookings, latestBooking } = useCitizen(allowNullable);
 
-  const sortedBookingsByDay = bookings?.reduce((acc, booking) => {
+  const sortedBookingsByDay = allBookings?.reduce((acc, booking) => {
     const day = new Date(booking.arrival).getDay();
     acc[day] = acc[day] || [];
     acc[day].push(booking);

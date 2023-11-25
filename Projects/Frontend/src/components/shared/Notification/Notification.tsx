@@ -52,7 +52,7 @@ export function Notification({
   return message ? (
     <section ref={toastRef} className={classNames('notification', `notification--${type}`)}>
       <header>
-        <h1>{type === 'success' ? 'Succes' : 'Fejl'}</h1>
+        <h1>{type === 'success' ? 'Succes' : type === 'error' ? 'Fejl' : 'Bemærk'}</h1>
         <span onClick={internalClose}>&times;</span>
       </header>
       <p>{message}</p>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
-import { serializeForm } from "utils";
+import { dateAsUTC, getCorrectHour, serializeForm } from "utils";
 import { useApiActions, useStateInQuery } from "hooks";
 import { useCitizen } from "providers/CitizenProvider";
 
@@ -76,9 +76,12 @@ export default function BookTaxi() {
 
     // Once the steps are completed and the citizenId is set, send the booking to the API
     (async function sendBooking() {
-      await dispatch('id' in payload ? 'updateBooking' : 'createBooking', {
+      const arrival = dateAsUTC(new Date(`${payload.date}T${payload.time}Z`));
+
+      await dispatch('id' in payload && payload.id !== undefined ? 'updateBooking' : 'createBooking', {
         ...payload,
-        arrival: new Date(`${payload.date}T${payload.time}Z`),
+        // Convert the date and time to a Date object as UTC
+        arrival
       } as BookingModifyPayload<any>);
 
       // Navigate to the citizen page once the booking has been sent
