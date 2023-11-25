@@ -67,13 +67,11 @@
 
       li.booking-item {
         background-color: var(--background-quaternary);
-        grid-template-areas: "header" "section" "footer";
-        grid-template-columns: 1fr;
+        grid-template-areas: 
+          "destination arrival" 
+          "pickup arrival" 
+          "buttons buttons";
         gap: 1ch;
-
-        header {
-          justify-content: space-between;
-        }
 
         .button-container {
           flex-direction: row-reverse;

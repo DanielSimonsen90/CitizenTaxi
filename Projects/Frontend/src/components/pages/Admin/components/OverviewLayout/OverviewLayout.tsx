@@ -43,12 +43,17 @@ type Props = {
 
   citizens: Array<Citizen>;
   setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
+
+  hideCitizens?: boolean;
+  hideBookings?: boolean;
+  hideNotes?: boolean;
 };
 
 export default function OverviewLayout({ 
   pageTitle, entity, 
   mainCreateModal: MainCreateModal,
-  citizens, setCitizens
+  citizens, setCitizens,
+  hideCitizens, hideBookings, hideNotes
 }: Props) {
   const dispatch = useApiActions({ setCitizens });
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
@@ -88,7 +93,9 @@ export default function OverviewLayout({
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
-            <CitizenCard setCitizens={setCitizens} onModalOpen={({ modal: Modal, modalRef }) => {
+            <CitizenCard setCitizens={setCitizens} 
+              hideCitizens={hideCitizens} hideBookings={hideBookings} hideNotes={hideNotes}
+              onModalOpen={({ modal: Modal, modalRef }) => {
                 setModalRef(modalRef);
                 setModal(<Modal />);
                 setShowModal(true);
