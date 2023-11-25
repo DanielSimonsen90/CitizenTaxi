@@ -1,13 +1,26 @@
 import { useCallback, useEffect, useRef } from "react";
 import { classNames } from "danholibraryrjs";
-import { NOTIFICATION_TIMEOUT_S } from "../NotificationProviderConstants";
-import { NotificationProps } from "../NotificationProviderTypes";
+
+const NOTIFICATION_TIMEOUT_S = 5;
+const NOTIFICATION_ANIMATION_CLASSNAME = 'animating';
+
+export type ToastNotificationTypes =
+  | 'success'
+  | 'info'
+  | 'warning'
+  | 'error';
+
+export type NotificationProps = {
+  message: string;
+  type?: ToastNotificationTypes;
+  duration?: number;
+}
 
 type Props = NotificationProps & {
   close(): void;
 }
 
-export default function Notification({
+export function Notification({
   message, close,
   duration = NOTIFICATION_TIMEOUT_S,
   type = 'info',
@@ -18,7 +31,7 @@ export default function Notification({
     if (!toastRef.current) return console.error(`Unable to find toast`);
 
     // Animate the notification out
-    toastRef.current.classList.add('animating');
+    toastRef.current.classList.add(NOTIFICATION_ANIMATION_CLASSNAME);
     const transitionTime = parseFloat(getComputedStyle(toastRef.current).getPropertyValue('--transition-time'));
     setTimeout(close, transitionTime);
   }, [toastRef, close]);
@@ -39,7 +52,7 @@ export default function Notification({
   return message ? (
     <section ref={toastRef} className={classNames('notification', `notification--${type}`)}>
       <header>
-        <h1>{type === 'success' ? 'Succes' : 'Fejl'}</h1>
+        <h1>{type === 'success' ? 'Succes' : type === 'error' ? 'Fejl' : 'Bemærk'}</h1>
         <span onClick={internalClose}>&times;</span>
       </header>
       <p>{message}</p>

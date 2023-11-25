@@ -1,49 +1,5 @@
-import { Guid } from "types";
-
-// Define API_ENDPOINT_SECURE by environment, if development then use localhost, else use azurewebsites
-if (process.env.NODE_ENV === 'development') {
-  var API_ENDPOINT_SECURE = "https://localhost:5000/api";
-} else {
-  API_ENDPOINT_SECURE = "https://citizentaxi.azurewebsites.net/api";
-}
-export { API_ENDPOINT_SECURE };
-
-// Export path for SignalR
-export const API_ENDPOINT_SECURE_SIGNALR = API_ENDPOINT_SECURE + "/notificationhub";
-
-// An ApiEndpoint paramter can be either a string or undefined
-type TParam = string | undefined;
-
-// All possible endpoints for the API. This will generate autocomplete when using the Request function
-export type ApiEndpoints<Param extends TParam = undefined> =
-  | `bookings` // [GET, POST]
-  | `bookings?citizenId=${Param}` // [GET] Guid
-  | `bookings/${Param}` // [GET, PUT, DELETE] Guid bookingId
-
-  | `notes` // [GET, POST]
-  | `notes?citizenId=${Param}` // [GET] Guid
-  | `notes/${Param}` // [GET, PUT, DELETE] Guid noteId
-
-  | `users` // [GET, POST]
-  | `users?role=${Param}` // [GET] enum Role
-  | `users/${Param}` // [GET, PUT, DELETE] Guid userId
-  | `users/authenticate`; // [POST, DELETE]
-
-// All possible HTTP methods
-export type HttpMethods =
-  | 'GET'
-  | 'POST'
-  | 'PUT'
-  | 'DELETE';
-
-// Options for the Request function
-export type RequestOptions<TBody = any> = Omit<RequestInit, 'method' | 'body'> & {
-  method?: HttpMethods;
-  body?: TBody;
-  noHeaders?: boolean;
-  controller?: AbortController;
-  query?: Record<string, string | undefined>;
-};
+import { API_ENDPOINT_SECURE } from "./ApiConstants";
+import { ApiEndpoints, RequestOptions, TParam } from "./ApiTypes";
 
 /**
  * Makes a request to the API
@@ -125,20 +81,4 @@ export async function Request<TData, Param extends TParam = undefined>(
  */
 export function ensureSlash(path: string) {
   return path.startsWith('/') ? path : '/' + path;
-}
-
-/**
- * Makes a request to the API and returns the data
- * @param endpoint Api endpoint to request
- * @param citizenId Citizen id to use in the query string
- * @returns The data from the API
- */
-export async function RequestEntity<TData>(endpoint: ApiEndpoints<string>, citizenId?: Guid, options?: RequestOptions) {
-  const response = await Request<TData, Guid>(endpoint, { query: { citizenId }, ...options });
-  if (response.success) return response.data;
-
-  if (response.status === 401) throw new Error('Unauthorized');
-
-  console.error(response.text);
-  return null;
 }

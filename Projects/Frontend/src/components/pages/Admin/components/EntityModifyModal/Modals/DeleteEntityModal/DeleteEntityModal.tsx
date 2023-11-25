@@ -1,39 +1,28 @@
-import { RefObject } from "react";
+import { FormEvent, RefObject } from "react";
 import { Button, FunctionComponent } from "danholibraryrjs";
 
 import Modal from "components/shared/Modal";
-import { useNotification } from "providers/NotificationProvider";
-import { Guid } from "types";
-import { ApiEndpoints, Request } from "utils";
 
 type Props = {
   modalRef: RefObject<HTMLDialogElement>;
   title: string;
-  endpoint: ApiEndpoints;
-  entityId: Guid;
   preview: FunctionComponent;
+  onSubmit: () => void;
 };
 
-export default function EntityDeleteModal({ 
+export default function EntityDeleteModal({
   modalRef,
-  title, preview: Preview, 
-  endpoint, entityId 
+  title, preview: Preview,
+  ...props
 }: Props) {
-  const { setNotification } = useNotification();
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+ 
+  const onSubmit =  (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await Request(`${endpoint}/${entityId}`, {
-      method: 'DELETE'
-    });
-
-    modalRef.current?.close();
-    if (response.data) setNotification({ type: "success", message: `${title.toPascalCase()} slettet.` });
-    else setNotification({ type: "error", message: response.text });
-  }
+    props.onSubmit();
+  };
 
   return (
-    <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId || undefined}>
+    <Modal className="entity-delete-modal" modalRef={modalRef}>
       <form onSubmit={onSubmit}>
         <header>
           <h1>Du er ved at slette {title}</h1>
@@ -46,12 +35,12 @@ export default function EntityDeleteModal({
         </section>
 
         <footer className="button-container">
-          <Button type="button" importance="secondary" className="alt" 
+          <Button type="button" importance="tertiary" className="alt"
             onClick={() => modalRef.current?.close()}>
             Fortryd
           </Button>
 
-          <Button type="submit" importance="primary" crud="delete">
+          <Button type="submit" importance="secondary" crud="delete">
             Slet {title}
           </Button>
         </footer>

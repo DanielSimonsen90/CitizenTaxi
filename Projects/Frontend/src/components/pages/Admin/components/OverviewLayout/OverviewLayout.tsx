@@ -1,14 +1,17 @@
-import { RefObject, useRef, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, FunctionComponent, useUpdateEffect } from "danholibraryrjs";
+import { Button, FunctionComponent, useAsyncEffectOnce, useUpdateEffect } from "danholibraryrjs";
 
 import { ModalProps } from "components/shared/Modal/Modal";
-import { Booking, Citizen, Note } from "models/backend/common";
+import { useModalContentState } from "components/shared/Modal/ModalHooks";
+
+import { Booking, Citizen, Note, Role } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
+
 import { CitizenProvider } from "providers/CitizenProvider";
+import { useApiActions } from "hooks";
 
 import { CitizenCard } from "../CitizenCard";
-import { useModalContentState } from "components/shared/Modal/ModalHooks";
 
 export type ModifyEntityModal<
   TEntity extends BaseEntity, P = {}
@@ -19,9 +22,6 @@ type ModifyEntityModalProps<
   TEntity extends BaseEntity,
   AdditionalProps = {}
 > = (
-  & Record<
-    `${'create' | 'edit' | 'delete'}${TEntityName}ModalRef`, 
-    RefObject<HTMLDialogElement>>
   & Record<
     `Create${TEntityName}Modal`, 
     FunctionComponent<Pick<ModalProps, 'modalRef'> & AdditionalProps>>
@@ -39,18 +39,35 @@ export type EntityModalProps = Partial<(
 type Props = {
   pageTitle: string;
   entity: string;
-  citizens: Array<Citizen>;
   mainCreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>;
+
+  citizens: Array<Citizen>;
+  setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
 };
 
-export default function OverviewLayout({ pageTitle, entity, citizens, mainCreateModal }: Props) {
+export default function OverviewLayout({ 
+  pageTitle, entity, 
+  mainCreateModal: MainCreateModal,
+  citizens, setCitizens
+}: Props) {
+  const dispatch = useApiActions({ setCitizens });
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
   const [modalRef, setModalRef] = useState<RefObject<HTMLDialogElement> | undefined>(undefined);
   const [Modal, setModal] = useModalContentState();
-  
+  const [showModal, setShowModal] = useState(false);
+
+  useAsyncEffectOnce(async () => {
+    const citizens = await dispatch('getCitizens', undefined, { query: { role: `${Role.Citizen}` } })
+    if (citizens) setCitizens(citizens);
+  });
+
   useUpdateEffect(() => {
-    modalRef?.current?.showModal();
-  }, [Modal, modalRef]);
+    if (showModal) modalRef?.current?.showModal();
+
+    const closeListener = () => setShowModal(false);
+    modalRef?.current?.addEventListener('close', closeListener);
+    return () => modalRef?.current?.removeEventListener('close', closeListener);
+  }, [showModal]);
 
   return (
     <main className="admin-overview">
@@ -60,7 +77,8 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
         <Button type="button" importance="primary" crud="create"
           onClick={() => {
             setModalRef(mainCreateModalRef);
-            setModal(mainCreateModal({ modalRef: mainCreateModalRef }));
+            setModal(<MainCreateModal modalRef={mainCreateModalRef} />);
+            setShowModal(true);
           }}
         >Opret {entity}</Button>
       </header>
@@ -70,10 +88,10 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
-            <CitizenCard citizen={citizen}
-              onModalOpen={({ modal: Modal, modalRef }) => {
+            <CitizenCard setCitizens={setCitizens} onModalOpen={({ modal: Modal, modalRef }) => {
                 setModalRef(modalRef);
                 setModal(<Modal />);
+                setShowModal(true);
               }}
             />
           </CitizenProvider>

@@ -130,4 +130,8 @@ button,
     flex-direction: row-reverse;
     margin-left: auto;
   }
+
+  &.stack {
+    display: grid;
+  }
 }

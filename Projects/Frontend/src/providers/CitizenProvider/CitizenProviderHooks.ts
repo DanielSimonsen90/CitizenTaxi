@@ -1,8 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 import { Booking } from "models/backend/common";
-import { useNotification } from "providers/NotificationProvider";
-import { NotificationContextType } from "providers/NotificationProvider/NotificationProviderTypes";
+import { showNotification } from "utils";
 
 import { CitizenProviderContext } from "./CitizenProviderConstants";
 import { 
@@ -10,6 +9,7 @@ import {
   NullableCitizenProviderContextType, 
   TimeLeft, UseBookingsReturnType
 } from './CitizenProviderTypes';
+import { useUpdateEffect } from "danholibraryrjs";
 
 /**
  * The hook to get the CitizenProviderContext data
@@ -32,9 +32,9 @@ export function useCitizen<AllowNullable extends boolean>(
 export function useBookings<AllowNullable extends boolean = true>(
   allowNullable: AllowNullable = true as AllowNullable
 ): UseBookingsReturnType<AllowNullable> {
-  const { bookings, latestBooking } = useCitizen(allowNullable);
+  const { allBookings, latestBooking } = useCitizen(allowNullable);
 
-  const sortedBookingsByDay = bookings?.reduce((acc, booking) => {
+  const sortedBookingsByDay = allBookings?.reduce((acc, booking) => {
     const day = new Date(booking.arrival).getDay();
     acc[day] = acc[day] || [];
     acc[day].push(booking);
@@ -49,26 +49,29 @@ export function useBookings<AllowNullable extends boolean = true>(
  * @param booking The booking to get the notifications for
  */
 export function useBookingNotifications(booking?: Booking) {
-  const { setNotification } = useNotification();
-
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (!booking) return;
 
-    const timeToWait = getTimeToWait();
-    if (!timeToWait) return;
-
-    const timeout = setTimeout(() => {
-      notify(getTimeLeft(booking), setNotification);
-      getTimeToWait();
-    }, timeToWait);
-
-    notify(getTimeLeft(booking), setNotification);
+    const timeout = notifyOnInterval(booking);
+    notify(getTimeLeft(booking));
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
 
-  }, [booking, setNotification]);
+  }, [booking]);
+}
+
+function notifyOnInterval(booking: Booking) {
+  const timeToWait = getTimeToWait(booking);
+  if (!timeToWait) return undefined;
+
+  const timeout = setTimeout(() => {
+    notify(getTimeLeft(booking));
+    notifyOnInterval(booking);
+  }, timeToWait);
+
+  return timeout;
 }
 
 /**
@@ -76,26 +79,28 @@ export function useBookingNotifications(booking?: Booking) {
  * @param booking The booking to get the time left for
  * @returns The time left before the taxi arrives
  */
-function getTimeLeft(booking?: Booking): TimeLeft {
-  if (!booking) return { seconds: 0, minutes: 0, hours: 0 };
-
-  const seconds = (booking.arrival.getTime() - Date.now()) / 1000;
+function getTimeLeft(booking: Booking): TimeLeft {
+  const nowUtc = Date.now() - new Date().getTimezoneOffset() * 60 * 1000;
+  const ms = booking.arrival.getTime() - nowUtc;
+  const seconds = ms / 1000;
   const minutes = seconds / 60;
   const hours = minutes / 60;
 
-  return {
+  const timeLeft = {
     seconds: Math.floor(seconds % 60),
     minutes: Math.floor(minutes % 60),
     hours: Math.floor(hours)
   };
+
+  return timeLeft;
 };
 
 /**
  * Get the time to wait before notifying the user
  * @returns The time to wait before notifying the user
  */
-function getTimeToWait(booking?: Booking) {
-  const timeLeft = getTimeLeft();
+function getTimeToWait(booking: Booking) {
+  const timeLeft = getTimeLeft(booking);
 
   // If timeLeft.hours > 1, notify when there's an hour left
   if (timeLeft.hours > 1) return (timeLeft.hours - 1) * 60 * 60 * 1000;
@@ -107,14 +112,15 @@ function getTimeToWait(booking?: Booking) {
   if (timeLeft.minutes > 5) return (timeLeft.minutes - 5) * 60 * 1000;
 
   // Return the remaining time left
-  return booking?.arrival.getTime() ?? 0 - Date.now() + 1000;
+  const remainingTime = timeLeft.minutes * 60 * 1000 + timeLeft.seconds * 1000;
+  return remainingTime > 0 ? remainingTime : undefined;
 }
 
 /**
  * Notify the user about the time left before the taxi arrives
  * @param timeLeft The time left
  */
-function notify(timeLeft: TimeLeft, setNotification: NotificationContextType['setNotification']) {
+function notify(timeLeft: TimeLeft) {
   const timeString = timeLeft.hours > 0 ? `${timeLeft.hours} timer`
     : timeLeft.minutes > 0 ? `${timeLeft.minutes} minutter`
     : timeLeft.seconds > 1 ? `${timeLeft.seconds} sekunder`
@@ -124,5 +130,5 @@ function notify(timeLeft: TimeLeft, setNotification: NotificationContextType['se
   const message = timeString === null ? 'Din taxa ankommer snart'
     : timeString === undefined ? ''
     : `Din taxa ankommer om ${timeString}`;
-  setNotification({ message });
+  showNotification({ message });
 }

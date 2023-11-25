@@ -18,9 +18,10 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
 
   const onCitizenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    modalRef.current?.close();
+
     const data = serializeForm<UserModifyPayload<any>>(e.currentTarget);
     props.onSubmit(data);
-    modalRef.current?.close();
   };
   const onCitizenWithNoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,13 +29,12 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
     // Create citizen
     const form = document.getElementById(`${crud}-borger-form`) as HTMLFormElement;
     const citizenPayload = serializeForm<UserModifyPayload<any>>(form);
-    const canSubmitNote = await props.onSubmit(citizenPayload);
-    if (!canSubmitNote || crud !== 'create') return;
+    const closeModal = await props.onSubmit(citizenPayload);
 
     // Create note
     const notePayload = serializeForm<NoteModifyPayload<any>>(e.currentTarget);
     props.onNoteSubmit?.(notePayload);
-    modalRef.current?.close();
+    closeModal();
   };
 
   return (

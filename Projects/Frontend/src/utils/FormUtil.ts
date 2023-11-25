@@ -22,7 +22,7 @@ export function serializeForm<T extends object>(form: HTMLFormElement) {
       const value = element.value;
       if (value === null) console.warn(`${name}.value returned null`, { element });
 
-      console.log(`[FormUtil]`, { name, value });
+      // console.log(`[FormUtil]`, { name, value });
       acc[name] = /^\d$/.test(value) ? parseInt(value) : value;
     }
 

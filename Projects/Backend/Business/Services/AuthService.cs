@@ -1,4 +1,5 @@
 ﻿using Business.Models;
+using DanhoLibrary.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
@@ -57,7 +58,7 @@ public class AuthService
             userId: userId);
 
         // If existing tokens exists for this user, replace them
-        AuthTokens? existing = _cacheService.AuthTokens.Values.FirstOrDefault(a => a.UserId == userId);
+        AuthTokens? existing = _cacheService.AuthTokens.Values.FirstOrDefault(a => a?.UserId == userId);
         if (existing is not null) _cacheService.AuthTokens.Remove(existing.AccessToken.ToString());
 
         AddCookie(response, auth);
@@ -85,8 +86,16 @@ public class AuthService
                 Secure = true, // Only allow https access
             });
 
-        // Add the auth to the cache
-        _cacheService.AuthTokens.Add(auth.AccessToken.ToString(), auth);
+        try
+        {
+            // Add the auth to the cache
+            _cacheService.AuthTokens.Add(auth.AccessToken.ToString(), auth);
+        } 
+        catch (InvalidOperationException)
+        {
+            // If the key already exists, replace it
+            _cacheService.AuthTokens.Set(auth.AccessToken.ToString(), auth);
+        }
     }
 
     /// <summary>

@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
-import { serializeForm } from "utils";
-import { useStateInQuery } from "hooks";
-import { RequestBookings, useCitizen } from "providers/CitizenProvider";
+import { dateAsUTC, serializeForm } from "utils";
+import { useApiActions, useStateInQuery } from "hooks";
+import { useCitizen } from "providers/CitizenProvider";
 
 import { getStepData } from "./BookTaxiConstants";
 import { BookingStepsPayload } from "./BookTaxiTypes";
 import Progress from "./Steps/Progress";
+import { BookingModifyPayload } from "models/backend/business/models/payloads";
 
 export default function BookTaxi() {
   // Destructure the bookingId from the URL
@@ -21,7 +22,8 @@ export default function BookTaxi() {
   const navigate = useNavigate();
 
   // Get the citizen from the CitizenProvider to use it for assigning the booking to the citizen
-  const { citizen } = useCitizen(true);
+  const { citizen, ...citizenProps } = useCitizen(true);
+  const dispatch = useApiActions(citizenProps);
 
   // Get the step from the URL, or default to 1 if it's not a number
   const step = params.step ? Number(params.step) : 1;
@@ -74,15 +76,13 @@ export default function BookTaxi() {
 
     // Once the steps are completed and the citizenId is set, send the booking to the API
     (async function sendBooking() {
-      await RequestBookings(payload.citizenId, {
-        // If the payload has an id, use PUT, otherwise use POST
-        method: 'id' in payload && payload.id ? 'PUT' : 'POST',
-        body: {
-          ...payload,
-          // Combine the date and time into a single ISO string
-          arrival: new Date(`${payload.date}T${payload.time}Z`).toISOString()
-        }
-      });
+      const arrival = dateAsUTC(new Date(`${payload.date}T${payload.time}Z`));
+
+      await dispatch('id' in payload && payload.id !== undefined ? 'updateBooking' : 'createBooking', {
+        ...payload,
+        // Convert the date and time to a Date object as UTC
+        arrival
+      } as BookingModifyPayload<any>);
 
       // Navigate to the citizen page once the booking has been sent
       navigate('/');

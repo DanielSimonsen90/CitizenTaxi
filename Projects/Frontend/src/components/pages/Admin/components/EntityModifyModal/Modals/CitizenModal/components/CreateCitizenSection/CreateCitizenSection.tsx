@@ -12,21 +12,21 @@ type Props = {
 export const CreateCitizenSection = ({ crud, hidePassword, setHidePassword, defaultModel }: Props) => (
   <section className={`${crud}-citizen`}>
     <FormGroup label="Borgerens navn" htmlFor={`${crud}-citizen-name`}>
-      <input type="text" id={`${crud}-citizen-name`} name="name" defaultValue={defaultModel?.name} />
+      <input type="text" id={`${crud}-citizen-name`} name="name" defaultValue={defaultModel?.name} required />
     </FormGroup>
 
     <FormGroup label="Borgerens e-mail" htmlFor={`${crud}-citizen-email`}>
-      <input type="email" id={`${crud}-citizen-email`} name="email" defaultValue={defaultModel?.email} />
+      <input type="email" id={`${crud}-citizen-email`} name="email" defaultValue={defaultModel?.email} required />
     </FormGroup>
 
     {crud === 'create' && (<>
       <FormGroup label="Borgerens brugernavn" htmlFor={`${crud}-citizen-username`}>
-        <input type="text" id={`${crud}-citizen-username`} name="username" />
+        <input type="text" id={`${crud}-citizen-username`} name="username" required />
       </FormGroup>
 
       <FormGroup label="Borgerens kodeord" htmlFor={`${crud}-citizen-password`}>
         <div className="password-container">
-          <input type={hidePassword ? 'password' : 'text'} id={`${crud}-citizen-password`} name="password" />
+          <input type={hidePassword ? 'password' : 'text'} id={`${crud}-citizen-password`} name="password" required />
           <Button type="button" importance="secondary" className="alt" onClick={() => setHidePassword(!hidePassword)}>
             {hidePassword ? 'Vis' : 'Skjul'} kodeord
           </Button>

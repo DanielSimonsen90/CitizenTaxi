@@ -1,12 +1,12 @@
-import { RefObject, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import { Button, FunctionComponent } from "danholibraryrjs";
 
 import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/components";
 import { Booking, Citizen } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
-import { useBookings } from "providers/CitizenProvider";
+import { useBookings, useCitizen } from "providers/CitizenProvider";
 
-import { useBookingModals, useCitizenModals, useNoteModals } from "../../pages/AdminOverviewHooks";
+import { useBookingModals, useCitizenModals, useNoteModals } from "../EntityModifyModal/AdminOverviewModalHooks";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -25,11 +25,12 @@ type ModalOpenProps = {
 };
 
 type Props = {
-  citizen: Citizen;
   onModalOpen: (props: ModalOpenProps) => void;
+  setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
 };
 
-export default function CitizenCard({ citizen, onModalOpen }: Props) {
+export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
+  const { citizen, note } = useCitizen(false);
   const [latestBooking, bookings] = useBookings();
   const [showAllBookings, setShowAllBookings] = useState(false);
 
@@ -43,13 +44,14 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
     editNoteModalRef, EditNoteModal,
     deleteNoteModalRef, DeleteNoteModal
   } = useNoteModals();
-
   const {
     editCitizenModalRef, EditCitizenModal,
     deleteCitizenModalRef, DeleteCitizenModal
-  } = useCitizenModals();
+  } = useCitizenModals({ setCitizens });
 
-  const { name, email, note } = citizen;
+  if (!citizen) return null;
+  
+  const { name, email } = citizen;
   const [firstName] = name.split(' ');
 
   return (
@@ -58,28 +60,42 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
         <h1>{name}</h1>
         {email
           ? <a href={`mailto:${email}`} onClick={e => {
-              e.preventDefault();
-              alert('Du kunne have sendt en email til borgeren via din mailapplikation. Da dette er en demo, er det ikke muligt.');
-            }}>{email}</a>
+            e.preventDefault();
+            alert('Du kunne have sendt en email til borgeren via din mailapplikation. Da dette er en demo, er det ikke muligt.');
+          }}>{email}</a>
           : <p className="muted">Borgeren har ingen email.</p>}
       </header>
 
       <section className="citizen-card__bookings">
         <header>
           <h2>Borgerens næste bestilling</h2>
-          <Button importance="secondary" crud="create"
-            disabled={!note} title={!note ? `Du skal oprette et notat til ${firstName}, før du må bestille en taxa.` : undefined}
-            onClick={() => onModalOpen({
-              modal: CreateBookingModal,
-              modalRef: createBookingModalRef
-            })}>Bestil en taxa til {firstName}</Button>
+          <div className="button-container">
+            {latestBooking && bookings && bookings.length > 0 && (
+              <Button type="button" importance="secondary" className="alt"
+                onClick={() => setShowAllBookings(!showAllBookings)}
+              >
+                {showAllBookings ? 'Vis seneste' : 'Vis alle'}
+              </Button>
+            )}
+            <Button importance="secondary" crud="create"
+              disabled={!note} title={!note ? `Du skal oprette et notat til ${firstName}, før du må bestille en taxa.` : undefined}
+              onClick={() => onModalOpen({
+                modal: () => <CreateBookingModal modalRef={createBookingModalRef} selectedCitizen={citizen} />,
+                modalRef: createBookingModalRef
+              })}>Bestil til {firstName}</Button>
+          </div>
         </header>
         {latestBooking ?
           <ul className="bookings-list">
             <BookingItem booking={latestBooking} isLatest
-              onViewAllBookings={() => setShowAllBookings(v => !v)}
-              onChangeBooking={() => onModalOpen({ modal: EditBookingModal, modalRef: editBookingModalRef })}
-              onDeleteBooking={() => onModalOpen({ modal: DeleteBookingModal, modalRef: deleteBookingModalRef })}
+              onChangeBooking={() => onModalOpen({
+                modal: () => <EditBookingModal modalRef={editBookingModalRef} selected={latestBooking} selectedCitizen={citizen} />,
+                modalRef: editBookingModalRef
+              })}
+              onDeleteBooking={() => onModalOpen({
+                modal: () => <DeleteBookingModal modalRef={deleteBookingModalRef} selected={latestBooking} selectedCitizen={citizen} />,
+                modalRef: deleteBookingModalRef
+              })}
             />
             {showAllBookings
               && bookings
@@ -88,9 +104,14 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
                 <ul key={bookings[0].arrival.getDate()}>
                   {bookings.map(booking => (
                     <BookingItem key={booking.id} booking={booking} isLatest={booking.id === latestBooking?.id}
-                      onChangeBooking={() => onModalOpen({ modal: EditBookingModal, modalRef: editBookingModalRef })}
-                      onDeleteBooking={() => onModalOpen({ modal: DeleteBookingModal, modalRef: deleteBookingModalRef })}
-                      onViewAllBookings={() => setShowAllBookings(v => !v)}
+                      onChangeBooking={() => onModalOpen({
+                        modal: () => <EditBookingModal modalRef={editBookingModalRef} selected={booking} selectedCitizen={citizen} />,
+                        modalRef: editBookingModalRef
+                      })}
+                      onDeleteBooking={() => onModalOpen({
+                        modal: () => <DeleteBookingModal modalRef={deleteBookingModalRef} selected={booking} selectedCitizen={citizen} />,
+                        modalRef: deleteBookingModalRef
+                      })}
                     />
                   ))}
                 </ul>
@@ -123,7 +144,7 @@ export default function CitizenCard({ citizen, onModalOpen }: Props) {
           )
           : (
             <>
-              <p className="muted">Borgeren har ingen note.</p>
+              <p className="muted">Borgeren har intet notat.</p>
               <div className="button-container">
                 <Button type="button" crud="create" onClick={() => onModalOpen({
                   modal: () => <CreateNoteModal modalRef={createNoteModalRef} selectedCitizen={citizen} />,

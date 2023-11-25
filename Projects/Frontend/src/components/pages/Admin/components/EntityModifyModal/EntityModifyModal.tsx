@@ -15,7 +15,7 @@ type Props<TEntity, TPayload> = {
 
   defaultModel?: TEntity;
   payload: TPayload;
-  onSubmit(model: TPayload): Promise<boolean>;
+  onSubmit(model: TPayload): Promise<() => void>;
 
   selectedCitizen?: Citizen;
 }
@@ -37,7 +37,7 @@ export default function EntityModifyModal<
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = serializeForm<TPayload>(e.currentTarget);
-    props.onSubmit(data);
+    return props.onSubmit(data);
   }
   
   return (
