@@ -30,8 +30,8 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="uow">UnitOfWork used to perform CRUD operations on <see cref="Citizen"/> and <see cref="Admin"/></param>
     /// <param name="loginService">Service for authentication and storing cookie</param>
-    public UsersController(UnitOfWork uow, LoginService loginService, AuthService authService) : base(uow) 
-    { 
+    public UsersController(UnitOfWork uow, LoginService loginService, AuthService authService) : base(uow)
+    {
         _loginService = loginService;
         _authService = authService;
     }
@@ -71,15 +71,15 @@ public class UsersController : BaseController
             _ => throw new Exception("Invalid role provided"),
         };
         string salt = LoginService.GenerateSalt();
-        Login login = new(payload.Username, 
-            LoginService.GenerateEncrypedPassword(payload.Password, salt), 
+        Login login = new(payload.Username,
+            LoginService.GenerateEncrypedPassword(payload.Password, salt),
             salt, user);
         user.Login = login;
-        
+
         // Add the login to the database and save changes
         unitOfWork.Logins.Add(login);
         await unitOfWork.SaveChangesAsync();
-        
+
         // Return the result
         return result;
     }
@@ -111,7 +111,7 @@ public class UsersController : BaseController
     /// </summary>
     /// <param name="userId">Id of the <see cref="Citizen"/> or <see cref="Admin"/> entity</param>
     /// <returns>HTTP response from containing the <see cref="Citizen"/> or <see cref="Admin"/> or any error-related HTTP response</returns>
-    [HttpGet("{userId:Guid}")] public async Task<IActionResult> GetUser([FromRoute] Guid userId) => 
+    [HttpGet("{userId:Guid}")] public async Task<IActionResult> GetUser([FromRoute] Guid userId) =>
         // Role of the payload determines which entity to get and which repository to use.
         // This is checked by the IsAdmin method.
         IsAdmin(userId)
@@ -147,12 +147,33 @@ public class UsersController : BaseController
     /// <param name="userId">Id of the <see cref="Citizen"/> or <see cref="Admin"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
     [HttpDelete("{userId:Guid}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] Guid userId) => 
+    public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
+    {
+        AUser user = IsAdmin(userId)
+            ? unitOfWork.Admins.GetWithRelations(userId, Admin.RELATIONS) ?? throw new Exception("Admin was null")
+            : unitOfWork.Citizens.GetWithRelations(userId, Citizen.RELATIONS) ?? throw new Exception("Citizen was null");
+
         // Role of the payload determines which entity to delete and which repository to use.
-        IsAdmin(userId)
+        IActionResult result = IsAdmin(userId)
             ? await DeleteEntity<Admin, AdminRepository>(userId, unitOfWork.Admins)
-            // TODO: Delete note, login and all bookings from the citizen
             : await DeleteEntity<Citizen, CitizenRepository>(userId, unitOfWork.Citizens);
+
+        // If the result is not an NoContentResult, return the result
+        if (result is not NoContentResult) return result;
+
+        // Delete the login from the database, as logins cant exist without users
+        Login? login = unitOfWork.Logins.GetLoginByUsername(user.Login.Username);
+        if (login is not null) unitOfWork.Logins.Delete(login);
+
+        // If the user is a citizen, delete all bookings from the citizen
+        if (user is Citizen citizen)
+            // Delete all bookings from the citizen
+            unitOfWork.Bookings.GetFromCitizen(citizen).ForEach(unitOfWork.Bookings.Delete);
+
+        // Save changes and return the result
+        await unitOfWork.SaveChangesAsync();
+        return result;
+    }
     #endregion
 
     #region Authenticate

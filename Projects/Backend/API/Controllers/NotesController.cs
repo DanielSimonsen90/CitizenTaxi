@@ -77,7 +77,23 @@ public class NotesController : BaseController
     /// </summary>
     /// <param name="noteId">Id of the <see cref="Note"/> entity</param>
     /// <returns>HTTP response from <see cref="BaseController.DeleteEntity{TEntity, TRepository}(Guid, TRepository)"/></returns>
-    [HttpDelete("{noteId:Guid}")] public async Task<IActionResult> DeleteNote([FromRoute] Guid noteId) =>
-        // TODO: Delete all bookings from the citizen associated with the note
-        await DeleteEntity<Note, NoteRepository>(noteId, unitOfWork.Notes);
+    [HttpDelete("{noteId:Guid}")] public async Task<IActionResult> DeleteNote([FromRoute] Guid noteId)
+    {
+        Citizen? citizen = unitOfWork.Citizens
+            .GetAllWithRelations(Citizen.RELATIONS)
+            .FirstOrDefault(citizen => citizen.Note?.Id == noteId);
+
+        IActionResult result = await DeleteEntity<Note, NoteRepository>(noteId, unitOfWork.Notes);
+
+        // If the result is not an NoContentResult, return the result
+        if (result is not NoContentResult) return result;
+
+        // Delete all bookings associated with the citizen, as bookings can't exist without a citizen note
+        citizen?.Bookings.ForEach(unitOfWork.Bookings.Delete);
+
+        // Save changes to the database
+        unitOfWork.SaveChanges();
+        return result;
+    }
+        
 }

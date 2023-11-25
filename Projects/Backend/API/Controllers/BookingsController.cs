@@ -28,8 +28,14 @@ public class BookingsController : BaseController
     /// </summary>
     /// <param name="payload">The payload from the frontend</param>
     /// <returns>HTTP response from <see cref="BaseController.CreateEntity{TPayload, TEntity}(TPayload, BaseRepository{TEntity, Guid})"/></returns>
-    [HttpPost] public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload) => 
-        await CreateEntity<BookingModifyPayload, BookingDTO, Booking>(payload, unitOfWork.Bookings);
+    [HttpPost] public async Task<IActionResult> CreateBooking([FromBody] BookingModifyPayload payload)
+    {
+        Citizen? citizen = unitOfWork.Citizens.GetWithRelations(payload.CitizenId, Citizen.RELATIONS);
+        if (citizen is null) return NotFound($"Citizen with id {payload.CitizenId} was not found");
+        if (citizen.Note is null) return BadRequest($"Citizen with id {payload.CitizenId} does not have a note, and can therefore not have bookings.");
+
+        return await CreateEntity<BookingModifyPayload, BookingDTO, Booking>(payload, unitOfWork.Bookings);
+    }
 
     /// <summary>
     /// Get all <see cref="Booking"/>s from the database.

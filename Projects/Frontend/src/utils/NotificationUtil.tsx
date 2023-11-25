@@ -15,5 +15,6 @@ export function showNotification(props: NotificationProps) {
     root = null;
     notificationLayer.innerHTML = '';
   }} {...props} />);
-  console.log(`[Notification]: ${props.type ?? 'info'} - ${props.message}`)
+  
+  if (props.message) console.log(`[Notification]: ${props.type ?? 'info'} - ${props.message}`)
 }
