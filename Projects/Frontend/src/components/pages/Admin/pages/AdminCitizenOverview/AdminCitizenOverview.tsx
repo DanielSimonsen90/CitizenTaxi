@@ -1,5 +1,5 @@
 import OverviewLayout from "../../components/OverviewLayout";
-import { useCitizenModals } from "../AdminOverviewModalHooks";
+import { useCitizenModals } from "../../components/EntityModifyModal/AdminOverviewModalHooks";
 
 export default function AdminCitizenOverview() {
   const { CreateCitizenModal } = useCitizenModals();

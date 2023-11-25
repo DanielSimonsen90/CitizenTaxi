@@ -1,19 +1,20 @@
+import { Citizen } from "models/backend/common";
 import { CitizenProviderContextType } from "providers/CitizenProvider/CitizenProviderTypes";
-import { Guid } from "types";
+import { Dispatch, SetStateAction } from "react";
+import { Guid, Nullable } from "types";
 import { ActionNames, ActionReturnTypes, Actions, ApiEndpoints, Request, showNotification } from "utils";
 
 type Props = {
   setCitizen?: CitizenProviderContextType['setCitizen'];
-  setNote?: CitizenProviderContextType['setNote'];
-  setBookings?: CitizenProviderContextType['setBookings'];
+  setCitizens?: Dispatch<SetStateAction<Array<Citizen>>>;
   closeModalAutomatically?: boolean;
 };
 
 export default function useApiActions({
-  setBookings, setCitizen, setNote,
+  setCitizen, setCitizens,
   closeModalAutomatically: shouldCloseModal = true
 }: Props = {}) {
-  return async function dispatch<Action extends ActionNames>(
+  async function dispatch<Action extends ActionNames>(
     action: Action,
     ...args: Actions[Action]
   ): Promise<ActionReturnTypes[Action]> {
@@ -25,9 +26,6 @@ export default function useApiActions({
     const baseEndpoint = action.includes('Citizen') ? `users`
       : action.includes('Note') ? `notes`
       : `bookings`;
-    const setter = action.includes('Citizen') ? setCitizen
-      : action.includes('Note') ? setNote
-      : setBookings;
     const entityName = action.includes('Citizen') ? 'Borger'
       : action.includes('Note') ? 'Notat'
       : 'Bestilling';
@@ -50,16 +48,18 @@ export default function useApiActions({
         });
 
         if (response.success) {
-          if (!shouldCloseModal) closeModal();
-          
-          if (setter) {
-            if (action.includes('create')) setter === setBookings ? setter(bookings => [...bookings, {
-              ...response.data,
-              arrival: new Date(response.data.arrival),
-            }]) : setter(response.data);
-            // Update returns 204, no content, so we have to use the payload instead of the response data for updates
-            else setter === setBookings ? setter(bookings => [...bookings, updatePayload as any]) : setter(updatePayload as any);
-          }
+          if (setCitizens && action.includes('Citizen')) setCitizens(citizens => [...citizens ?? [], response.data]);
+          if (setCitizen) setCitizen(citizen => {
+            const updatedNote = action.includes('Note') ? response.data : citizen?.note;
+            const updatedBookings = action.includes('Booking') ? [...citizen?.bookings ?? [], updatePayload] : citizen?.bookings;
+            const updatedCitizen = action.includes('Citizen') ? response.data : {
+              ...citizen,
+              note: updatedNote,
+              bookings: updatedBookings,
+            };
+
+            return updatedCitizen;
+          });
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
@@ -78,8 +78,15 @@ export default function useApiActions({
         const response = await Request(`${baseEndpoint}/${entityId}`, { method: 'DELETE' });
 
         if (response.success) {
-          if (!shouldCloseModal) closeModal();
-          if (setter) setter === setBookings ? setter(bookings => bookings.filter(b => b.id !== entityId)) : setter(() => null as any);
+          if (setCitizen) setCitizen(citizen => {
+            let updatedCitizen: Nullable<Citizen> = { ...citizen } as Citizen;
+
+            if (action.includes('Booking')) updatedCitizen.bookings = updatedCitizen.bookings?.filter(booking => booking.id !== entityId);
+            else if (action.includes('Note')) updatedCitizen.note = null;
+            else if (action.includes('Citizen')) updatedCitizen = null;
+
+            return updatedCitizen;
+          });
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
@@ -128,6 +135,9 @@ export default function useApiActions({
       }
     }
 
+    if (shouldCloseModal) closeModal();
     return closeModal as ActionReturnTypes[Action];
   };
+
+  return dispatch;
 };

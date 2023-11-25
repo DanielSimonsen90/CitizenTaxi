@@ -8,8 +8,8 @@ import { DeleteBookingModalContent } from "components/shared/Modal/components";
 import { CitizenNoteInputs } from "components/pages/Citizen/components";
 import { useApiActions } from "hooks";
 
-import { EntityModalProps, ModifyEntityModal } from "../components/OverviewLayout/OverviewLayout";
-import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from "../components/EntityModifyModal";
+import { EntityModalProps, ModifyEntityModal } from "../OverviewLayout/OverviewLayout";
+import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from ".";
 
 export function useCitizenModals() {
   const citizenProps = useCitizen(false);
@@ -32,7 +32,7 @@ export function useCitizenModals() {
 
   const DeleteCitizenModal: ModifyEntityModal<Citizen> = ({ modalRef, selected }) => (
     <DeleteEntityModal modalRef={modalRef} title={selected?.name || "Borgeren"}
-      entityId={selected?.id || ""} action="deleteCitizen"
+    onSubmit={() => dispatch('deleteCitizen', selected?.id!)}
       // TODO: Preview
       preview={() => <p>This is test preview</p>}
     />
@@ -82,7 +82,7 @@ export function useNoteModals() {
   const EditNoteModal: EntityModalProps['EditNoteModal'] = ({ selected, ...props }) =>
     <NoteModal crud="update" onSubmit={payload => dispatch('updateNote', payload)} defaultModel={selected} {...props} />;
   const DeleteNoteModal: EntityModalProps['DeleteNoteModal'] = ({ selected, ...props }) =>
-    <DeleteEntityModal title="Notat" entityId={selected?.id || ""} action="deleteNote" {...props}
+    <DeleteEntityModal onSubmit={() => dispatch('deleteNote', selected?.id!)} title="Notat" {...props}
       preview={() => (
         <CitizenProvider citizen={props.selectedCitizen}>
           <CitizenNoteInputs />

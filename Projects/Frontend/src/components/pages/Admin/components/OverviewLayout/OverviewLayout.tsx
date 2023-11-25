@@ -23,9 +23,6 @@ type ModifyEntityModalProps<
   AdditionalProps = {}
 > = (
   & Record<
-    `${'create' | 'edit' | 'delete'}${TEntityName}ModalRef`, 
-    RefObject<HTMLDialogElement>>
-  & Record<
     `Create${TEntityName}Modal`, 
     FunctionComponent<Pick<ModalProps, 'modalRef'> & AdditionalProps>>
   & Record<

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { useAsyncEffect, useUpdateEffect } from 'danholibraryrjs';
+import { useAsyncEffect } from 'danholibraryrjs';
 
 import { Nullable } from 'types';
-import { Booking, Citizen, Note, Role } from 'models/backend/common';
-import { useUpdateAsyncEffect, useApiActions } from 'hooks';
+import { Citizen } from 'models/backend/common';
+import { useApiActions } from 'hooks';
 import { useAuth } from 'providers/AuthProvider';
 
 import { CitizenProviderContext } from './CitizenProviderConstants';
@@ -12,10 +12,10 @@ import { CitizenProviderProps } from './CitizenProviderTypes';
 export default function CitizenProviderProvider({ children, citizen: defaultValue }: CitizenProviderProps) {
   const { user } = useAuth(false);
   const [citizen, setCitizen] = useState<Nullable<Citizen>>(defaultValue ?? null);
-  const [allBookings, setBookings] = useState<Array<Booking>>([]);
-  const [note, setNote] = useState<Nullable<Note>>(null);
-  const dispatch = useApiActions({ setBookings, setCitizen, setNote });
+  const dispatch = useApiActions({ setCitizen });
 
+  const note = useMemo(() => citizen?.note ?? null, [citizen?.note]);
+  const allBookings = useMemo(() => citizen?.bookings ?? [], [citizen?.bookings]);
   const [latestBooking, bookings] = useMemo(() => {
     if (!allBookings.length) return [null, []];
 
@@ -29,22 +29,6 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
     return [latest, rest];
   }, [allBookings]);
 
-  useUpdateEffect(() => {
-    console.log(`[${citizen?.name.split(' ')[0] ?? 'Citizen'}] note change`, note);
-  }, [note]);
-
-  // Update citizen entities when citizen changes
-  useUpdateAsyncEffect(async () => {
-    if (!citizen?.id || citizen.role !== Role.Citizen) return;
-
-    console.log('Updating citizen entities');
-    const note = await dispatch('getNote', citizen.id);
-    const bookings = await dispatch('getBookings', citizen.id);
-
-    setNote(note);
-    setBookings(bookings);
-  }, [citizen]);
-
   useAsyncEffect(async () => {
     // If the user is not yet loaded, we don't want to do anything yet
     if (!user?.id || defaultValue) return;
@@ -57,8 +41,8 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
   return (
     <CitizenProviderContext.Provider value={{
       citizen, setCitizen,
-      note, setNote,
-      bookings, latestBooking, allBookings, setBookings,
+      note,
+      bookings, latestBooking, allBookings,
     }}>
       {children}
     </CitizenProviderContext.Provider>

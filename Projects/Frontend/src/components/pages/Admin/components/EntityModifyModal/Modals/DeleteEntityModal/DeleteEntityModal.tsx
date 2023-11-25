@@ -2,36 +2,27 @@ import { FormEvent, RefObject } from "react";
 import { Button, FunctionComponent } from "danholibraryrjs";
 
 import Modal from "components/shared/Modal";
-import { Guid } from "types";
-import { useCitizen } from "providers/CitizenProvider";
-import { useApiActions } from "hooks";
-import { ActionNames } from "utils";
 
-type DeleteActions = Extract<ActionNames, 'deleteBooking' | 'deleteCitizen' | 'deleteNote'>;
-
-type Props<Action extends DeleteActions> = {
+type Props = {
   modalRef: RefObject<HTMLDialogElement>;
   title: string;
-  entityId: Guid;
-  action: Action;
   preview: FunctionComponent;
+  onSubmit: () => void;
 };
 
-export default function EntityDeleteModal<Action extends DeleteActions>({
+export default function EntityDeleteModal({
   modalRef,
   title, preview: Preview,
-  action, entityId
-}: Props<Action>) {
-  const citizenProps = useCitizen(false);
-  const dispatch = useApiActions(citizenProps);
+  ...props
+}: Props) {
  
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit =  (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await dispatch(action, entityId);
+    props.onSubmit();
   };
 
   return (
-    <Modal className="entity-delete-modal" modalRef={modalRef} data-entity-id={entityId || undefined}>
+    <Modal className="entity-delete-modal" modalRef={modalRef}>
       <form onSubmit={onSubmit}>
         <header>
           <h1>Du er ved at slette {title}</h1>

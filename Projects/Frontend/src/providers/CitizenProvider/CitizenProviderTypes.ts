@@ -10,8 +10,6 @@ export type CitizenProviderContextType = {
   allBookings: Array<Booking>;
 
   setCitizen: Dispatch<SetStateAction<Nullable<Citizen>>>;
-  setNote: Dispatch<SetStateAction<Nullable<Note>>>;
-  setBookings: Dispatch<SetStateAction<Array<Booking>>>;
 };
 
 export type CitizenProviderProps = PropsWithChildren & {

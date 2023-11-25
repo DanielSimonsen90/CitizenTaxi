@@ -13,6 +13,4 @@ export const CitizenProviderContext = createContext<NullableCitizenProviderConte
   note: null,
 
   setCitizen: () => { },
-  setBookings: () => { },
-  setNote: () => { },
 });

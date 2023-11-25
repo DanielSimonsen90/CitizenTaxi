@@ -6,7 +6,7 @@ import { Booking, Citizen } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { useBookings, useCitizen } from "providers/CitizenProvider";
 
-import { useBookingModals, useCitizenModals, useNoteModals } from "../../pages/AdminOverviewModalHooks";
+import { useBookingModals, useCitizenModals, useNoteModals } from "../EntityModifyModal/AdminOverviewModalHooks";
 import { useApiActions } from "hooks";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
@@ -31,9 +31,8 @@ type Props = {
 };
 
 export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
-  const { citizen, note, ...citizenProps } = useCitizen(false);
+  const { citizen, note } = useCitizen(false);
   const dispatch = useApiActions({
-    ...citizenProps,
     setCitizen: citizenState => {
       const updatedCitizen = typeof citizenState === 'function' ? citizenState(citizen) : citizenState;
       if (updatedCitizen) setCitizens(prev => prev.map(c => c.id === updatedCitizen.id ? updatedCitizen : c));
@@ -53,12 +52,13 @@ export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
     editNoteModalRef, EditNoteModal,
     deleteNoteModalRef, DeleteNoteModal
   } = useNoteModals();
-
   const {
     editCitizenModalRef, EditCitizenModal,
     deleteCitizenModalRef, DeleteCitizenModal
   } = useCitizenModals();
 
+  if (!citizen) return null;
+  
   const { name, email } = citizen;
   const [firstName] = name.split(' ');
 
