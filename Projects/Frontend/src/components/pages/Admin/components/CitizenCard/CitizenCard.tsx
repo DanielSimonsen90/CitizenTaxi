@@ -55,7 +55,7 @@ export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
   const {
     editCitizenModalRef, EditCitizenModal,
     deleteCitizenModalRef, DeleteCitizenModal
-  } = useCitizenModals();
+  } = useCitizenModals({ setCitizens });
 
   if (!citizen) return null;
   

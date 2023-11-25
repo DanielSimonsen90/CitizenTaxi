@@ -48,16 +48,24 @@ export default function useApiActions({
         });
 
         if (response.success) {
-          if (setCitizens && action.includes('Citizen')) setCitizens(citizens => [...citizens ?? [], response.data]);
+          if (setCitizens && action.includes('Citizen')) setCitizens(citizens => {
+            const updatedCitizens = !isUpdateAction 
+              ? [...citizens, response.data]
+              : citizens.map(citizen => citizen.id === updatePayload.id ? updatePayload : citizen);
+            
+            console.log('CitizenS update', updatedCitizens);
+            return updatedCitizens;
+          });
           if (setCitizen) setCitizen(citizen => {
             const updatedNote = action.includes('Note') ? response.data : citizen?.note;
             const updatedBookings = action.includes('Booking') ? [...citizen?.bookings ?? [], updatePayload] : citizen?.bookings;
-            const updatedCitizen = action.includes('Citizen') ? response.data : {
+            const updatedCitizen = action.includes('Citizen') && !isUpdateAction ? response.data : {
               ...citizen,
               note: updatedNote,
               bookings: updatedBookings,
             };
 
+            console.log('Citizen update', updatedCitizen, { response });
             return updatedCitizen;
           });
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);

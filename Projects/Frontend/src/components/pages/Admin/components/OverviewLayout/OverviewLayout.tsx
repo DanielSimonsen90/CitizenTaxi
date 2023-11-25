@@ -1,4 +1,4 @@
-import { RefObject, useRef, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, FunctionComponent, useAsyncEffectOnce, useUpdateEffect } from "danholibraryrjs";
 
@@ -40,11 +40,17 @@ type Props = {
   pageTitle: string;
   entity: string;
   mainCreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>;
+
+  citizens: Array<Citizen>;
+  setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
 };
 
-export default function OverviewLayout({ pageTitle, entity, mainCreateModal: MainCreateModal }: Props) {
-  const [citizens, setCitizens] = useState<Array<Citizen>>([]);
-  const dispatch = useApiActions();
+export default function OverviewLayout({ 
+  pageTitle, entity, 
+  mainCreateModal: MainCreateModal,
+  citizens, setCitizens
+}: Props) {
+  const dispatch = useApiActions({ setCitizens });
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
   const [modalRef, setModalRef] = useState<RefObject<HTMLDialogElement> | undefined>(undefined);
   const [Modal, setModal] = useModalContentState();

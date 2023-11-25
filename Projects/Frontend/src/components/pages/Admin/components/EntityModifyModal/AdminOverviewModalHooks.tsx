@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
 import { CitizenProvider, useCitizen } from "providers/CitizenProvider";
 import { Citizen } from "models/backend/common";
@@ -11,9 +11,13 @@ import { useApiActions } from "hooks";
 import { EntityModalProps, ModifyEntityModal } from "../OverviewLayout/OverviewLayout";
 import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from ".";
 
-export function useCitizenModals() {
-  const citizenProps = useCitizen(false);
-  const dispatch = useApiActions({ ...citizenProps, closeModalAutomatically: false })
+type CitizenModalProps = {
+  setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
+}
+
+export function useCitizenModals({ setCitizens }: CitizenModalProps) {
+  const { setCitizen } = useCitizen(false);
+  const dispatch = useApiActions({ setCitizen, setCitizens, closeModalAutomatically: false })
   const createCitizenModalRef = useRef<HTMLDialogElement>(null);
   const editCitizenModalRef = useRef<HTMLDialogElement>(null);
   const deleteCitizenModalRef = useRef<HTMLDialogElement>(null);
