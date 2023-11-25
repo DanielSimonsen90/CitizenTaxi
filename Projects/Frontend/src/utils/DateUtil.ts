@@ -17,9 +17,3 @@ export const dateAsUTC = (date: Date) => new Date(Date.UTC(
   date.getUTCHours() + 1, // Add one hour to get the correct time (UTC+1)
   date.getUTCMinutes()
 ));
-
-export const getCorrectHour = (time: string) => {
-  const [hour, minute] = time.split(':');
-  const hourString = hour.length === 1 ? `0${hour + 1}` : hour + 1;
-  return `${hourString}:${minute}`
-}

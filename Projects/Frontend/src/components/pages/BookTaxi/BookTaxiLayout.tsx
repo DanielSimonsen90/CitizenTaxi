@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
-import { dateAsUTC, getCorrectHour, serializeForm } from "utils";
+import { dateAsUTC, serializeForm } from "utils";
 import { useApiActions, useStateInQuery } from "hooks";
 import { useCitizen } from "providers/CitizenProvider";
 

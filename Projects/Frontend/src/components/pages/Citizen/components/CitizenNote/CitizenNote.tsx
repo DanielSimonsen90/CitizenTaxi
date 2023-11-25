@@ -12,7 +12,7 @@ export default function CitizenNote() {
         <h3 className="secondary">Er dit notat forkert?</h3>
         <p className="secondary">Du kan ringe til lægesekretærene og få det rettet med nummeret:</p>
         {/* We don't want the user to be able to change the number, so we set tabIndex to -1 and readOnly to true */}
-        <input type="tel" tabIndex={-1} readOnly defaultValue={DOCTORS_SECRETARY_PHONE} />
+        <input id="doctors-secretary-phone" type="tel" tabIndex={-1} readOnly defaultValue={DOCTORS_SECRETARY_PHONE} />
         <p className="or">eller</p>
         {/* 
           In production, the citizen could call the doctor's secretary assigned to them,
