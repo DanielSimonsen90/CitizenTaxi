@@ -18,25 +18,13 @@ export default function BookingModal({
     ?? new Date().toISOString().split('T');
 
   function convertTime(defaultTimeString: string) {
-    // If there is no default time, return the current time
-    if (!defaultTimeString) return new Date().toISOString().split('T')[1].slice(0, 5);
-
-    const [hours, minutes] = defaultTimeString.split(':');
-    
-    // add 1 hour to the time to get the correct time
-    let correctedHours = parseInt(hours) + 1;
-    if (correctedHours >= 24) correctedHours -= 24;
-
-    // Ensure double digits
-    const correctedHoursString = correctedHours.toString().padStart(2, '0');
-
-    return `${correctedHoursString}:${minutes}`;
+    return defaultTimeString ?? new Date().toISOString();
   }
 
   async function onSubmit(model: BookingModifyPayload<any>) {
     // Convert the date and time to a Date object for model.arrival
     const correctModel = model as any as BookingFormBody;
-    const arrivalDateTimeString = `${correctModel.arrivalDate}T${convertTime(correctModel.arrivalTime)}:00`;
+    const arrivalDateTimeString = `${correctModel.arrivalDate}T${convertTime(correctModel.arrivalTime)}:00.000Z`;
     model.arrival = new Date(arrivalDateTimeString);
     return props.onSubmit(model);
   }

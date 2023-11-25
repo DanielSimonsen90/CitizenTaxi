@@ -1,5 +1,6 @@
 import { Button } from "danholibraryrjs";
 import { Booking } from "models/backend/common";
+import { dateToString } from "utils";
 
 type Props = {
   /** The booking to display */
@@ -23,7 +24,7 @@ export default function BookingItem({
     <li id={id} className="booking-item" data-is-latest={isLatest}>
       <header>
         <label>Til {destination}</label>
-        <time dateTime={arrival.toISOString()}>{arrival.toLocaleString("en-UK")}</time>
+        <time dateTime={arrival.toISOString()}>{dateToString(arrival)}</time>
       </header>
       <section>
         <label>Fra {pickup}</label>

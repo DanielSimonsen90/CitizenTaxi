@@ -25,10 +25,10 @@ export default function useApiActions({
 
     const baseEndpoint = action.includes('Citizen') ? `users`
       : action.includes('Note') ? `notes`
-      : `bookings`;
+        : `bookings`;
     const entityName = action.includes('Citizen') ? 'Borger'
       : action.includes('Note') ? 'Notat'
-      : 'Bestilling';
+        : 'Bestilling';
 
     switch (action) {
       case 'createCitizen':
@@ -49,23 +49,28 @@ export default function useApiActions({
 
         if (response.success) {
           if (setCitizens && action.includes('Citizen')) setCitizens(citizens => {
-            const updatedCitizens = !isUpdateAction 
+            const updatedCitizens = !isUpdateAction
               ? [...citizens, response.data]
               : citizens.map(citizen => citizen.id === updatePayload.id ? updatePayload : citizen);
-            
-            console.log('CitizenS update', updatedCitizens);
             return updatedCitizens;
           });
           if (setCitizen) setCitizen(citizen => {
-            const updatedNote = action.includes('Note') ? response.data : citizen?.note;
-            const updatedBookings = action.includes('Booking') ? [...citizen?.bookings ?? [], updatePayload] : citizen?.bookings;
-            const updatedCitizen = action.includes('Citizen') && !isUpdateAction ? response.data : {
-              ...citizen,
-              note: updatedNote,
-              bookings: updatedBookings,
-            };
+            const updatedNote = action.includes('Note')
+              ? (isUpdateAction ? updatePayload : response.data)
+              : citizen?.note;
+            const updatedBookings = action.includes('Booking')
+              ? (isUpdateAction
+                ? citizen?.bookings?.map(booking => booking.id === updatePayload.id ? updatePayload : booking)
+                : [...citizen?.bookings ?? [], updatePayload])
+              : citizen?.bookings;
+            const updatedCitizen = action === 'createCitizen'
+              ? response.data
+              : {
+                ...(action.includes('Citizen') ? updatePayload : citizen),
+                note: updatedNote,
+                bookings: updatedBookings,
+              };
 
-            console.log('Citizen update', updatedCitizen, { response });
             return updatedCitizen;
           });
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
@@ -122,7 +127,7 @@ export default function useApiActions({
             && entityId && baseEndpoint !== 'users'
             ? `${baseEndpoint}?citizenId=${entityId}`
             : baseEndpoint === 'users' && !entityId ? baseEndpoint
-            : `${baseEndpoint}/${entityId}`
+              : `${baseEndpoint}/${entityId}`
         );
         const response = await Request<any, Guid>(endpoint, options);
 
@@ -131,15 +136,35 @@ export default function useApiActions({
           type: 'error',
         });
 
-        if (!action.includes('Booking')) return response.data as ActionReturnTypes[Action];
-        if (action === 'getBookings') return (response.data as ActionReturnTypes['getBookings']).map(booking => ({
-          ...booking,
-          arrival: new Date(booking.arrival),
-        })) as ActionReturnTypes['getBookings'] as ActionReturnTypes[Action];
-        if (action === 'getBooking') return {
-          ...response.data,
-          arrival: new Date(response.data.arrival),
-        } as ActionReturnTypes['getBooking'] as ActionReturnTypes[Action];
+        // Return the updated value
+        if (!action.includes('Booking') && !action.includes('Citizen')) return response.data as ActionReturnTypes[Action];
+
+        switch (action) {
+          case 'getBookings': return (response.data as ActionReturnTypes['getBookings']).map(booking => ({
+            ...booking,
+            arrival: new Date(booking.arrival),
+          })) as ActionReturnTypes['getBookings'] as ActionReturnTypes[Action];
+          case 'getBooking': return {
+            ...response.data,
+            arrival: new Date(response.data.arrival),
+          } as ActionReturnTypes['getBooking'] as ActionReturnTypes[Action];
+
+          case 'getCitizens': return (response.data as ActionReturnTypes['getCitizens']).map(citizen => ({
+            ...citizen,
+            bookings: (citizen.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
+              ...booking,
+              arrival: new Date(booking.arrival),
+            })),
+          })) as ActionReturnTypes['getCitizens'] as ActionReturnTypes[Action];
+          case 'getCitizen': return {
+            ...response.data,
+            bookings: (response.data.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
+              ...booking,
+              arrival: new Date(booking.arrival),
+            })),
+          } as ActionReturnTypes['getCitizen'] as ActionReturnTypes[Action];
+          default: throw new Error(`Action ${action} is not supported`);
+        }
       }
     }
 

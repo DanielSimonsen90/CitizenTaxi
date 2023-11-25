@@ -7,7 +7,6 @@ import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { useBookings, useCitizen } from "providers/CitizenProvider";
 
 import { useBookingModals, useCitizenModals, useNoteModals } from "../EntityModifyModal/AdminOverviewModalHooks";
-import { useApiActions } from "hooks";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -32,13 +31,6 @@ type Props = {
 
 export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
   const { citizen, note } = useCitizen(false);
-  const dispatch = useApiActions({
-    setCitizen: citizenState => {
-      const updatedCitizen = typeof citizenState === 'function' ? citizenState(citizen) : citizenState;
-      if (updatedCitizen) setCitizens(prev => prev.map(c => c.id === updatedCitizen.id ? updatedCitizen : c));
-      else setCitizens(prev => prev.filter(c => c.id !== citizen.id));
-    }
-  });
   const [latestBooking, bookings] = useBookings();
   const [showAllBookings, setShowAllBookings] = useState(false);
 
@@ -177,11 +169,6 @@ export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
             modalRef: editCitizenModalRef
           })}
         >Redigér {firstName}</Button>
-        <Button type="button" importance="primary" crud="delete"
-          onClick={() => dispatch('deleteNote', note.id)}
-        >
-          Slet {firstName}s note
-        </Button>
       </footer>
     </article>
   );
