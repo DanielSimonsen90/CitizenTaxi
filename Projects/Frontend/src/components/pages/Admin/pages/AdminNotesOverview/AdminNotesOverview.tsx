@@ -1,7 +1,15 @@
+import { useState } from "react";
+import { Citizen } from "models/backend/common";
+import { useNoteModals } from "../../components/EntityModifyModal/AdminOverviewModalHooks";
+import OverviewLayout from "../../components/OverviewLayout";
+
 export default function AdminNotesOverview() {
-  return (
-    <div>
-      AdminNotesOverview
-    </div>
-  );
+  const [citizens, setCitizens] = useState<Array<Citizen>>([]);
+  const { CreateNoteModal } = useNoteModals();
+
+  return <OverviewLayout pageTitle="Notatside" entity="notat"
+    citizens={citizens} setCitizens={setCitizens}
+    mainCreateModal={CreateNoteModal}
+    hideCitizens hideBookings
+  />;
 }

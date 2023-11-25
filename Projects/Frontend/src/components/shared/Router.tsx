@@ -18,7 +18,7 @@ const Router = () => (
 
         {/* Admin routes */}
         <Route path="borgere" element={<AdminCitizenOverview />} />
-        <Route path="noter" element={<AdminNotesOverview />} /> 
+        <Route path="notater" element={<AdminNotesOverview />} /> 
         <Route path="bestillinger" element={<AdminBookingsOverview />} />
 
         {/* If the user tries to access a route not registered, show the NotFound component */}

@@ -1,0 +1,12 @@
+main.not-found {
+  margin: 5vh auto 0;
+  text-align: center;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .not-found__title {
+    margin-bottom: unset;
+  }
+}

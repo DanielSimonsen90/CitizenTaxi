@@ -75,7 +75,7 @@ export default function OverviewLayout({
   }, [showModal]);
 
   return (
-    <main className="admin-overview">
+    <main className="admin-overview" data-entity={entity}>
       <header>
         <Link to='/' className="button secondary alt">Tilbage til oversigt</Link>
         <h1>{pageTitle}</h1>
