@@ -1,8 +1,7 @@
 import { useContext, useEffect } from "react";
 
 import { Booking } from "models/backend/common";
-import { useNotification } from "providers/NotificationProvider";
-import { NotificationContextType } from "providers/NotificationProvider/NotificationProviderTypes";
+import { showNotification } from "utils";
 
 import { CitizenProviderContext } from "./CitizenProviderConstants";
 import { 
@@ -49,8 +48,6 @@ export function useBookings<AllowNullable extends boolean = true>(
  * @param booking The booking to get the notifications for
  */
 export function useBookingNotifications(booking?: Booking) {
-  const { setNotification } = useNotification();
-
   useEffect(() => {
     if (!booking) return;
 
@@ -58,17 +55,17 @@ export function useBookingNotifications(booking?: Booking) {
     if (!timeToWait) return;
 
     const timeout = setTimeout(() => {
-      notify(getTimeLeft(booking), setNotification);
+      notify(getTimeLeft(booking));
       getTimeToWait();
     }, timeToWait);
 
-    notify(getTimeLeft(booking), setNotification);
+    notify(getTimeLeft(booking));
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
 
-  }, [booking, setNotification]);
+  }, [booking]);
 }
 
 /**
@@ -114,7 +111,7 @@ function getTimeToWait(booking?: Booking) {
  * Notify the user about the time left before the taxi arrives
  * @param timeLeft The time left
  */
-function notify(timeLeft: TimeLeft, setNotification: NotificationContextType['setNotification']) {
+function notify(timeLeft: TimeLeft) {
   const timeString = timeLeft.hours > 0 ? `${timeLeft.hours} timer`
     : timeLeft.minutes > 0 ? `${timeLeft.minutes} minutter`
     : timeLeft.seconds > 1 ? `${timeLeft.seconds} sekunder`
@@ -124,5 +121,5 @@ function notify(timeLeft: TimeLeft, setNotification: NotificationContextType['se
   const message = timeString === null ? 'Din taxa ankommer snart'
     : timeString === undefined ? ''
     : `Din taxa ankommer om ${timeString}`;
-  setNotification({ message });
+  showNotification({ message });
 }

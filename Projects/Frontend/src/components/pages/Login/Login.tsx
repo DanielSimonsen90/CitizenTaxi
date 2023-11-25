@@ -2,14 +2,12 @@ import { DOMAIN_NAME } from "SiteConstants";
 import { useStateInQuery } from "hooks";
 import { LoginContainer, SignUpContainer } from "./components";
 import { LoginPayload, UserModifyPayload } from "models/backend/business/models/payloads";
-import { Request } from "utils";
+import { Request, showNotification } from "utils";
 import { useAuth } from "providers/AuthProvider";
 import { Guid } from "types";
-import { useNotification } from "providers/NotificationProvider";
 
 export default function Login() {
   const { login } = useAuth();
-  const { setNotification } = useNotification();
 
   // Toggle the create user form. This is stored in the URL 
   // so the doctor secretaries can share the link with the citizens 
@@ -27,7 +25,7 @@ export default function Login() {
 
     if (!userCreateResponse.success) {
       console.error(`Error for POST /users`, userCreateResponse.text, payload);
-      return setNotification({
+      return showNotification({
         type: "error",
         message: `Der skete en fejl med din oprettelse. - ${userCreateResponse.text}`
       });

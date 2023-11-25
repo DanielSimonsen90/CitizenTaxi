@@ -35,8 +35,7 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
 
   // Update citizen entities when citizen changes
   useUpdateAsyncEffect(async () => {
-    if (!citizen?.id
-      || citizen.role !== Role.Citizen) return;
+    if (!citizen?.id || citizen.role !== Role.Citizen) return;
 
     console.log('Updating citizen entities');
     const note = await dispatch('getNote', citizen.id);

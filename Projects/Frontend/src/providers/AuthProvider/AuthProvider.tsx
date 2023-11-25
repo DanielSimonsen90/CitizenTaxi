@@ -2,17 +2,15 @@ import { useState, PropsWithChildren } from 'react';
 import { useCallbackOnce, useEffectOnce } from 'danholibraryrjs';
 import type { User } from 'models/backend/common/dtos';
 import { AuthProviderContext } from './AuthProviderConstants';
-import { Request } from 'utils';
+import { Request, showNotification } from 'utils';
 import { LoginPayload } from 'models/backend/business/models/payloads';
 import { Guid, Nullable } from 'types';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from 'providers/NotificationProvider';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<Nullable<User>>(null);
   const [logginIn, setLogginIn] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { setNotification } = useNotification();
 
   const login = useCallbackOnce(async (username: string, password: string) => {
     setLogginIn(true);
@@ -26,11 +24,11 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     });
 
     setLogginIn(false);
-    if (!response.success) return setNotification({ type: 'error', message: response.text });
+    if (!response.success) return showNotification({ type: 'error', message: response.text });
 
     const userId = response.data;
     const userResponse = await Request<User, Guid>(`users/${userId}`);
-    if (!userResponse.success) return setNotification({ type: 'error', message: userResponse.text });
+    if (!userResponse.success) return showNotification({ type: 'error', message: userResponse.text });
 
     setUser(userResponse.data);
   });

@@ -1,7 +1,6 @@
 import { CitizenProviderContextType } from "providers/CitizenProvider/CitizenProviderTypes";
-import { useNotification } from "providers/NotificationProvider";
 import { Guid } from "types";
-import { ActionNames, ActionReturnTypes, Actions, ApiEndpoints, Request } from "utils";
+import { ActionNames, ActionReturnTypes, Actions, ApiEndpoints, Request, showNotification } from "utils";
 
 type Props = {
   setCitizen?: CitizenProviderContextType['setCitizen'];
@@ -14,8 +13,6 @@ export default function useApiActions({
   setBookings, setCitizen, setNote,
   closeModalAutomatically: shouldCloseModal = true
 }: Props = {}) {
-  const { setNotification } = useNotification();
-
   return async function dispatch<Action extends ActionNames>(
     action: Action,
     ...args: Actions[Action]
@@ -27,13 +24,13 @@ export default function useApiActions({
 
     const baseEndpoint = action.includes('Citizen') ? `users`
       : action.includes('Note') ? `notes`
-        : `bookings`;
+      : `bookings`;
     const setter = action.includes('Citizen') ? setCitizen
       : action.includes('Note') ? setNote
-        : setBookings;
+      : setBookings;
     const entityName = action.includes('Citizen') ? 'Borger'
       : action.includes('Note') ? 'Notat'
-        : 'Bestilling';
+      : 'Bestilling';
 
     switch (action) {
       case 'createCitizen':
@@ -66,7 +63,7 @@ export default function useApiActions({
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
-        setNotification({
+        showNotification({
           message: response.success ? `${entityName} ${isUpdateAction ? 'opdateret' : 'oprettet'}` : response.text,
           type: response.success ? 'success' : 'error',
         });
@@ -86,7 +83,7 @@ export default function useApiActions({
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
-        setNotification({
+        showNotification({
           message: response.success ? `${entityName} slettet` : response.text,
           type: response.success ? 'success' : 'error',
         });
@@ -114,7 +111,7 @@ export default function useApiActions({
         );
         const response = await Request<any, Guid>(endpoint, options);
 
-        if (!response.success) setNotification({
+        if (!response.success) showNotification({
           message: response.text,
           type: 'error',
         });
