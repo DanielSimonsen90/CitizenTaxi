@@ -6,10 +6,10 @@ import { useBookings, useCitizen } from "providers/CitizenProvider";
 import { Booking } from "models/backend/common";
 import Modal from "components/shared/Modal";
 import { DeleteBookingModalContent } from "components/shared/Modal/components";
+import { useModalContentState } from "components/shared/Modal/ModalHooks";
+import { useApiActions } from "hooks";
 
 import BookingItem from "../BookingItem";
-import { useModalContentState } from "components/shared/Modal/ModalHooks";
-import { useApiActions } from "hooks/useApiActions";
 
 export default function BookingDashboard() {
   // All of these hooks receive "false" as a parameter, 

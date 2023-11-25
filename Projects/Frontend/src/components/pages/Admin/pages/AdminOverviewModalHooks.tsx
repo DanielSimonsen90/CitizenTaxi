@@ -6,10 +6,10 @@ import { Citizen } from "models/backend/common";
 import Modal from "components/shared/Modal";
 import { DeleteBookingModalContent } from "components/shared/Modal/components";
 import { CitizenNoteInputs } from "components/pages/Citizen/components";
+import { useApiActions } from "hooks";
 
 import { EntityModalProps, ModifyEntityModal } from "../components/OverviewLayout/OverviewLayout";
 import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from "../components/EntityModifyModal";
-import { useApiActions } from "hooks/useApiActions";
 
 export function useCitizenModals() {
   const citizenProps = useCitizen(false);

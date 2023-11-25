@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
-import { useAsyncEffect } from 'danholibraryrjs';
+import { useAsyncEffect, useUpdateEffect } from 'danholibraryrjs';
 
 import { Nullable } from 'types';
 import { Booking, Citizen, Note, Role } from 'models/backend/common';
-
+import { useUpdateAsyncEffect, useApiActions } from 'hooks';
 import { useAuth } from 'providers/AuthProvider';
+
 import { CitizenProviderContext } from './CitizenProviderConstants';
 import { CitizenProviderProps } from './CitizenProviderTypes';
-import { useApiActions } from 'hooks/useApiActions';
 
 export default function CitizenProviderProvider({ children, citizen: defaultValue }: CitizenProviderProps) {
   const { user } = useAuth(false);
@@ -29,8 +29,12 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
     return [latest, rest];
   }, [allBookings]);
 
+  useUpdateEffect(() => {
+    console.log(`[${citizen?.name.split(' ')[0] ?? 'Citizen'}] note change`, note);
+  }, [note]);
+
   // Update citizen entities when citizen changes
-  useAsyncEffect(async () => {
+  useUpdateAsyncEffect(async () => {
     if (!citizen?.id
       || citizen.role !== Role.Citizen) return;
 

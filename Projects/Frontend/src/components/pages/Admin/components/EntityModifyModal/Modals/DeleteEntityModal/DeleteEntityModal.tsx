@@ -4,7 +4,7 @@ import { Button, FunctionComponent } from "danholibraryrjs";
 import Modal from "components/shared/Modal";
 import { Guid } from "types";
 import { useCitizen } from "providers/CitizenProvider";
-import { useApiActions } from "hooks/useApiActions";
+import { useApiActions } from "hooks";
 import { ActionNames } from "utils";
 
 type DeleteActions = Extract<ActionNames, 'deleteBooking' | 'deleteCitizen' | 'deleteNote'>;
@@ -27,8 +27,7 @@ export default function EntityDeleteModal<Action extends DeleteActions>({
  
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const closeModal = await dispatch(action, entityId);
-    closeModal();
+    await dispatch(action, entityId);
   };
 
   return (

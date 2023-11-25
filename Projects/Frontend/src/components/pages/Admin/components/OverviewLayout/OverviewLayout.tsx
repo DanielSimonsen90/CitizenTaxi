@@ -52,6 +52,10 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
   useUpdateEffect(() => {
     if (showModal) modalRef?.current?.showModal();
     else modalRef?.current?.close();
+
+    const closeListener = () => setShowModal(false);
+    modalRef?.current?.addEventListener('close', closeListener);
+    return () => modalRef?.current?.removeEventListener('close', closeListener);
   }, [showModal]);
 
   return (

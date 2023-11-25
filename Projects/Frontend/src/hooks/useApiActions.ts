@@ -11,10 +11,10 @@ type Props = {
   closeModalAutomatically?: boolean;
 };
 
-export const useApiActions = ({
+export default function useApiActions({
   setBookings, setCitizen, setNote,
   closeModalAutomatically: shouldCloseModal = true
-}: Props) => {
+}: Props) {
   const { setNotification } = useNotification();
 
   return async function dispatch<Action extends ActionNames>(
@@ -55,10 +55,15 @@ export const useApiActions = ({
 
         if (response.success) {
           if (!shouldCloseModal) closeModal();
-          if (setter) setter === setBookings ? setter(bookings => [...bookings, {
-            ...response.data,
-            arrival: new Date(response.data.arrival),
-          }]) : setter(response.data);
+          
+          if (setter) {
+            if (action.includes('create')) setter === setBookings ? setter(bookings => [...bookings, {
+              ...response.data,
+              arrival: new Date(response.data.arrival),
+            }]) : setter(response.data);
+            // Update returns 204, no content, so we have to use the payload instead of the response data for updates
+            else setter === setBookings ? setter(bookings => [...bookings, updatePayload as any]) : setter(updatePayload as any);
+          }
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 
@@ -78,9 +83,7 @@ export const useApiActions = ({
 
         if (response.success) {
           if (!shouldCloseModal) closeModal();
-          if (setter) setter === setBookings
-            ? setter(bookings => bookings.filter(b => b.id !== entityId))
-            : setter(null as any);
+          if (setter) setter === setBookings ? setter(bookings => bookings.filter(b => b.id !== entityId)) : setter(() => null as any);
           else console.warn(`No setter was provided for ${action}, so the response data was not set.`);
         }
 

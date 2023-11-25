@@ -16,7 +16,7 @@ export default function NoteModal({
 
   async function onSubmit(model: NoteModifyPayload<any>) {
     modalRef.current?.close();
-    return await props.onSubmit(model);
+    return props.onSubmit(model);
   }
 
   return (
