@@ -1,14 +1,17 @@
 import { RefObject, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, FunctionComponent, useUpdateEffect } from "danholibraryrjs";
+import { Button, FunctionComponent, useAsyncEffectOnce, useUpdateEffect } from "danholibraryrjs";
 
 import { ModalProps } from "components/shared/Modal/Modal";
-import { Booking, Citizen, Note } from "models/backend/common";
+import { useModalContentState } from "components/shared/Modal/ModalHooks";
+
+import { Booking, Citizen, Note, Role } from "models/backend/common";
 import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
+
 import { CitizenProvider } from "providers/CitizenProvider";
+import { useApiActions } from "hooks";
 
 import { CitizenCard } from "../CitizenCard";
-import { useModalContentState } from "components/shared/Modal/ModalHooks";
 
 export type ModifyEntityModal<
   TEntity extends BaseEntity, P = {}
@@ -39,19 +42,24 @@ export type EntityModalProps = Partial<(
 type Props = {
   pageTitle: string;
   entity: string;
-  citizens: Array<Citizen>;
   mainCreateModal: FunctionComponent<Pick<ModalProps, 'modalRef'> & { selectedCitizen?: Citizen }>;
 };
 
-export default function OverviewLayout({ pageTitle, entity, citizens, mainCreateModal: MainCreateModal }: Props) {
+export default function OverviewLayout({ pageTitle, entity, mainCreateModal: MainCreateModal }: Props) {
+  const [citizens, setCitizens] = useState<Array<Citizen>>([]);
+  const dispatch = useApiActions();
   const mainCreateModalRef = useRef<HTMLDialogElement>(null);
   const [modalRef, setModalRef] = useState<RefObject<HTMLDialogElement> | undefined>(undefined);
   const [Modal, setModal] = useModalContentState();
   const [showModal, setShowModal] = useState(false);
 
+  useAsyncEffectOnce(async () => {
+    const citizens = await dispatch('getCitizens', undefined, { query: { role: `${Role.Citizen}` } })
+    if (citizens) setCitizens(citizens);
+  });
+
   useUpdateEffect(() => {
     if (showModal) modalRef?.current?.showModal();
-    else modalRef?.current?.close();
 
     const closeListener = () => setShowModal(false);
     modalRef?.current?.addEventListener('close', closeListener);
@@ -77,7 +85,7 @@ export default function OverviewLayout({ pageTitle, entity, citizens, mainCreate
       <section className="citizen-list" role="list">
         {citizens.map(citizen => (
           <CitizenProvider key={citizen.id} citizen={citizen}>
-            <CitizenCard onModalOpen={({ modal: Modal, modalRef }) => {
+            <CitizenCard setCitizens={setCitizens} onModalOpen={({ modal: Modal, modalRef }) => {
                 setModalRef(modalRef);
                 setModal(<Modal />);
                 setShowModal(true);

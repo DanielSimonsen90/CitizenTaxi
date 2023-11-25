@@ -7,14 +7,13 @@ type Props = {
   setCitizen?: CitizenProviderContextType['setCitizen'];
   setNote?: CitizenProviderContextType['setNote'];
   setBookings?: CitizenProviderContextType['setBookings'];
-  allBookings?: CitizenProviderContextType['allBookings'];
   closeModalAutomatically?: boolean;
 };
 
 export default function useApiActions({
   setBookings, setCitizen, setNote,
   closeModalAutomatically: shouldCloseModal = true
-}: Props) {
+}: Props = {}) {
   const { setNotification } = useNotification();
 
   return async function dispatch<Action extends ActionNames>(
@@ -110,8 +109,8 @@ export default function useApiActions({
           (action.endsWith('s') || action === 'getNote')
             && entityId && baseEndpoint !== 'users'
             ? `${baseEndpoint}?citizenId=${entityId}`
-            : baseEndpoint === 'users' ? `${baseEndpoint}/${entityId}`
-              : `${baseEndpoint}/${entityId}`
+            : baseEndpoint === 'users' && !entityId ? baseEndpoint
+            : `${baseEndpoint}/${entityId}`
         );
         const response = await Request<any, Guid>(endpoint, options);
 

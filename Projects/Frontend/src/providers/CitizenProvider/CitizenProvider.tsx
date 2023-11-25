@@ -14,7 +14,7 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
   const [citizen, setCitizen] = useState<Nullable<Citizen>>(defaultValue ?? null);
   const [allBookings, setBookings] = useState<Array<Booking>>([]);
   const [note, setNote] = useState<Nullable<Note>>(null);
-  const dispatch = useApiActions({ allBookings, setBookings, setCitizen, setNote });
+  const dispatch = useApiActions({ setBookings, setCitizen, setNote });
 
   const [latestBooking, bookings] = useMemo(() => {
     if (!allBookings.length) return [null, []];
@@ -38,6 +38,7 @@ export default function CitizenProviderProvider({ children, citizen: defaultValu
     if (!citizen?.id
       || citizen.role !== Role.Citizen) return;
 
+    console.log('Updating citizen entities');
     const note = await dispatch('getNote', citizen.id);
     const bookings = await dispatch('getBookings', citizen.id);
 

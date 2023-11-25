@@ -23,7 +23,6 @@ export default function BookTaxi() {
 
   // Get the citizen from the CitizenProvider to use it for assigning the booking to the citizen
   const { citizen, ...citizenProps } = useCitizen(true);
-  // @ts-expect-error
   const dispatch = useApiActions(citizenProps);
 
   // Get the step from the URL, or default to 1 if it's not a number

@@ -16,7 +16,6 @@ export default function BookingDashboard() {
   // which means that they will be interpreted as non-nullable values.
   const [latest, allBookings] = useBookings(false);
   const { citizen, ...citizenProps } = useCitizen(true);
-  // @ts-expect-error
   const dispatch = useApiActions(citizenProps);
 
   // We use a ref to the modal so we can call the showModal() and close() methods

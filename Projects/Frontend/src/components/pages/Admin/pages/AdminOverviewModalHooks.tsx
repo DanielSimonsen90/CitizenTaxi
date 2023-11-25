@@ -59,10 +59,7 @@ export function useBookingModals() {
     <Modal modalRef={modalRef}>
       <DeleteBookingModalContent booking={selected!} citizen={selectedCitizen} 
         onCancel={() => modalRef.current?.close()}
-        onConfirm={async () => {
-          const closeModal = await dispatch('deleteBooking', selected?.id!);
-          closeModal();
-        }}
+        onConfirm={() => dispatch('deleteBooking', selected?.id!)}
       />
     </Modal>
 

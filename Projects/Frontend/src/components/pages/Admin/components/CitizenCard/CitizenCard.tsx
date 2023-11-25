@@ -1,4 +1,4 @@
-import { RefObject, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import { Button, FunctionComponent } from "danholibraryrjs";
 
 import { BookingItem, CitizenNoteInputs } from "components/pages/Citizen/components";
@@ -7,6 +7,7 @@ import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { useBookings, useCitizen } from "providers/CitizenProvider";
 
 import { useBookingModals, useCitizenModals, useNoteModals } from "../../pages/AdminOverviewModalHooks";
+import { useApiActions } from "hooks";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -26,10 +27,19 @@ type ModalOpenProps = {
 
 type Props = {
   onModalOpen: (props: ModalOpenProps) => void;
+  setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
 };
 
-export default function CitizenCard({ onModalOpen }: Props) {
-  const { citizen, note } = useCitizen(false);
+export default function CitizenCard({ onModalOpen, setCitizens }: Props) {
+  const { citizen, note, ...citizenProps } = useCitizen(false);
+  const dispatch = useApiActions({
+    ...citizenProps,
+    setCitizen: citizenState => {
+      const updatedCitizen = typeof citizenState === 'function' ? citizenState(citizen) : citizenState;
+      if (updatedCitizen) setCitizens(prev => prev.map(c => c.id === updatedCitizen.id ? updatedCitizen : c));
+      else setCitizens(prev => prev.filter(c => c.id !== citizen.id));
+    }
+  });
   const [latestBooking, bookings] = useBookings();
   const [showAllBookings, setShowAllBookings] = useState(false);
 
@@ -69,7 +79,7 @@ export default function CitizenCard({ onModalOpen }: Props) {
           <h2>Borgerens næste bestilling</h2>
           <div className="button-container">
             {latestBooking && bookings && bookings.length > 0 && (
-              <Button type="button" importance="secondary" className="alt" 
+              <Button type="button" importance="secondary" className="alt"
                 onClick={() => setShowAllBookings(!showAllBookings)}
               >
                 {showAllBookings ? 'Vis seneste' : 'Vis alle'}
@@ -167,6 +177,11 @@ export default function CitizenCard({ onModalOpen }: Props) {
             modalRef: editCitizenModalRef
           })}
         >Redigér {firstName}</Button>
+        <Button type="button" importance="primary" crud="delete"
+          onClick={() => dispatch('deleteNote', note.id)}
+        >
+          Slet {firstName}s note
+        </Button>
       </footer>
     </article>
   );
