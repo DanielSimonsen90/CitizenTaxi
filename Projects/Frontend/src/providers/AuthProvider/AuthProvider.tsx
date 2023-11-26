@@ -1,11 +1,13 @@
 import { useState, PropsWithChildren } from 'react';
-import { useCallbackOnce, useEffectOnce } from 'danholibraryrjs';
-import type { User } from 'models/backend/common/dtos';
-import { AuthProviderContext } from './AuthProviderConstants';
-import { Request, showNotification } from 'utils';
-import { LoginPayload } from 'models/backend/business/models/payloads';
-import { Guid, Nullable } from 'types';
+import { useCallbackOnce } from 'danholibraryrjs';
 import { useNavigate } from 'react-router-dom';
+
+import type { User } from 'models/backend/common/dtos';
+import { LoginPayload } from 'models/backend/business/models/payloads';
+import { Request, showNotification } from 'utils';
+import { Guid, Nullable } from 'types';
+
+import { AuthProviderContext } from './AuthProviderConstants';
 
 export default function AuthProviderProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<Nullable<User>>(null);
@@ -39,12 +41,6 @@ export default function AuthProviderProvider({ children }: PropsWithChildren) {
     setUser(null);
     navigate('/')
   });
-
-  // TODO: Remove this - it's only for development purposes
-  useEffectOnce(() => {
-    // login('admin', 'admin123');
-    login('carl', 'carl123');
-  })
 
   return (
     <AuthProviderContext.Provider value={{
