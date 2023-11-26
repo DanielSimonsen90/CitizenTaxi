@@ -1,8 +1,18 @@
 .entity-delete-modal {
-  
-
   .button-container {
     flex-direction: row;
     justify-content: flex-end;
+  }
+
+  .citizen-card {
+    grid-template-rows: 5em;
+
+    h1 {
+      text-align: left;
+    }
+
+    button {
+      display: none;
+    }
   }
 }

@@ -25,7 +25,7 @@ export default function Modal({ children, modalRef: ref, ...props }: Props) {
   return (
     <dialog ref={ref} {...props}>
       <div className="modal-content">
-        <Button className="close" importance="tertiary">&times;</Button>
+        <Button type="button" className="close" importance="tertiary">&times;</Button>
         {children}
       </div>
     </dialog>

@@ -10,6 +10,7 @@ import { useApiActions } from "hooks";
 
 import { EntityModalProps, ModifyEntityModal } from "../OverviewLayout/OverviewLayout";
 import { CitizenModal, NoteModal, DeleteEntityModal, BookingModal } from ".";
+import { CitizenCard } from "../CitizenCard";
 
 type CitizenModalProps = {
   setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
@@ -37,8 +38,13 @@ export function useCitizenModals({ setCitizens }: CitizenModalProps) {
   const DeleteCitizenModal: ModifyEntityModal<Citizen> = ({ modalRef, selected }) => (
     <DeleteEntityModal modalRef={modalRef} title={selected?.name || "Borgeren"}
     onSubmit={() => dispatch('deleteCitizen', selected?.id!)}
-      // TODO: Preview
-      preview={() => <p>This is test preview</p>}
+      preview={() => (
+        <CitizenProvider citizen={selected}>
+          <CitizenCard
+            onModalOpen={() => { }} setCitizens={() => { }}
+          />
+        </CitizenProvider>
+      )}
     />
   );
 
