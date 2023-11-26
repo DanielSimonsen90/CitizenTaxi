@@ -1,5 +1,4 @@
 ﻿using Business.Models.Payloads;
-using Business.Services;
 using Common.Enums;
 #nullable disable
 
@@ -19,7 +18,8 @@ public static partial class TestConstants
         Name = "Test User",
         Username = USERNAME,
         Password = PASSWORD,
-        Role = Role.Citizen
+        Role = Role.Citizen,
+        Email = "test-user@citizentaxi.dk"
     };
     public static LoginPayload TEST_LOGIN_PAYLOAD { get; } = new()
     {

@@ -59,7 +59,7 @@ public class UsersController : BaseController
             _ => BadRequest("Invalid role provided"),
         };
 
-        // If the result is not an OkObjectResult, return the result
+        // If the result is not an CreatedResult, return the result
         if (result is not CreatedResult createdResult) return result;
 
         // Receive the created user from the result and create a login for the user
