@@ -8,9 +8,7 @@ import { Citizen } from "models/backend/common";
 import { serializeForm } from "utils";
 import Modal from "components/shared/Modal";
 
-type Props = EntityModifyExtendProps<Citizen, UserModifyPayload<any>> & {
-  onNoteSubmit?: (note: NoteModifyPayload<any>) => void;
-};
+type Props = EntityModifyExtendProps<Citizen, UserModifyPayload<any>>;
 
 export default function CitizenModal({ modalRef, crud, defaultModel, ...props }: Props) {
   const [hidePassword, setHidePassword] = useState(true);
@@ -26,22 +24,20 @@ export default function CitizenModal({ modalRef, crud, defaultModel, ...props }:
   const onCitizenWithNoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Create note
+    const notePayload = serializeForm<NoteModifyPayload<any>>(e.target as HTMLFormElement);
+
     // Create citizen
     const form = document.getElementById(`${crud}-borger-form`) as HTMLFormElement;
     const citizenPayload = serializeForm<UserModifyPayload<any>>(form);
-    const closeModal = await props.onSubmit(citizenPayload);
-
-    // Create note
-    const notePayload = serializeForm<NoteModifyPayload<any>>(e.currentTarget);
-    props.onNoteSubmit?.(notePayload);
-    closeModal();
+    await props.onSubmit({ ...citizenPayload, note: notePayload });
   };
 
   return (
     <Modal modalRef={modalRef} className={`borger-${crud}`}>
       <h1>{crud === 'create' ? 'Opret'
         : crud === 'update' ? 'Opdater'
-          : 'Slet'} Borger</h1>
+        : 'Slet'} Borger</h1>
       <form id={`${crud}-borger-form`} onSubmit={onCitizenSubmit}>
         {crud !== 'create' && (
           <input type="hidden" name="id" value={defaultModel?.id} />

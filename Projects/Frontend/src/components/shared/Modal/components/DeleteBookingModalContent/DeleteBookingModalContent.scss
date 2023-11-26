@@ -41,3 +41,11 @@
     justify-self: end;
   }
 }
+
+dialog[open]:has(.delete-booking) {
+  max-width: 35em;
+
+  @media screen and (max-width: 400px) {
+    max-width: 100vw;
+  }
+}

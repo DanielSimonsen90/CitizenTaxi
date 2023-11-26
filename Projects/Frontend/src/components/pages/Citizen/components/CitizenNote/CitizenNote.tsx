@@ -20,8 +20,8 @@ export default function CitizenNote() {
         */}
         <a href={`tel:${DOCTORS_SECRETARY_PHONE}`} onClick={(e) => {
           e.preventDefault();
-          alert("Du kunne have ringet til lægesekretærene nu");
-        }}>Ring til lægesekretærene direkte</a>
+          alert("Du kunne have ringet til lægesekretærerne nu");
+        }}>Ring til lægesekretærerne direkte</a>
       </footer>
     </aside>
   );

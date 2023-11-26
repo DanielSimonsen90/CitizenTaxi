@@ -8,7 +8,7 @@ dialog {
   :is(input, select) {
     background-color: var(--background-quaternary);
     font-size: 1.2rem;
-    padding-inline: .75ch;
+    padding: .25ch .75ch;
   }
 
   label {

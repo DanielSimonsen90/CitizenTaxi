@@ -18,4 +18,6 @@ public class UserModifyPayload : ABaseModifyPayload
     public Role Role { get; set; }
 
     public string? Email { get; set; }
+
+    public NoteModifyPayload? Note { get; set; }
 }

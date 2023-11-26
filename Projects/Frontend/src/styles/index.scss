@@ -72,7 +72,7 @@
     }
 
     span {
-      margin-left: .75ch;
+      margin-left: .5ch;
     }
   }
 
@@ -122,5 +122,6 @@
     border: unset;
     color: var(--text-primary);
     border-radius: .5em;
+    padding: .5em;
   }
 }

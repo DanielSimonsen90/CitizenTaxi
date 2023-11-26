@@ -8,11 +8,7 @@ $para-fz: .75rem;
   flex-direction: column;
   padding: $site-header-padding;
   background-color: var(--background-secondary);
-  // height: calc(
-  //   #{$site-header-padding} * 2 
-  //   + #{$heading-fz} 
-  //   + #{$heading-margin} * 2
-  //   + #{$para-fz});
+  border-radius: .5em;
 
   &:has(.login-container[data-logged-in=true]) {
     gap: 1.25em;

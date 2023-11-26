@@ -38,7 +38,8 @@ export default function SignUpContainer({ onSubmit }: Props) {
         const data = serializeForm<AllStringValues<UserModifyPayload<false>>>(e.currentTarget);
         onSubmit({
           ...data,
-          role: revertTranslationForEnum(data.role, Role)
+          role: revertTranslationForEnum(data.role, Role),
+          note: undefined
         });
       }}>
         <FormGroup label="Navn" htmlFor="create-name">

@@ -1,23 +1,22 @@
+import { Dispatch, SetStateAction } from "react";
 import { Citizen } from "models/backend/common";
 import { CitizenProviderContextType } from "providers/CitizenProvider/CitizenProviderTypes";
-import { Dispatch, SetStateAction } from "react";
 import { Guid, Nullable } from "types";
 import { ActionNames, ActionReturnTypes, Actions, ApiEndpoints, Request, showNotification } from "utils";
 
 type Props = {
   setCitizen?: CitizenProviderContextType['setCitizen'];
   setCitizens?: Dispatch<SetStateAction<Array<Citizen>>>;
-  closeModalAutomatically?: boolean;
 };
 
 export default function useApiActions({
   setCitizen, setCitizens,
-  closeModalAutomatically: shouldCloseModal = true
 }: Props = {}) {
   async function dispatch<Action extends ActionNames>(
     action: Action,
     ...args: Actions[Action]
   ): Promise<ActionReturnTypes[Action]> {
+    let value: ActionReturnTypes[Action] = null as any;
     const closeModal = () => {
       const dialog = document.querySelector('dialog[open]') as HTMLDialogElement | null;
       dialog?.close();
@@ -25,10 +24,10 @@ export default function useApiActions({
 
     const baseEndpoint = action.includes('Citizen') ? `users`
       : action.includes('Note') ? `notes`
-        : `bookings`;
+      : `bookings`;
     const entityName = action.includes('Citizen') ? 'Borger'
       : action.includes('Note') ? 'Notat'
-        : 'Bestilling';
+      : 'Bestilling';
 
     switch (action) {
       case 'createCitizen':
@@ -81,6 +80,7 @@ export default function useApiActions({
           type: response.success ? 'success' : 'error',
         });
 
+        value = response.data as ActionReturnTypes[Action];
         break;
       }
 
@@ -127,7 +127,7 @@ export default function useApiActions({
             && entityId && baseEndpoint !== 'users'
             ? `${baseEndpoint}?citizenId=${entityId}`
             : baseEndpoint === 'users' && !entityId ? baseEndpoint
-              : `${baseEndpoint}/${entityId}`
+            : `${baseEndpoint}/${entityId}`
         );
         const response = await Request<any, Guid>(endpoint, options);
 
@@ -136,40 +136,45 @@ export default function useApiActions({
           type: 'error',
         });
 
-        // Return the updated value
-        if (!action.includes('Booking') && !action.includes('Citizen')) return response.data as ActionReturnTypes[Action];
 
-        switch (action) {
-          case 'getBookings': return (response.data as ActionReturnTypes['getBookings']).map(booking => ({
-            ...booking,
-            arrival: new Date(booking.arrival),
-          })) as ActionReturnTypes['getBookings'] as ActionReturnTypes[Action];
-          case 'getBooking': return {
-            ...response.data,
-            arrival: new Date(response.data.arrival),
-          } as ActionReturnTypes['getBooking'] as ActionReturnTypes[Action];
-
-          case 'getCitizens': return (response.data as ActionReturnTypes['getCitizens']).map(citizen => ({
-            ...citizen,
-            bookings: (citizen.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
+        value = (() => {
+          // Return the updated value
+          if (!action.includes('Booking') && !action.includes('Citizen')) return response.data as ActionReturnTypes[Action];
+  
+          switch (action) {
+            case 'getBookings': return (response.data as ActionReturnTypes['getBookings']).map(booking => ({
               ...booking,
               arrival: new Date(booking.arrival),
-            })),
-          })) as ActionReturnTypes['getCitizens'] as ActionReturnTypes[Action];
-          case 'getCitizen': return {
-            ...response.data,
-            bookings: (response.data.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
-              ...booking,
-              arrival: new Date(booking.arrival),
-            })),
-          } as ActionReturnTypes['getCitizen'] as ActionReturnTypes[Action];
-          default: throw new Error(`Action ${action} is not supported`);
-        }
+            })) as ActionReturnTypes['getBookings'] as ActionReturnTypes[Action];
+            case 'getBooking': return {
+              ...response.data,
+              arrival: new Date(response.data.arrival),
+            } as ActionReturnTypes['getBooking'] as ActionReturnTypes[Action];
+  
+            case 'getCitizens': return (response.data as ActionReturnTypes['getCitizens']).map(citizen => ({
+              ...citizen,
+              bookings: (citizen.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
+                ...booking,
+                arrival: new Date(booking.arrival),
+              })),
+            })) as ActionReturnTypes['getCitizens'] as ActionReturnTypes[Action];
+            case 'getCitizen': return {
+              ...response.data,
+              bookings: (response.data.bookings as Array<Citizen['bookings'][0]>).map(booking => ({
+                ...booking,
+                arrival: new Date(booking.arrival),
+              })),
+            } as ActionReturnTypes['getCitizen'] as ActionReturnTypes[Action];
+            default: throw new Error(`Action ${action} is not supported`);
+          }
+        })();
+
+        return value as any;
       }
     }
 
-    if (shouldCloseModal) closeModal();
-    return closeModal as ActionReturnTypes[Action];
+    closeModal();
+    return value;
   };
 
   return dispatch;

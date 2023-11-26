@@ -4,17 +4,15 @@ import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { Nullable, Guid } from "types";
 import { RequestOptions } from "./ApiTypes";
 
-type CloseModalFunction = () => void;
-
 type InternalEntityActionReturnType<
   TEntityName extends string,
   TEntity extends BaseEntity
 > = (
-    & Record<`create${Capitalize<TEntityName>}`, CloseModalFunction>
+    & Record<`create${Capitalize<TEntityName>}`, TEntity>
     & Record<`get${Capitalize<TEntityName>}s`, Array<TEntity>>
     & Record<`get${Capitalize<TEntityName>}`, Nullable<TEntity>>
-    & Record<`update${Capitalize<TEntityName>}`, CloseModalFunction>
-    & Record<`delete${Capitalize<TEntityName>}`, CloseModalFunction>
+    & Record<`update${Capitalize<TEntityName>}`, TEntity>
+    & Record<`delete${Capitalize<TEntityName>}`, null>
   );
 export type ActionReturnTypes = (
   & InternalEntityActionReturnType<'citizen', Citizen>

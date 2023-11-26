@@ -1,3 +1,7 @@
 .admin-overview[data-entity=bestilling] .citizen-card {
-  grid-template-rows: 5em 12em;
+  grid-template-rows: 5em 9em;
+
+  ul.bookings-list {
+    max-height: 7em;
+  }
 }

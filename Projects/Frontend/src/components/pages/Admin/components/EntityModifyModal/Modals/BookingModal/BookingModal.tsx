@@ -1,8 +1,8 @@
+import { Button } from "danholibraryrjs";
 import { Booking } from "models/backend/common";
-import EntityModifyModal, { EntityModifyExtendProps } from "../../EntityModifyModal";
 import { BookingModifyPayload } from "models/backend/business/models/payloads";
 import FormGroup from "components/shared/FormGroup";
-import { Button } from "danholibraryrjs";
+import EntityModifyModal, { EntityModifyExtendProps } from "../../EntityModifyModal";
 
 type BookingFormBody = Pick<BookingModifyPayload<any>, 'destination' | 'pickup'> & {
   arrivalDate: string;

@@ -5,14 +5,14 @@
  */
 export function serializeForm<T extends object>(form: HTMLFormElement) {
   const children = Array.from(form.children);
-  children.pop(); // remove submit button
-
   const formData = children.reduce((acc, child) => {
     // Find inputs and selects
     const elements = Array.from(child.querySelectorAll('input, select') as NodeListOf<HTMLInputElement | HTMLSelectElement>);
     if (['INPUT', 'SELECT'].includes(child.tagName)) elements.push(child as HTMLInputElement | HTMLSelectElement);
 
     for (const element of Array.from(elements)) {
+      if (element.type === 'submit') continue; // Ignore submit buttons
+      
       const name = element.getAttribute('name');
       if (!name) {
         console.error('serializeForm: name attribute is required', { element });

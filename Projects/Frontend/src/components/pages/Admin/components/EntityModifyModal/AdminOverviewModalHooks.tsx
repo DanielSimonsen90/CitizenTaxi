@@ -14,11 +14,13 @@ import { CitizenCard } from "../CitizenCard";
 
 type CitizenModalProps = {
   setCitizens: Dispatch<SetStateAction<Array<Citizen>>>;
-}
+};
 
 export function useCitizenModals({ setCitizens }: CitizenModalProps) {
   const { setCitizen } = useCitizen(false);
-  const dispatch = useApiActions({ setCitizen, setCitizens, closeModalAutomatically: false })
+  const dispatch = useApiActions({
+    setCitizen, setCitizens,
+  });
   const createCitizenModalRef = useRef<HTMLDialogElement>(null);
   const editCitizenModalRef = useRef<HTMLDialogElement>(null);
   const deleteCitizenModalRef = useRef<HTMLDialogElement>(null);
@@ -31,13 +33,14 @@ export function useCitizenModals({ setCitizens }: CitizenModalProps) {
   const EditCitizenModal: ModifyEntityModal<Citizen> = ({ modalRef, selected }) => (
     <CitizenModal modalRef={modalRef} crud="update"
       onSubmit={payload => dispatch('updateCitizen', payload as any)} defaultModel={selected}
-      onNoteSubmit={payload => dispatch('createNote', payload)}
     />
   );
 
   const DeleteCitizenModal: ModifyEntityModal<Citizen> = ({ modalRef, selected }) => (
     <DeleteEntityModal modalRef={modalRef} title={selected?.name || "Borgeren"}
-    onSubmit={() => dispatch('deleteCitizen', selected?.id!)}
+      onSubmit={async () => {
+        await dispatch('deleteCitizen', selected?.id!);
+      }}
       preview={() => (
         <CitizenProvider citizen={selected}>
           <CitizenCard
@@ -55,8 +58,8 @@ export function useCitizenModals({ setCitizens }: CitizenModalProps) {
 }
 
 export function useBookingModals() {
-  const citizenProps = useCitizen(false);
-  const dispatch = useApiActions(citizenProps);
+  const { setCitizen } = useCitizen(false);
+  const dispatch = useApiActions({ setCitizen });
   const createBookingModalRef = useRef<HTMLDialogElement>(null);
   const editBookingModalRef = useRef<HTMLDialogElement>(null);
   const deleteBookingModalRef = useRef<HTMLDialogElement>(null);
@@ -67,11 +70,11 @@ export function useBookingModals() {
     <BookingModal crud="update" onSubmit={payload => dispatch('updateBooking', payload)} defaultModel={selected} {...props} />;
   const DeleteBookingModal: EntityModalProps['DeleteBookingModal'] = ({ selected, selectedCitizen, modalRef }) =>
     <Modal modalRef={modalRef}>
-      <DeleteBookingModalContent booking={selected!} citizen={selectedCitizen} 
+      <DeleteBookingModalContent booking={selected!} citizen={selectedCitizen}
         onCancel={() => modalRef.current?.close()}
         onConfirm={() => dispatch('deleteBooking', selected?.id!)}
       />
-    </Modal>
+    </Modal>;
 
   return {
     createBookingModalRef, editBookingModalRef, deleteBookingModalRef,
@@ -80,8 +83,8 @@ export function useBookingModals() {
 }
 
 export function useNoteModals() {
-  const citizenProps = useCitizen(false);
-  const dispatch = useApiActions(citizenProps);
+  const { setCitizen } = useCitizen(false);
+  const dispatch = useApiActions({ setCitizen });
 
   const createNoteModalRef = useRef<HTMLDialogElement>(null);
   const editNoteModalRef = useRef<HTMLDialogElement>(null);
