@@ -18,18 +18,17 @@
   li.booking-item {
     background-color: var(--background-quaternary);
     grid-auto-flow: column;
-    grid-template-areas: "header" "section";
-    
-    header {
-      display: grid;
-      grid-template-columns: auto 12ch;
-      align-items: start;
-      gap: 1em;
-      text-align: start;
+    grid-template-areas:
+      "destination arrival"
+      "pickup arrival";
 
-      time {
-        text-align: end;
-      }
+    .booking-to-destination,
+    .booking-from-pickup {
+      text-align: left;
+    }
+
+    time {
+      text-align: end;
     }
   }
 

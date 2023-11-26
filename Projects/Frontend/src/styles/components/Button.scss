@@ -1,8 +1,12 @@
 @use '../colors' as colors;
 @use '../mixins' as mixins;
 
-@mixin createButton($main: colors.$brand-primary,
-  $text: colors.$text-primary,
+$default-main: colors.$brand-primary;
+$default-text: colors.$text-primary;
+
+@mixin createButton(
+  $main: $default-main,
+  $text: $default-text,
   $border: transparent) {
   @include mixins.transition();
 
@@ -88,7 +92,7 @@ button,
       @include createButton(transparent,
         colors.$crud-update,
         colors.$crud-update);
-    
+
     }
 
     &[data-crud=delete] {
@@ -111,6 +115,13 @@ button,
 
   &.tertiary {
     @include createButton(transparent);
+
+    @media (prefers-color-scheme: light) {
+      @include createButton(
+        transparent,
+        colors.$background-primary
+      );
+    }
 
     &:hover {
       box-shadow: unset !important;
