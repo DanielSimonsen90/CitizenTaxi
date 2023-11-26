@@ -5,7 +5,7 @@ import OverviewLayout from "../../components/OverviewLayout";
 
 export default function AdminNotesOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
-  const { CreateNoteModal } = useNoteModals();
+  const { CreateNoteModal } = useNoteModals(citizens);
 
   return <OverviewLayout pageTitle="Notatside" entity="notat"
     citizens={citizens} setCitizens={setCitizens}

@@ -2,7 +2,7 @@ import { Button } from "danholibraryrjs";
 import { Booking } from "models/backend/common";
 import { BookingModifyPayload } from "models/backend/business/models/payloads";
 import FormGroup from "components/shared/FormGroup";
-import EntityModifyModal, { EntityModifyExtendProps } from "../../EntityModifyModal";
+import EntityModifyModal, { BOOKING_ENTITY_NAME, EntityModifyExtendProps } from "../../EntityModifyModal";
 
 type BookingFormBody = Pick<BookingModifyPayload<any>, 'destination' | 'pickup'> & {
   arrivalDate: string;
@@ -11,7 +11,8 @@ type BookingFormBody = Pick<BookingModifyPayload<any>, 'destination' | 'pickup'>
 
 export default function BookingModal({ 
   modalRef, crud,
-  defaultModel, selectedCitizen,
+  defaultModel, selectedCitizen, 
+  citizens,
   ...props
 }: EntityModifyExtendProps<Booking, BookingModifyPayload<any>>) {
   const [defaultDate, defaultTimeString] = defaultModel?.arrival.toISOString().split(/[T.]/) 
@@ -30,8 +31,8 @@ export default function BookingModal({
   }
 
   return (
-    <EntityModifyModal modalRef={modalRef} entityName="taxabestilling"
-      crud={crud} onSubmit={onSubmit} 
+    <EntityModifyModal modalRef={modalRef} entityName={BOOKING_ENTITY_NAME}
+      crud={crud} onSubmit={onSubmit} citizens={citizens}
       defaultModel={defaultModel} selectedCitizen={selectedCitizen}
       payload={{} as BookingModifyPayload<any>}
     >

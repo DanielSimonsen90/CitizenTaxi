@@ -57,7 +57,7 @@ export function useCitizenModals({ setCitizens }: CitizenModalProps) {
   };
 }
 
-export function useBookingModals() {
+export function useBookingModals(citizens?: Array<Citizen>) {
   const { setCitizen } = useCitizen(false);
   const dispatch = useApiActions({ setCitizen });
   const createBookingModalRef = useRef<HTMLDialogElement>(null);
@@ -65,7 +65,7 @@ export function useBookingModals() {
   const deleteBookingModalRef = useRef<HTMLDialogElement>(null);
 
   const CreateBookingModal: EntityModalProps['CreateBookingModal'] = (props) =>
-    <BookingModal crud="create" onSubmit={payload => dispatch('createBooking', payload)} {...props} />;
+    <BookingModal crud="create" onSubmit={payload => dispatch('createBooking', payload)} {...props} citizens={citizens} />;
   const EditBookingModal: EntityModalProps['EditBookingModal'] = ({ selected, ...props }) =>
     <BookingModal crud="update" onSubmit={payload => dispatch('updateBooking', payload)} defaultModel={selected} {...props} />;
   const DeleteBookingModal: EntityModalProps['DeleteBookingModal'] = ({ selected, selectedCitizen, modalRef }) =>
@@ -82,7 +82,7 @@ export function useBookingModals() {
   };
 }
 
-export function useNoteModals() {
+export function useNoteModals(citizens?: Array<Citizen>) {
   const { setCitizen } = useCitizen(false);
   const dispatch = useApiActions({ setCitizen });
 
@@ -91,7 +91,7 @@ export function useNoteModals() {
   const deleteNoteModalRef = useRef<HTMLDialogElement>(null);
 
   const CreateNoteModal: EntityModalProps['CreateNoteModal'] = (props) =>
-    <NoteModal crud="create" onSubmit={payload => dispatch('createNote', payload)} {...props} />;
+    <NoteModal crud="create" onSubmit={payload => dispatch('createNote', payload)} {...props} citizens={citizens} />;
   const EditNoteModal: EntityModalProps['EditNoteModal'] = ({ selected, ...props }) =>
     <NoteModal crud="update" onSubmit={payload => dispatch('updateNote', payload)} defaultModel={selected} {...props} />;
   const DeleteNoteModal: EntityModalProps['DeleteNoteModal'] = ({ selected, ...props }) =>

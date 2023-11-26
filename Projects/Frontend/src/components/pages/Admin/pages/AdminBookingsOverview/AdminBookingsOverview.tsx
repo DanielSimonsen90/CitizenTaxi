@@ -5,7 +5,7 @@ import OverviewLayout from "../../components/OverviewLayout";
 
 export default function AdminBookingsOverview() {
   const [citizens, setCitizens] = useState<Array<Citizen>>([]);
-  const { CreateBookingModal } = useBookingModals();
+  const { CreateBookingModal } = useBookingModals(citizens);
 
   return <OverviewLayout pageTitle="Bestillingsside" entity="bestilling"
     citizens={citizens} setCitizens={setCitizens}

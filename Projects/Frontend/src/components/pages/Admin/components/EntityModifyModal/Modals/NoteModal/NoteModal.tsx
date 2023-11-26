@@ -6,11 +6,12 @@ import FormGroup from "components/shared/FormGroup";
 import { NoteModifyPayload } from "models/backend/business/models/payloads";
 import { Note, CarHeight, HelpingUtil, Companion, Follow } from "models/backend/common";
 
-import EntityModifyModal, { EntityModifyExtendProps } from "../../EntityModifyModal";
+import EntityModifyModal, { EntityModifyExtendProps, NOTE_ENTITY_NAME } from "../../EntityModifyModal";
 
 export default function NoteModal({ 
   modalRef, crud,
   defaultModel, selectedCitizen,
+  citizens,
   ...props 
 }: EntityModifyExtendProps<Note, NoteModifyPayload<any>>) {
 
@@ -20,8 +21,8 @@ export default function NoteModal({
   }
 
   return (
-    <EntityModifyModal modalRef={modalRef} entityName="notat"
-      crud={crud} onSubmit={onSubmit} 
+    <EntityModifyModal modalRef={modalRef} entityName={NOTE_ENTITY_NAME}
+      crud={crud} onSubmit={onSubmit} citizens={citizens}
       defaultModel={defaultModel} selectedCitizen={selectedCitizen}
       payload={{} as NoteModifyPayload<any>}
     >
