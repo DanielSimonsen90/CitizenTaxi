@@ -32,7 +32,7 @@ export function useCitizen<AllowNullable extends boolean>(
 export function useBookings<AllowNullable extends boolean = true>(
   allowNullable: AllowNullable = true as AllowNullable
 ): UseBookingsReturnType<AllowNullable> {
-  const { bookings, latestBooking } = useCitizen(allowNullable);
+  const { allBookings: bookings, latestBooking } = useCitizen(allowNullable);
 
   const sortedBookingsByDay = bookings?.reduce((acc, booking) => {
     const day = new Date(booking.arrival).getDay();
