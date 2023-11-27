@@ -2,6 +2,6 @@
 if (process.env.NODE_ENV === 'development') {
   var API_ENDPOINT_SECURE = "https://localhost:5000/api";
 } else {
-  API_ENDPOINT_SECURE = "https://citizentaxi.azurewebsites.net/api";
+  API_ENDPOINT_SECURE = "https://citizentaxiapi.azurewebsites.net/api";
 }
 export { API_ENDPOINT_SECURE };

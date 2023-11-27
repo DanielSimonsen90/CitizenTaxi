@@ -39,3 +39,5 @@ export type ErrorForModel<T extends Record<string, any>> = {
 
 export type Enum = Role | CarHeight | Companion | Follow | HelpingUtil;
 export type EnumTypes = typeof Role | typeof CarHeight | typeof Companion | typeof Follow | typeof HelpingUtil;
+
+export type FunctionComponent<P extends {} | undefined> = (props: P) => JSX.Element | null;

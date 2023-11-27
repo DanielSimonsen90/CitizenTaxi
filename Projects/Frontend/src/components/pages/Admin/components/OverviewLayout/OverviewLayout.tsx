@@ -1,6 +1,6 @@
 import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, FunctionComponent, useAsyncEffectOnce, useUpdateEffect } from "danholibraryrjs";
+import { Button, useAsyncEffectOnce, useUpdateEffect } from "danholibraryrjs";
 
 import { ModalProps } from "components/shared/Modal/Modal";
 import { useModalContentState } from "components/shared/Modal/ModalHooks";
@@ -12,6 +12,7 @@ import { CitizenProvider } from "providers/CitizenProvider";
 import { useApiActions } from "hooks";
 
 import { CitizenCard } from "../CitizenCard";
+import { FunctionComponent } from "types";
 
 export type ModifyEntityModal<
   TEntity extends BaseEntity, P = {}
