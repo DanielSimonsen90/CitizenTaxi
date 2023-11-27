@@ -221,6 +221,8 @@ public class UsersController : BaseController
     }
     #endregion
 
+    [HttpGet("ping")] public IActionResult Ping(bool a = false) => a ? Ok(unitOfWork.Admins.GetAll().Adapt<List<UserDTO>>()) : Ok("Pong");
+
     /// <summary>
     /// Check if the given <paramref name="userId"/> is an <see cref="Admin"/>.
     /// This is done by checking if the <paramref name="userId"/> exists in the <see cref="Admin"/> repository.

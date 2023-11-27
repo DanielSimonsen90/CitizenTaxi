@@ -40,6 +40,11 @@ export default function Login() {
       <header>
         <h1>Login</h1>
         <p className="muted">For at benytte {DOMAIN_NAME}, skal du logge ind.</p>
+        {/* <button onClick={() => {
+          Request('users/ping').then(res => {
+            alert(res.text)
+          })
+        }}>Send ping</button> */}
       </header>
       <section>
         <LoginContainer onCreateClick={onCreateClick} onSubmit={onLoginSubmit} />

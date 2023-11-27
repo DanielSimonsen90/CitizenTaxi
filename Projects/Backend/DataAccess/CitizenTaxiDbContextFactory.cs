@@ -22,7 +22,10 @@ internal class CitizenTaxiDbContextFactory : IDesignTimeDbContextFactory<Citizen
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<CitizenTaxiDbContext>();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString(
+            //"DefaultConnection"
+            "ReleaseConnection"
+        ));
 
         return new CitizenTaxiDbContext(optionsBuilder.Options);
     }

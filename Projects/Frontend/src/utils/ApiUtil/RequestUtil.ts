@@ -38,7 +38,8 @@ export async function Request<TData, Param extends TParam = undefined>(
     body: body ? !noHeaders ? JSON.stringify(body) : body : undefined,
     headers: !noHeaders ? { 'Content-Type': 'application/json' } : undefined,
     signal: controller.signal,
-    credentials: 'include'
+    credentials: 'include',
+    mode: 'cors'
   };
 
   // Make the request, log any errors, and throw them again
