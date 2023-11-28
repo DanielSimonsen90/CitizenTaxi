@@ -1,7 +1,7 @@
+import { useState } from "react";
 import FormGroup from "components/shared/FormGroup/FormGroup";
 import { useDefaultStepValue } from "../StepHooks";
 import { getValidationMessage } from "../../BookTaxiConstants";
-import { useState } from "react";
 
 export default function Step1() {
   const defaultValue = useDefaultStepValue('destination');
@@ -11,7 +11,7 @@ export default function Step1() {
     <FormGroup label="Destination" htmlFor="destination">
       <input type="text" name="destination" id="destination" 
         placeholder="Frederikshavn Sygehus"
-        {...getValidationMessage('en destination', value, setValue)}
+        {...getValidationMessage(value, setValue)}
       />
     </FormGroup>
   );

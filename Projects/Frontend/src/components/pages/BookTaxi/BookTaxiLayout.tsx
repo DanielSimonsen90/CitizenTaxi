@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Button, classNames, useUpdateEffect } from "danholibraryrjs";
 
-import { dateAsUTC, serializeForm } from "utils";
+import { dateAsUTC, serializeForm, showNotification } from "utils";
 import { useApiActions, useStateInQuery } from "hooks";
 import { useCitizen } from "providers/CitizenProvider";
 
-import { getStepData } from "./BookTaxiConstants";
+import { checkPayloadValidity, getStepData } from "./BookTaxiConstants";
 import { BookingStepsPayload } from "./BookTaxiTypes";
 import Progress from "./Steps/Progress";
 import { BookingModifyPayload } from "models/backend/business/models/payloads";
@@ -65,11 +65,19 @@ export default function BookTaxi() {
     // If the form hasn't been submitted, don't do anything as this was triggered by internal state changes
     if (!submitted) return;
 
+    const isInvalid = checkPayloadValidity(payload);
+    if (isInvalid) {
+      setSubmitted(false);
+      return showNotification({
+        type: 'error',
+        message: "Du har manglende inputfelter.",
+      });
+    }
     // If the user has more steps to complete, navigate to the next step
     if (canContinue) {
       setSubmitted(false);
       return navigateToStep(step + 1);
-    } 
+    }
 
     // If the user has completed all steps, make sure the citizenId is set
     if (!payload.citizenId) return updatePayload({ citizenId: citizen?.id });
@@ -113,8 +121,8 @@ export default function BookTaxi() {
 
             <footer className="button-container">
               <Button type="button" className={classNames('button secondary', canGoBack ? undefined : 'disabled')}
-                onClick={e => !canGoBack 
-                  ? e.preventDefault() 
+                onClick={e => !canGoBack
+                  ? e.preventDefault()
                   : navigateToStep(step - 1)}
               >Tilbage</Button>
               <Progress step={step} />
