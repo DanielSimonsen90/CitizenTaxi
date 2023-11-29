@@ -21,8 +21,7 @@ public class AuthMiddleware
 
         // If user isn't re-authenticating or creating an account, check if they have valid tokens
         if (!context.Request.Path.Value.Contains("/users/authenticate") &&
-            !(context.Request.Path.Value.Contains("/users") && context.Request.Method == "POST") &&
-            !context.Request.Path.Value.Contains("/users/ping"))
+            !(context.Request.Path.Value.Contains("/users") && context.Request.Method == "POST"))
         {
             try
             {

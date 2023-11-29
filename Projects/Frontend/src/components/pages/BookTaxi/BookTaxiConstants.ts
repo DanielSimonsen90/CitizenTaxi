@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, FormEvent, InputHTMLAttributes } from "react";
+import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import { FunctionComponent } from "danholibraryrjs";
 import { StepProps } from "./Steps/StepTypes";
 
@@ -8,6 +8,7 @@ import {
   BookTaxi__Step2,
   BookTaxi__Step3
 } from "./Steps";
+import { BookingStepsPayload } from "./BookTaxiTypes";
 
 export const MAX_STEPS = 3;
 
@@ -49,16 +50,28 @@ export function getStepData(step: number) {
 }
 
 export function getValidationMessage(
-  property: string, 
   value: string, 
   onChange: (newValue: string) => void
 ): DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   return {
-    required: true, 
-    onInvalid: (e: FormEvent) => (e.target as HTMLInputElement).setCustomValidity(
-      `Du skal indtaste ${property}, før du kan fortsætte`
-    ),
     value, 
     onChange: e => onChange(e.currentTarget.value)
   }
+}
+
+/**
+ * 
+ * @param payload 
+ * @returns IsInvalid
+ */
+export function checkPayloadValidity(payload: BookingStepsPayload): boolean {
+  const objectKeys = Object.keysOf(payload)
+    .filter(key => key !== 'citizenId' && key !== 'id');
+
+  for (const key of objectKeys) {
+    const isFalsy = [undefined, null, ''].includes(payload[key]);
+    if (isFalsy) return true;
+  }
+
+  return false;
 }

@@ -11,7 +11,7 @@ export default function Step3() {
     <FormGroup label="Afhentning" htmlFor="pickup">
       <input type="text" name="pickup" id="pickup"
         placeholder="Solvej 10, 0000 God by"
-        {...getValidationMessage("en afhentningsadresse", value, setValue)}
+        {...getValidationMessage(value, setValue)}
       />
     </FormGroup>
   );

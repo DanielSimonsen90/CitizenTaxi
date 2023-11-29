@@ -45,7 +45,8 @@ public abstract class ABaseRepositoryTest<TEntity, TRepository>
     }
 
     /// <summary>
-    /// This method is called after each test, disposing the UnitOfWork and releasing the in-memory database and its resources.
+    /// This method is called after each test, disposing the UnitOfWork 
+    /// and releasing the in-memory database and its resources.
     /// </summary>
     [TearDown]
     public void TearDown()
