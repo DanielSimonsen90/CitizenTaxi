@@ -80,13 +80,16 @@ export default function OverviewLayout({
       <header>
         <Link to='/' className="button secondary alt">Tilbage til oversigt</Link>
         <h1>{pageTitle}</h1>
-        <Button type="button" importance="primary" crud="create"
-          onClick={() => {
-            setModalRef(mainCreateModalRef);
-            setModal(<MainCreateModal modalRef={mainCreateModalRef} />);
-            setShowModal(true);
-          }}
-        >Opret {entity}</Button>
+
+        <div className="sub-header">
+          <Button type="button" importance="primary" crud="create"
+            onClick={() => {
+              setModalRef(mainCreateModalRef);
+              setModal(<MainCreateModal modalRef={mainCreateModalRef} />);
+              setShowModal(true);
+            }}
+          >Opret {entity}</Button>
+        </div>
       </header>
 
       <Modal />
