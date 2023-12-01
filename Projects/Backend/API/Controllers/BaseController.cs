@@ -2,9 +2,9 @@
 using Business.Services;
 using Common.DTOs;
 using DanhoLibrary.NLayer;
+
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using System.Linq.Expressions;
 
 namespace API.Controllers;
@@ -19,12 +19,12 @@ namespace API.Controllers;
 public abstract class BaseController : ControllerBase
 {
     /// <summary>
-    /// The <see cref="Business.Services.UnitOfWork"/> used for CRUD operations on the database.
+    /// The <see cref="UnitOfWork"/> used for CRUD operations on the database.
     /// </summary>
     protected readonly UnitOfWork unitOfWork;
 
     /// <summary>
-    /// The constructor receives <see cref="Business.Services.UnitOfWork"/> through dependency injection.
+    /// The constructor receives <see cref="UnitOfWork"/> through dependency injection.
     /// </summary>
     /// <param name="uow">UnitOfWork</param>
     protected BaseController(UnitOfWork uow)

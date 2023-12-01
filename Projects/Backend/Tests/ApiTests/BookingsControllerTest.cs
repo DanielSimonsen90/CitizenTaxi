@@ -42,6 +42,7 @@ internal class BookingsControllerTest : ABaseControllerTest<
         citizen.Bookings.Add(a);
         Repository.AddRange(a, b);
         UnitOfWorkMock.Object.Citizens.Add(citizen);
+
         Guid citizenId = citizen.Id;
         await SaveChangesAsync();
 

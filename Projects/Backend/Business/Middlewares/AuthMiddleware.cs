@@ -4,9 +4,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Middlewares;
 
+/// <summary>
+/// Middleware for authenticating users.
+/// </summary>
 public class AuthMiddleware
 {
+    /// <summary>
+    /// This method is called when the middleware is done processing the request.
+    /// </summary>
     private readonly RequestDelegate _next;
+
+    /// <summary>
+    /// Service consisting of the main authentication process.
+    /// </summary>
     private readonly AuthService _authService;
 
     public AuthMiddleware(RequestDelegate next, AuthService authService)
@@ -15,6 +25,12 @@ public class AuthMiddleware
         _authService = authService;
     }
 
+    /// <summary>
+    /// This method is called when the middleware is invoked by ASP.NET Core.
+    /// </summary>
+    /// <param name="context">The relevant context to process the request</param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task InvokeAsync(HttpContext context)
     {
         if (!context.Request.Path.HasValue) throw new Exception("Request path is null");

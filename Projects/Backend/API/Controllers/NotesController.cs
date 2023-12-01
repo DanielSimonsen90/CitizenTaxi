@@ -95,5 +95,4 @@ public class NotesController : BaseController
         unitOfWork.SaveChanges();
         return result;
     }
-        
 }
