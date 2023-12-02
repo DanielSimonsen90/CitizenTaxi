@@ -1,12 +1,7 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Business.Middlewares;
 using Business.Services;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-
-const string CONNECTION_STRING = "CONNECTION-STRING"; // This is retrieved from Azure KeyVault
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,15 +58,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
-//app.UseCors(builder => builder
-//    .AllowAnyHeader() // HTTP Headers
-//    .AllowAnyMethod() // HTTP Methods
-//    .SetIsOriginAllowed(origin => new string[]
-//    {
-//        "http://localhost:3000",
-//        "https://citizentaxi.netlify.app/"
-//    }.Contains(origin)) // Allow any origin
-//    .AllowCredentials());
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

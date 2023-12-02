@@ -1,5 +1,8 @@
 ﻿namespace Business.Models;
 
+/// <summary>
+/// Information about the login attempts of a user.
+/// </summary>
 public class LoginAttempt
 {
     //public const int MAX_LOGIN_ATTEMPTS = 3;

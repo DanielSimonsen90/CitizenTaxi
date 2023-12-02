@@ -2,6 +2,10 @@
 
 namespace Business.Services;
 
+/// <summary>
+/// This service is used to cache data, as most services are scoped and can't cache data.
+/// This service is a singleton, so it can cache data.
+/// </summary>
 public class CacheService
 {
     /// <summary>

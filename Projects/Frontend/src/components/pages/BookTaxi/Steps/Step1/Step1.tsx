@@ -10,7 +10,7 @@ export default function Step1() {
   return (
     <FormGroup label="Destination" htmlFor="destination">
       <input type="text" name="destination" id="destination" 
-        placeholder="Frederikshavn Sygehus"
+        placeholder="Frederikshavn Sygehus, 9900 Frederikshavn..."
         {...getValidationMessage(value, setValue)}
       />
     </FormGroup>

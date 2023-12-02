@@ -10,7 +10,7 @@ export default function Step3() {
   return (
     <FormGroup label="Afhentning" htmlFor="pickup">
       <input type="text" name="pickup" id="pickup"
-        placeholder="Solvej 10, 0000 God by"
+        placeholder="Solvej 10, 0000 God by..."
         {...getValidationMessage(value, setValue)}
       />
     </FormGroup>

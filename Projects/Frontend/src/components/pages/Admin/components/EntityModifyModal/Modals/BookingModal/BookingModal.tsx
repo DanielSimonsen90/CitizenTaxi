@@ -40,11 +40,11 @@ export default function BookingModal({
         <input type="text" id={`${crud}-booking-destination`} name="destination" defaultValue={defaultModel?.destination} />
       </FormGroup>
 
-      <FormGroup label="Ankomst dato" htmlFor={`${crud}-booking-arrival-date`}>
+      <FormGroup label="Ankomstdato" htmlFor={`${crud}-booking-arrival-date`}>
         <input type="date" id={`${crud}-booking-arrival-date`} name="arrivalDate" defaultValue={defaultDate} />
       </FormGroup>
 
-      <FormGroup label="Ankomst tid" htmlFor={`${crud}-booking-arrival-time`}>
+      <FormGroup label="Ankomsttid" htmlFor={`${crud}-booking-arrival-time`}>
         <input type="time" id={`${crud}-booking-arrival-time`} name="arrivalTime" defaultValue={convertTime(defaultTimeString)} />
       </FormGroup>
 

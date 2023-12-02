@@ -4,6 +4,10 @@
     justify-content: flex-end;
   }
 
+  &:has(.citizen-card) {
+    max-width: unset;
+  }
+
   .citizen-card {
     grid-template-rows: 5em;
 

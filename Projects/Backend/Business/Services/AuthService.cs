@@ -5,6 +5,9 @@ using System.Text.Json;
 
 namespace Business.Services;
 
+/// <summary>
+/// This service handles the authentication of users.
+/// </summary>
 public class AuthService
 {
     #region Statics

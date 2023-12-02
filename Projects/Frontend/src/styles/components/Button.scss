@@ -4,8 +4,7 @@
 $default-main: colors.$brand-primary;
 $default-text: colors.$text-primary;
 
-@mixin createButton(
-  $main: $default-main,
+@mixin createButton($main: $default-main,
   $text: $default-text,
   $border: transparent) {
   @include mixins.transition();
@@ -117,10 +116,8 @@ button,
     @include createButton(transparent);
 
     @media (prefers-color-scheme: light) {
-      @include createButton(
-        transparent,
-        colors.$background-primary
-      );
+      @include createButton(transparent,
+        colors.$background-primary );
     }
 
     &:hover {
