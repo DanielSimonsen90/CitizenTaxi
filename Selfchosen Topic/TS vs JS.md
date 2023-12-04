@@ -4,15 +4,15 @@ What is ts?
   * TS != JS
 * Compile ts to js
 *  tsconfig.json
-  - target
+  - target: Change target from ES5 to ES6 and ESNext
 * Runtime errors
 
-.ts to .d.ts & .js  as .c & .h
+.ts => .d.ts. .js & .js.map | .c & .h
 ts vs jsdoc
   - comments inside code for intellisence & autocomplete
   - making an object type
   - protection types (#property)
-Type renames i.e. Guid = string
+  - generics
 enum & namespace
 
 https://dev.azure.com/skpazure/_git/DCH?path=/DCH.Website/wwwroot/js/shared/components/modal.js
