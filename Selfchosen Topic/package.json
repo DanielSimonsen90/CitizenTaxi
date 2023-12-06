@@ -1,0 +1,9 @@
+{
+  "name": "ts-vs-jsdoc",
+  "version": "1.0.0",
+  "description": "TypeScript vs JSDoc",
+  "author": "Daniel Simonsen",
+  "dependencies": {
+    "customlib": "1.0.0"
+  }
+}

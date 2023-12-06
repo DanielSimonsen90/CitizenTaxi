@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "dom", "ES5", "ES6"],
+    "module": "CommonJS",
+    "outDir": "compiled",
+    
+    // "sourceMap": true,
+
+    // "declaration": true,
+    // "declarationDir": "compiled/types",
+  },
+}
