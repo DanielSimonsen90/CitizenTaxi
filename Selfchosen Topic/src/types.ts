@@ -12,3 +12,6 @@ export type SimulatedResponse<T> = {
   statusCode: StatusCode;
   data: T;
 };
+
+export type ReturnTypes<ReturnString extends boolean> =
+  ReturnString extends true ? string : number;

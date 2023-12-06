@@ -1,6 +1,8 @@
 const StatusCode = {
   OK: 200,
   NOT_FOUND: 404,
+  0: 200,
+  1: 404
 };
 
 /**

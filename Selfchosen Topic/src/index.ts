@@ -1,4 +1,9 @@
-import { Data, SimulatedResponse, StatusCode } from './types';
+import { add } from 'customlib';
+import { Data, ReturnTypes, SimulatedResponse, StatusCode } from './types';
+
+const sum = add(1, 2);
+const data = getData();
+const mappedFormData = getReturnType('1', false);
 
 async function getData() {
   const response = await simulateApiRequest<Data>();
@@ -31,4 +36,11 @@ function simulateApiRequest<T>(forceFail = false): Promise<SimulatedResponse<T>>
   });
 }
 
-getData();
+function getReturnType<
+  ReturnString extends boolean
+>(
+  value: string, 
+  returnString: ReturnString
+): ReturnTypes<ReturnString> {
+  return (returnString ? value : Number(value)) as ReturnTypes<ReturnString>;
+}
