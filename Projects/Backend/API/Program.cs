@@ -16,16 +16,23 @@ builder.Services.AddSingleton<CacheService>();
 builder.Services.AddSingleton<AuthService>();
 
 builder.Services.AddDbContext<CitizenTaxiDbContext>(options =>
-{
-    IConfigurationRoot configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("ConnectionStrings.json")
-        .Build();
+{   
+    try
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("ConnectionStrings.json")
+            .Build();
 
-    options.UseSqlServer(configuration.GetSection(
-        //"DefaultConnection"
-        "ReleaseConnection"
-    ).Value);
+        options.UseSqlServer(configuration.GetSection(
+            //"DefaultConnection"
+            "ReleaseConnection"
+        ).Value);
+    }
+    catch
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
 });
 
 builder.Services.AddScoped<UnitOfWork>();
