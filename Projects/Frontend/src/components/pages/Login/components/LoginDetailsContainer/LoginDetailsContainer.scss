@@ -1,0 +1,35 @@
+.login-details-container {
+  h2 {
+    font-size: 1.5rem;
+    color: var(--text-tertiary);
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em;
+  }
+  
+  li {
+    background-color: var(--background-secondary);
+    padding: .5em;
+    border-radius: .25em;
+    box-shadow: 0 0 0 .25em var(--background-secondary);
+  }
+
+  h3 {
+    text-align: center;
+  }
+
+  p {
+    margin-top: .5ch;
+  }  
+
+  button {
+    margin: 1em auto 0;
+  }
+}

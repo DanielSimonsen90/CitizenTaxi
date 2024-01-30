@@ -4,7 +4,7 @@ import { Nullable } from "types";
 export type AuthProviderContextType<AllowNullable extends boolean> = {
   user: AllowNullable extends true ? Nullable<User> : User;
 
-  login: (email: string, password: string) => void;
+  login: (username: string, password: string) => void;
   logout: () => void;
   loggingIn: boolean;
 }

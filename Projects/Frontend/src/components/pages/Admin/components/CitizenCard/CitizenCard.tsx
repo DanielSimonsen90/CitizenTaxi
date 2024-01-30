@@ -7,6 +7,7 @@ import { BaseEntity } from "models/backend/common/dtos/BaseEntity";
 import { useBookings, useCitizen } from "providers/CitizenProvider";
 
 import { useBookingModals, useCitizenModals, useNoteModals } from "../EntityModifyModal/AdminOverviewModalHooks";
+import { formatName } from "utils";
 
 type EntityOperations<TEntityName extends string, TEntity extends BaseEntity> = (
   Record<`onCreate${TEntityName}`, () => void>
@@ -144,11 +145,11 @@ export default function CitizenCard({
                       modal: () => <DeleteNoteModal modalRef={deleteNoteModalRef} selected={note} selectedCitizen={citizen} />,
                       modalRef: deleteNoteModalRef
                     })}
-                  >Slet {firstName}s notat</Button>
+                  >Slet {formatName(firstName)} notat</Button>
                   <Button type="button" importance="secondary" crud="update" onClick={() => onModalOpen({
                     modal: () => <EditNoteModal modalRef={editNoteModalRef} selected={note} selectedCitizen={citizen} />,
                     modalRef: editNoteModalRef
-                  })}>Redigér {firstName}s notat</Button>
+                  })}>Redigér {formatName(firstName)} notat</Button>
                 </div>
               </>
             )
